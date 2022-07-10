@@ -1,0 +1,21 @@
+{
+  "manifestVersion": 1,
+  "id": "demo-tabs",
+  "name": "Tabs",
+  "author": "RemNote",
+  "repoUrl": "",
+  "version": {
+    "major": 0,
+    "minor": 22,
+    "patch": 0
+  },
+  "description": "Organize your knowledgebase with workspaces and tabs.",
+  "authorizedActions": "ReadCreateModifyDelete",
+  "requestNative": false,
+  "requiredScopes": [
+    {
+      "type": "All",
+      "level": "ReadCreateModifyDelete"
+    }
+  ]
+}

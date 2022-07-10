@@ -1,0 +1,21 @@
+{
+  "manifestVersion": 1,
+  "id": "demo_wiki_popup",
+  "name": "Wiki Popups",
+  "author": "Jamesb",
+  "repoUrl": "",
+  "version": {
+    "major": 0,
+    "minor": 5,
+    "patch": 0
+  },
+  "description": "Right click on Wikipedia links to preview the article in the Rem reference window.",
+  "authorizedActions": "Read",
+  "requestNative": true,
+  "requiredScopes": [
+    {
+      "type": "All",
+      "level": "ReadCreateModifyDelete"
+    }
+  ]
+}

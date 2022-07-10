@@ -1,0 +1,21 @@
+{
+  "manifestVersion": 1,
+  "id": "demo_dictionary",
+  "name": "Dictionary",
+  "author": "Jamesb",
+  "repoUrl": "",
+  "version": {
+    "major": 0,
+    "minor": 2,
+    "patch": 0
+  },
+  "description": "Adds a dictionary in the selected text menu.",
+  "authorizedActions": "Read",
+  "requestNative": true,
+  "requiredScopes": [
+    {
+      "type": "All",
+      "level": "ReadCreateModifyDelete"
+    }
+  ]
+}

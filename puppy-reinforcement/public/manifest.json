@@ -1,0 +1,21 @@
+{
+  "manifestVersion": 1,
+  "id": "demo_puppy_reinforcement",
+  "name": "Puppy Reinforcement",
+  "author": "RemNote",
+  "repoUrl": "",
+  "version": {
+    "major": 0,
+    "minor": 7,
+    "patch": 0
+  },
+  "description": "Shows motivational dog pics in the queue.",
+  "authorizedActions": "Read",
+  "requestNative": true,
+  "requiredScopes": [
+    {
+      "type": "All",
+      "level": "ReadCreateModifyDelete"
+    }
+  ]
+}

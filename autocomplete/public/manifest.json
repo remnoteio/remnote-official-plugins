@@ -1,0 +1,20 @@
+{
+  "manifestVersion": 1,
+  "id": "demo_autocomplete",
+  "name": "Autocomplete",
+  "author": "Jamesb",
+  "repoUrl": "",
+  "version": {
+    "major": 0,
+    "minor": 4,
+    "patch": 0
+  },
+  "description": "Get autocomplete suggestions based on words in the current document.",
+  "requestNative": true,
+  "requiredScopes": [
+    {
+      "type": "All",
+      "level": "ReadCreateModifyDelete"
+    }
+  ]
+}
