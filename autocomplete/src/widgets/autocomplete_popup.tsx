@@ -127,25 +127,25 @@ function AutocompletePopup() {
       const allWordsAsString = await plugin.richText.toString(
         allWordsAsRichText
       );
-      const allWords = Re.pipe(
+      const matchingWords = Re.pipe(
         allWordsAsString,
         // remove punctuation at word boundaries
         (s: string) =>
           s?.replace(/\b[^\w\s]+\B|\B[^\w\s]+\b/g, ""),
         // split on whitespace
         (s: string) => s?.split(/(\s+)/) || [],
-        Re.map((word) => word.trim().toLowerCase()),
-        Re.filter((word) => word != null && word.length >= 3 && !isURL(word)),
-        Re.uniq()
+        Re.filter((word) => {
+          const lowerCaseWord = word.trim().toLowerCase();
+          return (
+            word != null &&
+            word.length >= 3 && !isURL(word) &&
+            lowerCaseWord.startsWith(lastPartialWord.toLowerCase()) && lowerCaseWord !== lastPartialWord.toLowerCase()
+          )
+        }),
+        Re.uniq(),
+        Re.sortBy(x => x.length)
       );
-      setAutocompleteSuggestions(
-        lastPartialWord
-          ? allWords.filter(
-              (word) =>
-                word.startsWith(lastPartialWord) && word !== lastPartialWord
-            )
-          : []
-      );
+      setAutocompleteSuggestions(matchingWords);
     };
     effect();
   }, [remWordsMap, lastPartialWord]);

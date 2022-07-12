@@ -30,7 +30,7 @@ async function onActivate(plugin: ReactRNPlugin) {
   //
   // Hotkeys can be customised using strings like `ctrl+enter`
   // or `tab`.
-
+  
   await plugin.settings.registerStringSetting({
     id: selectNextKeyId,
     title: "Select Next Shortcut",
@@ -49,6 +49,16 @@ async function onActivate(plugin: ReactRNPlugin) {
     defaultValue: "tab",
   });
 
+  const openAutocompleteWindow = async () => {
+    const caret = await plugin.editor.getCurrentCaretDOMRect();
+    lastFloatingWidgetId = await plugin.window.openFloatingWidget(
+      "autocomplete_popup",
+      { top: caret ? caret.y + POPUP_Y_OFFSET : undefined, left: caret?.x }
+    );
+  }
+
+  await openAutocompleteWindow();
+
   // Whenever the user edits text we check if there is already an open
   // autocomplete floating widget. If there is no current autocomplete widget
   // then open one.
@@ -60,12 +70,8 @@ async function onActivate(plugin: ReactRNPlugin) {
     ) {
       return;
     }
-    const caret = await plugin.editor.getCurrentCaretDOMRect();
-    lastFloatingWidgetId = await plugin.window.openFloatingWidget(
-      "autocomplete_popup",
-      { top: caret ? caret.y + POPUP_Y_OFFSET : undefined, left: caret?.x }
-    );
-  });
+    await openAutocompleteWindow();
+  })
 }
 
 async function onDeactivate(_: ReactRNPlugin) {}
