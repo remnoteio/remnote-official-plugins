@@ -8,7 +8,7 @@ import {
   RNPlugin,
   useAPIEventListener,
   usePlugin,
-  useReactiveAPI,
+  useTracker,
 } from "@remnote/plugin-sdk";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
@@ -21,12 +21,12 @@ function TabsBar() {
   const [tabIndex, setTabIndex] = React.useState<number>(0);
   const [draggingId, setDraggingId] = React.useState<string | undefined>();
 
-  const workspacePowerup = useReactiveAPI(async (reactivePlugin: RNPlugin) => {
+  const workspacePowerup = useTracker(async (reactivePlugin: RNPlugin) => {
     return await reactivePlugin.powerup.getPowerupByCode("workspace");
   }, []);
 
   // Reactively get the tabs
-  const reactiveTabs = useReactiveAPI(async (reactivePlugin) => {
+  const reactiveTabs = useTracker(async (reactivePlugin) => {
     const workspacePowerup = await reactivePlugin.powerup.getPowerupByCode(
       "workspace"
     );
@@ -272,7 +272,7 @@ interface TabProps {
 function Tab(props: TabProps) {
   const plugin = usePlugin();
 
-  const tabRem = useReactiveAPI(
+  const tabRem = useTracker(
     async (reactivePlugin) => {
       return await reactivePlugin.rem.findOne(props.tabRem._id);
     },

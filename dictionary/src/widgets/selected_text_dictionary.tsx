@@ -4,7 +4,7 @@ import {
   RNPlugin,
   LoadingSpinner,
   useRunAsync,
-  useReactiveAPI,
+  useTracker,
 } from "@remnote/plugin-sdk";
 import { PreviewDefinitions } from "../components/PreviewDefinitions";
 import { WordData, GroupedDefinition } from "../lib/models";
@@ -71,7 +71,7 @@ async function addSelectedDefinition(
 function SelectedTextDictionary() {
   const plugin = usePlugin();
 
-  // The `useReactiveAPI` hook
+  // The `useTracker` hook
   // watches the current selected text in RemNote and
   // rerenders our component every time it changes.
   //
@@ -80,7 +80,7 @@ function SelectedTextDictionary() {
   // value to only set it once the selected text value has
   // not been updated for 0.3 seconds.
   const selTextRichText = useDebounce(
-    useReactiveAPI(async(reactivePlugin) => {
+    useTracker(async(reactivePlugin) => {
       return await reactivePlugin.editor.getSelectedRichText()
     }),
     300

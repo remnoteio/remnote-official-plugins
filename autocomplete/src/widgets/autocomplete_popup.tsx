@@ -5,7 +5,7 @@ import {
   RichTextInterface,
   useAPIEventListener,
   useRunAsync,
-  useReactiveAPI,
+  useTracker,
 } from "@remnote/plugin-sdk";
 import * as R from "react";
 import clsx from "clsx";
@@ -32,11 +32,11 @@ function AutocompletePopup() {
   // the settings this component will re-render with the latest
   // values without requiring the user to refresh / reload.
 
-  const selectNextKey = useReactiveAPI(
+  const selectNextKey = useTracker(
     async (reactivePlugin) => await reactivePlugin.settings.getSetting(selectNextKeyId)) as string
-  const selectPrevKey = useReactiveAPI(
+  const selectPrevKey = useTracker(
     async (reactivePlugin) => await reactivePlugin.settings.getSetting(selectPrevKeyId)) as string
-  const insertSelectedKey = useReactiveAPI(
+  const insertSelectedKey = useTracker(
     async (reactivePlugin) => await reactivePlugin.settings.getSetting(insertSelectedKeyId)) as string
 
   // Steal autocomplete navigation and insertion keys from the editor
@@ -68,10 +68,10 @@ function AutocompletePopup() {
     }
   );
 
-  // useReactiveAPI subscribes to AppEvents for us, and reacts
+  // useTracker subscribes to AppEvents for us, and reacts
   // if they change, so we always get the latest documentRem value
 
-  const documentRem = useReactiveAPI(async (reactivePlugin) => {
+  const documentRem = useTracker(async (reactivePlugin) => {
     const paneId = await reactivePlugin.window.getFocusedPaneId();
     const remId = await reactivePlugin.window.getOpenPaneRemId(paneId);
     return reactivePlugin.rem.findOne(remId)

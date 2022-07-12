@@ -4,7 +4,7 @@ import {
   LoadingSpinner,
   useRunAsync,
   WidgetLocation,
-  useReactiveAPI,
+  useTracker,
 } from "@remnote/plugin-sdk";
 import { WikiExtract } from "../lib/models";
 import { useFetch } from "../hooks/useFetch";
@@ -23,7 +23,7 @@ interface WikiPopupInterface {
 export function WikiPopup(props: WikiPopupInterface) {
   const plugin = usePlugin();
   const rem = useRunAsync(async () => await plugin.rem.findOne(props.remId), [props.remId]);
-  const renderLocation = useReactiveAPI(async (reactivePlugin) => {
+  const renderLocation = useTracker(async (reactivePlugin) => {
     return (await reactivePlugin.settings.getSetting("render-location")) as WidgetLocation
   })
 
