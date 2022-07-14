@@ -6,7 +6,7 @@ import {
 import "../style.css";
 
 async function onActivate(plugin: ReactRNPlugin) {
-  await plugin.registerWidget(
+  await plugin.app.registerWidget(
     "selected_text_dictionary",
     WidgetLocation.SelectedTextMenu,
     {

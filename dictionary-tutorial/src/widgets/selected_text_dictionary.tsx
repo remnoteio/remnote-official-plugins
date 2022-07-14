@@ -30,12 +30,12 @@ async function addSelectedDefinition(
   // Find the root Rem where we want to add the word defitions as children.
   const rootRemName = (await plugin.settings.getSetting("root")) as string;
   if (!rootRemName) {
-    plugin.toast("You need to set the Dictionary Root Rem setting!", { autoClose: 2000 });
+    plugin.app.toast("You need to set the Dictionary Root Rem setting!", { autoClose: 2000 });
     return;
   }
   const rootRem = await plugin.rem.findByName([rootRemName], null);
   if (!rootRem) {
-    plugin.toast("Failed to find the root rem", { autoClose: 2000 });
+    plugin.app.toast("Failed to find the root rem", { autoClose: 2000 });
     return;
   }
 
@@ -63,9 +63,9 @@ async function addSelectedDefinition(
     // Practice the flashcard in both directions
     await wordRem.setPracticeDirection("both");
     // Success!
-    plugin.toast("Added!", { autoClose: 2000 });
+    plugin.app.toast("Added!", { autoClose: 2000 });
   } else {
-    plugin.toast("Failed to save the word to your knowledge base.", {
+    plugin.app.toast("Failed to save the word to your knowledge base.", {
       autoClose: 2000,
     });
   }
