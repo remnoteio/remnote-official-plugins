@@ -10,7 +10,6 @@
     "patch": 0
   },
   "description": "Adds a dictionary in the selected text menu.",
-  "authorizedActions": "Read",
   "requestNative": true,
   "requiredScopes": [
     {

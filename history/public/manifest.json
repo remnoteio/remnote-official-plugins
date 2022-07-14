@@ -10,7 +10,6 @@
     "patch": 0
   },
   "description": "Adds a right sidebar showing Rem history.",
-  "authorizedActions": "Read",
   "requestNative": true,
   "requiredScopes": [
     {
