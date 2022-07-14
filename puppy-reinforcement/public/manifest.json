@@ -10,12 +10,11 @@
     "patch": 0
   },
   "description": "Shows motivational dog pics in the queue.",
-  "authorizedActions": "Read",
   "requestNative": true,
   "requiredScopes": [
     {
       "type": "All",
-      "level": "ReadCreateModifyDelete"
+      "level": "Read"
     }
   ]
 }
