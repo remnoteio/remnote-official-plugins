@@ -10,7 +10,6 @@
     "patch": 0
   },
   "description": "Organize your knowledgebase with workspaces and tabs.",
-  "authorizedActions": "ReadCreateModifyDelete",
   "requestNative": false,
   "requiredScopes": [
     {
