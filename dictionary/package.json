@@ -15,6 +15,7 @@
     ]
   },
   "dependencies": {
+    "@remnote/plugin-sdk": "0.0.5",
     "babel-loader": "^8.2.3",
     "css-loader": "^6.7.1",
     "dayjs": "^1.10.8",
