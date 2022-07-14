@@ -104,7 +104,7 @@ function SelectedTextDictionary() {
   return (
     <div className="min-h-[200px] max-h-[500px] overflow-y-scroll m-4 font-inter">
       {isLoading ? (
-        <LoadingSpinner size="medium" />
+        <LoadingSpinner/>
       ) : isError ? (
         <p>An error occurred fetching the definition</p>
       ) : searchTerm ? (

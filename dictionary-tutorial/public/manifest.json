@@ -1,16 +1,15 @@
 {
   "manifestVersion": 1,
-  "id": "demo_dictionary",
-  "name": "Dictionary",
+  "id": "demo_dictionary_tutorial",
+  "name": "Dictionary Tutorial",
   "author": "Jamesb",
   "repoUrl": "",
   "version": {
     "major": 0,
-    "minor": 2,
+    "minor": 4,
     "patch": 0
   },
-  "description": "Adds a dictionary in the selected text menu.",
-  "authorizedActions": "Read",
+  "description": "Source code for the dictionary plugin tutorial project.",
   "requestNative": true,
   "requiredScopes": [
     {

@@ -292,7 +292,8 @@ function Tab(props: TabProps) {
         props.isSelected
           ? "rn-clr-background-primary"
           : "rn-clr-background-secondary",
-        "mb-[-1px] pl-4 pr-1 py-[8px] p-1 ",
+        "flex items-center justify-between gap-2 py-2",
+        props.index == 0 ? "px-4" : "pl-4 pr-3",
         "min-w-[50px] ",
         "!whitespace-nowrap",
         "flex items-center flex-row flex-shrink-0 flex-grow-0"
@@ -326,14 +327,14 @@ function Tab(props: TabProps) {
       {/* {!!remIds && remIds.length > 1 && (
         <span className="text-gray-600 ml-1">({remIds?.length})</span>
       )} */}
-      {props.deleteTab ? (
+      {props.deleteTab && (
         <span
           onClick={(event) => {
             props.deleteTab && props.deleteTab(event, props.index);
             event.preventDefault();
             event.stopPropagation();
           }}
-          className="mx-2 p-1 rounded-sm items-center justify-center hover:rn-clr-background--hovered flex rn-clr-content-primary"
+          className="p-0.5 rounded-sm items-center justify-center hover:rn-clr-background--hovered flex rn-clr-content-primary"
         >
           <img
             src={`${plugin.rootURL}close.svg`}
@@ -346,9 +347,7 @@ function Tab(props: TabProps) {
             }}
           />
         </span>
-      ) : (
-        <div className="mr-2" />
-      )}
+        )}
     </div>
   );
 }
@@ -357,10 +356,10 @@ function TabPlusButton(props) {
   const plugin = usePlugin();
   return (
     <div
-      className="p-2 flex items-center cursor-pointer"
+      className="p-1 flex items-center cursor-pointer"
       onClick={props.addTab}
     >
-      <div className="flex items-center w-6 h-6 justify-center p-1 rounded-md text-center hover:rn-clr-background--hovered">
+      <div className="flex items-center w-6 h-6 justify-center rounded-md text-center hover:rn-clr-background--hovered">
         <img
           src={`${plugin.rootURL}add.svg`}
           style={{

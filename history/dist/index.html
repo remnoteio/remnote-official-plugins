@@ -1,9 +1,0 @@
-<body></body><script>const urlSearchParams = new URLSearchParams(window.location.search);
-      const queryParams = Object.fromEntries(urlSearchParams.entries());
-      const widgetName = queryParams["widgetName"];
-      if (widgetName == undefined) {document.body.innerHTML+="Widget ID not specified."}
-
-      const s = document.createElement('script');
-      s.type = "module";
-      s.src = widgetName+".js";
-      document.body.appendChild(s);</script>
