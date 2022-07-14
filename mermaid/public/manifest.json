@@ -1,0 +1,21 @@
+{
+  "manifestVersion": 1,
+  "id": "mermaid",
+  "name": "Mermaid",
+  "author": "karthikeyan",
+  "repoUrl": "",
+  "version": {
+    "major": 0,
+    "minor": 1,
+    "patch": 0
+  },
+  "description": "",
+  "authorizedActions": "Read",
+  "requestNative": false,
+  "requiredScopes": [
+    {
+      "type": "All",
+      "level": "Read"
+    }
+  ]
+}
