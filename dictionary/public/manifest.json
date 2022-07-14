@@ -15,7 +15,7 @@
   "requiredScopes": [
     {
       "type": "All",
-      "level": "ReadCreateModifyDelete"
+      "level": "ReadCreateModify"
     }
   ]
 }
