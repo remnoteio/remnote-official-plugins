@@ -7,7 +7,7 @@ import "../style.css";
 import { rootRemSettingId } from "../lib/constants";
 
 async function onActivate(plugin: ReactRNPlugin) {
-  await plugin.registerWidget(
+  await plugin.app.registerWidget(
     "selected_text_dictionary",
     WidgetLocation.SelectedTextMenu,
     {

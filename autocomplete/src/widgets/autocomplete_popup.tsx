@@ -17,27 +17,36 @@ import {
 import * as Re from "remeda";
 import { useSyncWidgetPositionWithCaret } from "../lib/hooks";
 import { allRemText } from "../lib/utils";
-import isURL from 'isurl';
+import isURL from "isurl";
 
 function AutocompletePopup() {
   const plugin = usePlugin();
-  const ctx = useRunAsync(async () => await plugin.getWidgetContext(), []);
+  const ctx = useRunAsync(
+    async () => await plugin.widget.getWidgetContext(),
+    []
+  );
 
   const [hidden, setHidden] = R.useState(true);
   const floatingWidgetId = ctx?.floatingWidgetId;
 
   useSyncWidgetPositionWithCaret(floatingWidgetId, hidden);
-  
+
   // Reactively get hotkey strings - if the user updates these in
   // the settings this component will re-render with the latest
   // values without requiring the user to refresh / reload.
 
   const selectNextKey = useTracker(
-    async (reactivePlugin) => await reactivePlugin.settings.getSetting(selectNextKeyId)) as string
+    async (reactivePlugin) =>
+      await reactivePlugin.settings.getSetting(selectNextKeyId)
+  ) as string;
   const selectPrevKey = useTracker(
-    async (reactivePlugin) => await reactivePlugin.settings.getSetting(selectPrevKeyId)) as string
+    async (reactivePlugin) =>
+      await reactivePlugin.settings.getSetting(selectPrevKeyId)
+  ) as string;
   const insertSelectedKey = useTracker(
-    async (reactivePlugin) => await reactivePlugin.settings.getSetting(insertSelectedKeyId)) as string
+    async (reactivePlugin) =>
+      await reactivePlugin.settings.getSetting(insertSelectedKeyId)
+  ) as string;
 
   // Steal autocomplete navigation and insertion keys from the editor
   // while the floating autocomplete window is open.
@@ -54,19 +63,15 @@ function AutocompletePopup() {
     }
   }, [hidden]);
 
-  useAPIEventListener(
-    AppEvents.StealKeyEvent,
-    floatingWidgetId,
-    ({ key }) => {
-      if (key === selectNextKey) {
-        selectAdjacentWord("down");
-      } else if (key === selectPrevKey) {
-        selectAdjacentWord("up");
-      } else if (key === insertSelectedKey) {
-        insertSelectedWord();
-      }
+  useAPIEventListener(AppEvents.StealKeyEvent, floatingWidgetId, ({ key }) => {
+    if (key === selectNextKey) {
+      selectAdjacentWord("down");
+    } else if (key === selectPrevKey) {
+      selectAdjacentWord("up");
+    } else if (key === insertSelectedKey) {
+      insertSelectedWord();
     }
-  );
+  });
 
   // useTracker subscribes to AppEvents for us, and reacts
   // if they change, so we always get the latest documentRem value
@@ -74,13 +79,17 @@ function AutocompletePopup() {
   const documentRem = useTracker(async (reactivePlugin) => {
     const paneId = await reactivePlugin.window.getFocusedPaneId();
     const remId = await reactivePlugin.window.getOpenPaneRemId(paneId);
-    return reactivePlugin.rem.findOne(remId)
-  })
+    return reactivePlugin.rem.findOne(remId);
+  });
 
   // Whenever we change documents we first get all Rem descendants and
   // add their text to the remWordsMap.
 
-  const allInitialDescendants = useRunAsync(async () => await documentRem?.getDescendants(), [documentRem?._id]) || []
+  const allInitialDescendants =
+    useRunAsync(
+      async () => await documentRem?.getDescendants(),
+      [documentRem?._id]
+    ) || [];
 
   const [remWordsMap, setRemWordsMap] = R.useState<
     Record<string, RichTextInterface>
@@ -106,8 +115,8 @@ function AutocompletePopup() {
     setRemWordsMap(Re.set(rem._id, allRemText(rem)));
   });
 
-  // The last partial word is the current part of a word before the 
-  // caret that the user has not yet finished typing. We use the 
+  // The last partial word is the current part of a word before the
+  // caret that the user has not yet finished typing. We use the
   // lastPartialWord to filter down the autocomplete suggestions to
   // show in the popup window.
 
@@ -130,20 +139,21 @@ function AutocompletePopup() {
       const matchingWords = Re.pipe(
         allWordsAsString,
         // remove punctuation at word boundaries
-        (s: string) =>
-          s?.replace(/\b[^\w\s]+\B|\B[^\w\s]+\b/g, ""),
+        (s: string) => s?.replace(/\b[^\w\s]+\B|\B[^\w\s]+\b/g, ""),
         // split on whitespace
         (s: string) => s?.split(/(\s+)/) || [],
         Re.filter((word) => {
           const lowerCaseWord = word.trim().toLowerCase();
           return (
             word != null &&
-            word.length >= 3 && !isURL(word) &&
-            lowerCaseWord.startsWith(lastPartialWord.toLowerCase()) && lowerCaseWord !== lastPartialWord.toLowerCase()
-          )
+            word.length >= 3 &&
+            !isURL(word) &&
+            lowerCaseWord.startsWith(lastPartialWord.toLowerCase()) &&
+            lowerCaseWord !== lastPartialWord.toLowerCase()
+          );
         }),
         Re.uniq(),
-        Re.sortBy(x => x.length)
+        Re.sortBy((x) => x.length)
       );
       setAutocompleteSuggestions(matchingWords);
     };
@@ -166,7 +176,7 @@ function AutocompletePopup() {
     );
     const lpw = prevLine?.match(/\b(\w+)$/)?.[0]?.toLowerCase();
     setLastPartialWord(lpw);
-  }
+  };
 
   useAPIEventListener(
     AppEvents.EditorTextEdited,

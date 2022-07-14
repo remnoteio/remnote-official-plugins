@@ -15,7 +15,7 @@ function PuppyPopup() {
   const [seenCards] = useSessionStorageState("seenCards", 0);
 
   useAPIEventListener(AppEvents.QueueCompleteCard, undefined, async () => {
-    const { floatingWidgetId } = await plugin.getWidgetContext();
+    const { floatingWidgetId } = await plugin.widget.getWidgetContext();
     await plugin.window.closeFloatingWidget(floatingWidgetId);
   });
 
@@ -28,7 +28,7 @@ function PuppyPopup() {
             // The widget context for widgets positioned in floating
             // widgets contains the floatingWidgetId which we can use
             // to close the widget when the user clicks on the popup.
-            const { floatingWidgetId } = await plugin.getWidgetContext();
+            const { floatingWidgetId } = await plugin.widget.getWidgetContext();
             await plugin.window.closeFloatingWidget(floatingWidgetId);
           }}
           className="cursor-pointer rounded-md border border-solid grid gap-1 grid-cols-2 rn-clr-background-primary rn-clr-content-primary"

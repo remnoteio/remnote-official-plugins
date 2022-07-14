@@ -11,6 +11,6 @@ export function log(
 ) {
   console.log(`[${getTime()}] (Autocomplete Plugin): ${message}`);
   if (notify) {
-    plugin.toast(message, { autoClose: 2000 });
+    plugin.app.toast(message, { autoClose: 2000 });
   }
 }

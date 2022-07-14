@@ -15,7 +15,7 @@ import {
 let lastFloatingWidgetId: string;
 
 async function onActivate(plugin: ReactRNPlugin) {
-  await plugin.registerWidget(
+  await plugin.app.registerWidget(
     "autocomplete_popup",
     WidgetLocation.FloatingWidget,
     {
@@ -30,7 +30,7 @@ async function onActivate(plugin: ReactRNPlugin) {
   //
   // Hotkeys can be customised using strings like `ctrl+enter`
   // or `tab`.
-  
+
   await plugin.settings.registerStringSetting({
     id: selectNextKeyId,
     title: "Select Next Shortcut",
@@ -55,7 +55,7 @@ async function onActivate(plugin: ReactRNPlugin) {
       "autocomplete_popup",
       { top: caret ? caret.y + POPUP_Y_OFFSET : undefined, left: caret?.x }
     );
-  }
+  };
 
   await openAutocompleteWindow();
 
@@ -63,7 +63,7 @@ async function onActivate(plugin: ReactRNPlugin) {
   // autocomplete floating widget. If there is no current autocomplete widget
   // then open one.
 
-  plugin.addListener(AppEvents.EditorTextEdited, undefined, async () => {
+  plugin.event.addListener(AppEvents.EditorTextEdited, undefined, async () => {
     if (
       lastFloatingWidgetId &&
       (await plugin.window.isFloatingWidgetOpen(lastFloatingWidgetId))
@@ -71,7 +71,7 @@ async function onActivate(plugin: ReactRNPlugin) {
       return;
     }
     await openAutocompleteWindow();
-  })
+  });
 }
 
 async function onDeactivate(_: ReactRNPlugin) {}

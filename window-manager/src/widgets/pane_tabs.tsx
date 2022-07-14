@@ -9,10 +9,18 @@ import {
 } from "@remnote/plugin-sdk";
 import * as R from "react";
 import clsx from "clsx";
-import { isMonocleModeStorageKey, restoreLayoutStorageKey, tabIdxStorageKey } from "../lib/constants";
-import { getAllPaneRemIds, paneRemTreeToRemTree, replaceRemId, } from "../lib/windowTreeUtils";
+import {
+  isMonocleModeStorageKey,
+  restoreLayoutStorageKey,
+  tabIdxStorageKey,
+} from "../lib/constants";
+import {
+  getAllPaneRemIds,
+  paneRemTreeToRemTree,
+  replaceRemId,
+} from "../lib/windowTreeUtils";
 import { Direction } from "../lib/types";
-import {PaneNumber} from "../components/PaneNumber";
+import { PaneNumber } from "../components/PaneNumber";
 
 interface PaneProps {
   paneId: string;
@@ -20,7 +28,7 @@ interface PaneProps {
   isFocused: boolean;
   idx: number;
   windowTree: PaneRemWindowTree;
-  setTabIndex: R.Dispatch<R.SetStateAction<number>>
+  setTabIndex: R.Dispatch<R.SetStateAction<number>>;
 }
 
 const PaneTab: R.FC<PaneProps> = (props) => {
@@ -43,7 +51,7 @@ const PaneTab: R.FC<PaneProps> = (props) => {
         await plugin.window.setRemWindowTree(props.remId);
         const newTree = await plugin.window.getCurrentWindowTree();
         await plugin.window.setFocusedPaneId((newTree as PaneRem).paneId);
-        props.setTabIndex(props.idx)
+        props.setTabIndex(props.idx);
       }}
     >
       <PaneNumber windowTree={props.windowTree} paneId={props.paneId} />
@@ -63,14 +71,14 @@ const PanesBar = () => {
   const plugin = usePlugin();
 
   // Registers commands every re-render to avoid reading stale state.
-  plugin.registerCommand({
+  plugin.app.registerCommand({
     name: "Focus Next Pane",
     id: "focusNextPane",
     keyboardShortcut: "opt+pagedown",
     action: () => focusAdjacentPaneWrapped("down"),
   });
 
-  plugin.registerCommand({
+  plugin.app.registerCommand({
     name: "Focus Previous Pane",
     id: "focusPrevPane",
     keyboardShortcut: "opt+pageup",
@@ -88,7 +96,11 @@ const PanesBar = () => {
 
   // The window tree representing the layout we want to return to when the user
   // leaves monocle mode.
-  const [restoreLayout, setRestoreLayout] = useSessionStorageState<PaneRemWindowTree | null>(restoreLayoutStorageKey, null)
+  const [restoreLayout, setRestoreLayout] =
+    useSessionStorageState<PaneRemWindowTree | null>(
+      restoreLayoutStorageKey,
+      null
+    );
   const [tabIndex, setTabIndex] = useSessionStorageState(tabIdxStorageKey, 0);
 
   R.useEffect(() => {
@@ -103,21 +115,23 @@ const PanesBar = () => {
         // focused pane. This is what creates the zoom/monocle effect.
         const curTree = await plugin.window.getCurrentWindowTree();
         const allPaneRem = getAllPaneRemIds(curTree);
-        const focusedIdx = allPaneRem.findIndex(x => x.paneId === pane)        
+        const focusedIdx = allPaneRem.findIndex((x) => x.paneId === pane);
         await plugin.window.setRemWindowTree(remId);
         const newTree = await plugin.window.getCurrentWindowTree();
-        await plugin.window.setFocusedPaneId((newTree as PaneRem).paneId)
+        await plugin.window.setFocusedPaneId((newTree as PaneRem).paneId);
         setTabIndex(focusedIdx);
         setRestoreLayout(curTree);
       } else {
         // If we are toggling monocle mode off and there is a restorable layout present,
         // set the current window tree in RemNote to the layout.
         if (restoreLayout) {
-          await plugin.window.setRemWindowTree(paneRemTreeToRemTree(restoreLayout));
+          await plugin.window.setRemWindowTree(
+            paneRemTreeToRemTree(restoreLayout)
+          );
           const newTree = await plugin.window.getCurrentWindowTree();
           const newTreeAllPanes = getAllPaneRemIds(newTree);
           const newPaneId = newTreeAllPanes[tabIndex];
-          await plugin.window.setFocusedPaneId(newPaneId.paneId)
+          await plugin.window.setFocusedPaneId(newPaneId.paneId);
         }
       }
     };
@@ -140,9 +154,10 @@ const PanesBar = () => {
         if (allPanes.length > 1) {
           setRestoreLayout(newTree);
           setIsMonocleMode(false);
-        }
-        else {
-          const oldLayout = await plugin.storage.getSession(restoreLayoutStorageKey);
+        } else {
+          const oldLayout = await plugin.storage.getSession(
+            restoreLayoutStorageKey
+          );
           const oldAllPaneRems = getAllPaneRemIds(oldLayout);
           const tabIdx = await plugin.storage.getSession(tabIdxStorageKey);
           const oldPaneId = oldAllPaneRems[tabIdx].paneId;
@@ -158,7 +173,7 @@ const PanesBar = () => {
 
     runEffect().then((_) => {
       setTimeout(() => {
-        plugin.addListener(
+        plugin.event.addListener(
           AppEvents.URLChange,
           undefined,
           updateOnExternalChange
@@ -166,23 +181,23 @@ const PanesBar = () => {
       }, 20);
     });
 
-    // When using `plugin.addListener`, you must remember to
+    // When using `plugin.event.addListener`, you must remember to
     // manually unsubscribe from the event when the component unmounts.
     // This isn't necessary when using the `useAPIEventListener` hook,
     // so that is preferred in most cases.
     return () => {
-      plugin.removeListener(
+      plugin.event.removeListener(
         AppEvents.URLChange,
         undefined,
         updateOnExternalChange
-      )
+      );
     };
   }, [isMonocleMode]);
 
   // See the "Focus Next Pane" and "Focus Prev Pane" commands above.
   async function focusAdjacentPaneWrapped(direction: Direction) {
     if (!restoreLayout) {
-      return
+      return;
     }
     const allPaneRem = getAllPaneRemIds(restoreLayout);
     let newPaneIdx = tabIndex + (direction === "up" ? -1 : 1);
@@ -198,30 +213,28 @@ const PanesBar = () => {
     }
   }
 
-  return (isMonocleMode && restoreLayout)
-    ? <div
-        className={clsx(
-          "overflow-x-auto overflow-y-hidden",
-          "rn-clr-background-secondary",
-          "flex gap-1 items-stretch",
-          "p-1 py-0 pl-4"
-        )}
-      >
-      {
-        getAllPaneRemIds(restoreLayout).map((paneRem, idx) => (
-          <PaneTab
-            windowTree={restoreLayout}
-            idx={idx}
-            key={paneRem.paneId}
-            paneId={paneRem.paneId}
-            remId={paneRem.remId}
-            isFocused={tabIndex === idx}
-            setTabIndex={setTabIndex}
-          />
-        )
+  return isMonocleMode && restoreLayout ? (
+    <div
+      className={clsx(
+        "overflow-x-auto overflow-y-hidden",
+        "rn-clr-background-secondary",
+        "flex gap-1 items-stretch",
+        "p-1 py-0 pl-4"
       )}
-      </div>
-    : null
+    >
+      {getAllPaneRemIds(restoreLayout).map((paneRem, idx) => (
+        <PaneTab
+          windowTree={restoreLayout}
+          idx={idx}
+          key={paneRem.paneId}
+          paneId={paneRem.paneId}
+          remId={paneRem.remId}
+          isFocused={tabIndex === idx}
+          setTabIndex={setTabIndex}
+        />
+      ))}
+    </div>
+  ) : null;
 };
 
 renderWidget(PanesBar);

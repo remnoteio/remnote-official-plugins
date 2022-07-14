@@ -39,7 +39,7 @@ async function onActivate(plugin: ReactRNPlugin) {
   // When the user completes a card, we check if they
   // have seen the number of cards specified in the card
   // interval setting. If so we show the popup.
-  plugin.addListener(AppEvents.QueueCompleteCard, undefined, async () => {
+  plugin.event.addListener(AppEvents.QueueCompleteCard, undefined, async () => {
     const cardInterval = Number(
       await plugin.settings.getSetting("cardInterval")
     );
@@ -59,24 +59,28 @@ async function onActivate(plugin: ReactRNPlugin) {
   });
 
   // Reset the seen cards counter when the user enters the queue.
-  plugin.addListener(AppEvents.QueueEnter, undefined, () => {
+  plugin.event.addListener(AppEvents.QueueEnter, undefined, () => {
     plugin.storage.setSession("seenCards", 0);
   });
 
   // A test command so you can see how the popup looks.
-  await plugin.registerCommand({
+  await plugin.app.registerCommand({
     id: "showDoggo",
     name: "Show Doggo",
     action: () => showDoggo(plugin),
   });
 
   // Register the puppy popup widget component.
-  await plugin.registerWidget("puppy_popup", WidgetLocation.FloatingWidget, {
-    dimensions: {
-      width: 300,
-      height: "auto",
-    },
-  });
+  await plugin.app.registerWidget(
+    "puppy_popup",
+    WidgetLocation.FloatingWidget,
+    {
+      dimensions: {
+        width: 300,
+        height: "auto",
+      },
+    }
+  );
 }
 
 async function onDeactivate(_: ReactRNPlugin) {}
