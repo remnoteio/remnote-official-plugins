@@ -26,20 +26,21 @@ function TabsBar() {
   }, []);
 
   // Reactively get the tabs
-  const reactiveTabs = useTracker(async (reactivePlugin) => {
-    const workspacePowerup = await reactivePlugin.powerup.getPowerupByCode(
-      "workspace"
-    );
-    const children = (await workspacePowerup?.getChildrenRem()) || [];
-
-    return await filterAsync(children, async (c) => {
-      return (
-        c.type != RemType.PORTAL &&
-        workspacePowerup &&
-        (await c.hasPowerup("workspace"))
+  const reactiveTabs =
+    useTracker(async (reactivePlugin) => {
+      const workspacePowerup = await reactivePlugin.powerup.getPowerupByCode(
+        "workspace"
       );
-    });
-  }, []) || []
+      const children = (await workspacePowerup?.getChildrenRem()) || [];
+
+      return await filterAsync(children, async (c) => {
+        return (
+          c.type != RemType.PORTAL &&
+          workspacePowerup &&
+          (await c.hasPowerup("workspace"))
+        );
+      });
+    }, []) || [];
 
   // Cache the tabs in React state to reduce jitter when the user drags a tab
   const [tabs, setTabs] = useState(reactiveTabs);
@@ -95,8 +96,7 @@ function TabsBar() {
   }, [!!tabs]);
 
   const onURLChange = async () => {
-    if (currentTab)
-      await setPowerupPropertiesForCurrentWindow(currentTab);
+    if (currentTab) await setPowerupPropertiesForCurrentWindow(currentTab);
   };
 
   useAPIEventListener(AppEvents.ClickSidebarItem, "home", async () => {
@@ -318,9 +318,14 @@ function Tab(props: TabProps) {
       ) : (
         <div
           onMouseUp={(e) => e.stopPropagation()}
-          className={clsx("font-inter text-md !whitespace-nowrap", tabRem?.text.length === 0 && "italic")}
+          className={clsx(
+            "font-inter text-md !whitespace-nowrap",
+            tabRem?.text.length === 0 && "italic"
+          )}
         >
-          {tabRem?.text.length === 0 ? "Untitled" : tabRem?.text.filter((e) => typeof e == "string")}
+          {tabRem?.text.length === 0
+            ? "Untitled"
+            : tabRem?.text.filter((e) => typeof e == "string")}
         </div>
       )}
       {/* This renders the number of open windows in the tab: */}
@@ -347,7 +352,7 @@ function Tab(props: TabProps) {
             }}
           />
         </span>
-        )}
+      )}
     </div>
   );
 }
