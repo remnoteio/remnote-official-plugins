@@ -1,17 +1,13 @@
 ## Features
 
-- Provides Autocomplete suggestions in a popup menu based on words present in the current document.
-
-Note: Currently only works with whitespace-delimited languages like English.
+- Provides a "Hide in Queue" powerup that hides the tagged Rem in the queue.
 
 ## How to Use
 
-- The default hotkeys are:
-  - `down`: select the next suggestion.
-  - `up`: select the previous suggestion.
-  - `tab`: insert the currently selected suggestion into the editor.
-- You can customise the hotkeys in the settings.
-  - Note that hotkeys for this plugin must be specified as text in the settings - eg. `ctrl+n` or `enter` rather than using the normal hotkey system in RemNote.
+Tag any Rem with "Hide in Queue":
+
+![](https://i.imgur.com/06IHTFp.png)
+![](https://i.imgur.com/nntgSw1.png)
 
 ## Developers
 
