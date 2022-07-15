@@ -6,7 +6,10 @@
 
 Tag any Rem with "Hide in Queue":
 
+**Editor:**
 ![](https://i.imgur.com/06IHTFp.png)
+
+**Queue:**
 ![](https://i.imgur.com/nntgSw1.png)
 
 ## Developers
