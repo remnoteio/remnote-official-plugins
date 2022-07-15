@@ -1,17 +1,8 @@
 ## Features
 
-- Provides Autocomplete suggestions in a popup menu based on words present in the current document.
-
-Note: Currently only works with whitespace-delimited languages like English.
+- Hide Rem in the Queue
 
 ## How to Use
-
-- The default hotkeys are:
-  - `down`: select the next suggestion.
-  - `up`: select the previous suggestion.
-  - `tab`: insert the currently selected suggestion into the editor.
-- You can customise the hotkeys in the settings.
-  - Note that hotkeys for this plugin must be specified as text in the settings - eg. `ctrl+n` or `enter` rather than using the normal hotkey system in RemNote.
 
 ## Developers
 
