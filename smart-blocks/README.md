@@ -5,9 +5,7 @@
 
 ## How to Use
 
-- Type a mathematical expression like 1+1, the result will be displayed in a widget below the Rem.
-- Save smart block calculations using the "Save calculation" Omnibar command.
-
+- 1. Type `/` then search and select smart block plugin, it'll automatically create a sample equation with the results
 ## Developers
 
 This plugin is an example plugin built by the RemNote team to demonstrate how to build plugins using the new plugin SDK. The source code has been extensively documented to explain the various API functions.

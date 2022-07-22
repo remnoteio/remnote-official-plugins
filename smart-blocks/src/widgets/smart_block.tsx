@@ -1,38 +1,46 @@
 import React from "react";
 import {
+  AppEvents,
   renderWidget,
+  useAPIEventListener,
   usePlugin,
   useRunAsync,
-  useTracker,
 } from "@remnote/plugin-sdk";
 
+const { useState, useEffect } = React;
+
 function SmartBlock() {
+  const [text, setText] = useState("");
   const plugin = usePlugin();
   const widgetContext = useRunAsync(() => plugin.widget.getWidgetContext(), []);
 
-  // We want to reactively monitor any Rem being referenced.
-  const deepRefs = useTracker(async (reactivePlugin) =>  {
-    const remId = widgetContext?.remId
-    const rem = await reactivePlugin.rem.findOne(remId)
-    return await rem?.deepRemsBeingReferenced()
+  const getRemText = async (remId: string) => {
+    const rem = await plugin.rem.findOne(remId);
+    const text = await plugin.richText.toString(rem?.text || []);
+    return text?.toString() || "";
+  };
+
+  const renderText = async () => {
+    const remId = widgetContext?.remId;
+    const text = await getRemText(remId);
+    setText(text);
+  };
+
+  useAPIEventListener(AppEvents.RemChanged, widgetContext?.remId, () =>
+    renderText()
+  );
+
+  useEffect(() => {
+    renderText();
   }, [widgetContext?.remId]);
-
-  // We must now re-fetch our Rem, and add `deepRefs` as a React dependency
-  // so we re-fetch whenever we observe that a dependency changes.
-  const remText = useTracker(async (reactivePlugin) => {
-    const newRem = await reactivePlugin.rem.findOne(widgetContext?.remId)
-    return await reactivePlugin.richText.toString(newRem?.text || [])
-  }, [deepRefs]);
-
-  console.log(remText)
 
   let val;
   try {
-    val = eval(remText || "");
+    val = eval(text || "");
   } catch {}
 
-  return val != undefined && "" + val != remText?.trim() ? (
-    <div className="text-blue-500 ml-10">= {val}</div>
+  return val != undefined && "" + val != text?.trim() ? (
+    <div className="ml-10 text-blue-500">= {val}</div>
   ) : null;
 }
 

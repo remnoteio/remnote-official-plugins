@@ -5,39 +5,36 @@ import {
 } from "@remnote/plugin-sdk";
 import "../style.css";
 
+export const SMART_BLOCK_POWERUP = "smart_block_powerup";
+
 async function onActivate(plugin: ReactRNPlugin) {
-  await plugin.app.registerWidget("smart_block", WidgetLocation.UnderRemEditor, {
-    dimensions: { height: "auto", width: "100%" },
-  });
+  await plugin.app.registerPowerup(
+    "Smart Block",
+    SMART_BLOCK_POWERUP,
+    "A smart block plugin",
+    {
+      slots: [{ code: "smart_block", name: "Smart Block" }],
+    }
+  );
 
-  console.log("registerCommand");
+  await plugin.app.registerWidget(
+    "smart_block",
+    WidgetLocation.UnderRemEditor,
+    {
+      dimensions: { height: "auto", width: "100%" },
+      powerupFilter: SMART_BLOCK_POWERUP,
+    }
+  );
+
   await plugin.app.registerCommand({
-    id: "saveCalculation",
-    name: "Save calculation",
+    id: "smart_block",
+    name: "Smart Block",
     action: async () => {
-      const focusedId = await plugin.focus.getFocusedRemId();
-      if (focusedId) {
-        const rem = await plugin.rem.findOne(focusedId);
-        const remText = await plugin.richText.toString(rem?.text || []);
-
-        const portalId = await plugin.focus.getFocusedPortalId();
-        const portal = await plugin.rem.findOne(portalId);
-
-        console.log("portal", portal, portalId);
-
-        const newRem = await plugin.rem.createRem();
-        await newRem?.setParent(rem?._id || "", 0);
-        await newRem?.addToPortal(portal?._id || "");
-
-        let val = "";
-        try {
-          val = "" + eval(remText);
-        } catch {}
-
-        await newRem?.setText([val]);
-      } else {
-        await plugin.app.toast("No Rem is focused.");
-      }
+      const focusedRemId = await plugin.focus.getFocusedRemId();
+      const rem = await plugin.rem.findOne(focusedRemId);
+      await rem?.addPowerup(SMART_BLOCK_POWERUP);
+      // TODO: change the rem to code block and add a sample into the text
+      await rem?.setText([`Math.floor(Math.min((Math.cos(345)*345), 300))`]);
     },
   });
 }
