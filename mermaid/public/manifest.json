@@ -9,7 +9,7 @@
     "minor": 1,
     "patch": 0
   },
-  "description": "",
+  "description": "Mermaid library integration with RemNote",
   "requestNative": false,
   "requiredScopes": [
     {
