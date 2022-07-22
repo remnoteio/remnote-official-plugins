@@ -5,9 +5,8 @@
 
 ## How to Use
 
--
--
-- Save smart block calculations using the "Save calculation" command.
+- Type a mathematical expression like 1+1, the result will be displayed in a widget below the Rem.
+- Save smart block calculations using the "Save calculation" Omnibar command.
 
 ## Developers
 

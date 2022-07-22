@@ -10,7 +10,6 @@
     "patch": 1
   },
   "description": "Simple smart blocks example plugin",
-  "authorizedActions": "ReadCreateModifyDelete",
   "requestNative": false,
   "requiredScopes": [
     {
