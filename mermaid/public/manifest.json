@@ -10,7 +10,6 @@
     "patch": 0
   },
   "description": "",
-  "authorizedActions": "Read",
   "requestNative": false,
   "requiredScopes": [
     {
