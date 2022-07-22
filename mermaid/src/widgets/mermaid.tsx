@@ -2,8 +2,8 @@ import {
   usePlugin,
   renderWidget,
   AppEvents,
-  useRunAPIMethod,
   useAPIEventListener,
+  useRunAsync,
 } from "@remnote/plugin-sdk";
 import { useEffect, useState } from "react";
 import mermaid from "mermaid";
@@ -17,11 +17,10 @@ export const MermaidWidget = () => {
   const plugin = usePlugin();
   const [id] = useState(nanoid());
 
-  const widgetContext = useRunAPIMethod(plugin.getWidgetContext, []);
+  const widgetContext = useRunAsync(() => plugin.widget.getWidgetContext(), []);
 
   const getRemText = async (remId: string) => {
     const rem = await plugin.rem.findOne(remId);
-
     const text = await plugin.richText.toString(rem?.text || []);
     return text?.toString() || "";
   };
@@ -31,8 +30,8 @@ export const MermaidWidget = () => {
     const text = await getRemText(remId);
     if (text) {
       try {
-        mermaid.render(id + "mermaid_widget", text, (svgCode: string) => {
-          const elem = document.getElementById(id + "mermaid_widget_renderer");
+        mermaid.render(id + MERMAID_WIDGET, text, (svgCode: string) => {
+          const elem = document.getElementById(id + MERMAID_WIDGET_RENDERER);
           if (elem) {
             elem.innerHTML = svgCode;
           }
@@ -48,20 +47,9 @@ export const MermaidWidget = () => {
   );
 
   useEffect(() => {
-    const callback = () => {
-      // TODO: add debounce
-      setTimeout(async () => {
-        const remId = widgetContext?.remId;
-        renderMermaid();
-      }, 500);
-    };
-    plugin.addListener(AppEvents.EditorTextEdited, undefined, callback);
+    renderMermaid()
+  }, [widgetContext?.remId])
 
-    renderMermaid();
-
-    return () =>
-      plugin.removeListener(AppEvents.EditorTextEdited, undefined, callback);
-  }, [widgetContext, id]);
   return (
     <div>
       <div id={id + MERMAID_WIDGET} />
