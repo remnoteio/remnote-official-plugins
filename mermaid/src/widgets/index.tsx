@@ -39,12 +39,17 @@ declareIndexPlugin(onActivate, onDeactivate);
 
 const SAMPLE_MERMAID: RichTextInterface = [
   {
-    text: `graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
-    F-->A;`,
+    text: `
+journey
+  title My working day
+  section Go to work
+    Make tea: 5: Me
+    Go upstairs: 3: Me
+    Do work: 1: Me, Cat
+  section Go home
+    Go downstairs: 5: Me
+    Sit down: 5: Me
+    `.trim(),
     i: "m",
     code: true,
   },
