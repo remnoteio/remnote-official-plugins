@@ -1,6 +1,13 @@
 ## Features
 
+- Prototype smart block plugin.
 - Calculate sums using smart blocks.
+
+## How to Use
+
+-
+-
+- Save smart block calculations using the "Save calculation" command.
 
 ## Developers
 

@@ -6,12 +6,12 @@ import {
 import "../style.css";
 
 async function onActivate(plugin: ReactRNPlugin) {
-  await plugin.registerWidget("smart_block", WidgetLocation.UnderRemEditor, {
+  await plugin.app.registerWidget("smart_block", WidgetLocation.UnderRemEditor, {
     dimensions: { height: "auto", width: "100%" },
   });
 
   console.log("registerCommand");
-  await plugin.registerCommand({
+  await plugin.app.registerCommand({
     id: "saveCalculation",
     name: "Save calculation",
     action: async () => {
@@ -36,7 +36,7 @@ async function onActivate(plugin: ReactRNPlugin) {
 
         await newRem?.setText([val]);
       } else {
-        await plugin.toast("No Rem is focused.");
+        await plugin.app.toast("No Rem is focused.");
       }
     },
   });
