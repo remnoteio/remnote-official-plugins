@@ -1,0 +1,24 @@
+{
+  "manifestVersion": 1,
+  "id": "demo-smart-blocks",
+  "name": "Smart Blocks",
+  "author": "remnote",
+  "repoUrl": "",
+  "version": {
+    "major": 0,
+    "minor": 1,
+    "patch": 1
+  },
+  "description": "Simple smart blocks example plugin",
+  "requestNative": false,
+  "requiredScopes": [
+    {
+      "type": "All",
+      "level": "Read"
+    },
+    {
+      "type": "FocusedSubtree",
+      "level": "ReadCreateModifyDelete"
+    }
+  ]
+}
