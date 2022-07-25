@@ -1,0 +1,20 @@
+{
+  "manifestVersion": 1,
+  "id": "mermaid",
+  "name": "Mermaid",
+  "author": "karthikeyan",
+  "repoUrl": "",
+  "version": {
+    "major": 0,
+    "minor": 1,
+    "patch": 0
+  },
+  "description": "Mermaid library integration with RemNote",
+  "requestNative": false,
+  "requiredScopes": [
+    {
+      "type": "All",
+      "level": "ReadCreateModify"
+    }
+  ]
+}
