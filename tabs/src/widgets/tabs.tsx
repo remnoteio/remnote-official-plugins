@@ -9,6 +9,7 @@ import {
   useAPIEventListener,
   usePlugin,
   useTracker,
+  useOnMessageBroadcast,
 } from "@remnote/plugin-sdk";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
@@ -19,7 +20,6 @@ import { getOrCreateHomeWorkspace, HOME_TAB_NAME } from "../shared";
 function TabsBar() {
   const plugin = usePlugin();
   const [tabIndex, setTabIndex] = React.useState<number>(0);
-  const [draggingId, setDraggingId] = React.useState<string | undefined>();
 
   const workspacePowerup = useTracker(async (reactivePlugin: RNPlugin) => {
     return await reactivePlugin.powerup.getPowerupByCode("workspace");
@@ -174,7 +174,6 @@ function TabsBar() {
     >
       {tabs?.[0] && (
         <Tab
-          isDragging={false}
           tabRem={tabs?.[0]}
           index={0}
           key={tabs[0]?._id}
@@ -185,7 +184,6 @@ function TabsBar() {
       <Container
         lockAxis="x"
         getChildPayload={(idx) => tabs[idx + 1]}
-        onDragStart={(e) => setDraggingId(e.payload._id)}
         orientation="horizontal"
         onDrop={async (e) => {
           // Immediately optimistiaclly re-render
@@ -235,15 +233,14 @@ function TabsBar() {
             setTabIndex(tabIndex - 1);
           }
 
-          // Stop dragging
-          setDraggingId(undefined);
+          // send "drop" message to Tab components so they know
+          // when dragging has stopped.
+          plugin.messaging.broadcast("drop");
         }}
       >
         {tabs?.slice(1).map((tabRem, index) => (
           <Draggable key={tabRem._id}>
             <Tab
-              isDragging={draggingId === tabRem._id}
-              setDraggingId={setDraggingId}
               tabRem={tabRem}
               index={index + 1}
               key={tabRem._id}
@@ -265,8 +262,6 @@ interface TabProps {
   isSelected: boolean;
   deleteTab?: (event: any, index: number) => void;
   onClick: (index: number, tabRem: Rem | undefined) => void;
-  isDragging: boolean;
-  setDraggingId?: (id: string | undefined) => void;
 }
 
 function Tab(props: TabProps) {
@@ -279,12 +274,38 @@ function Tab(props: TabProps) {
     [props.tabRem._id]
   );
 
+  const [isDragging, setIsDragging] = React.useState(false);
+  const clicked = React.useRef(false);
+  const onMouseDown = function () {
+    clicked.current = true;
+    setIsDragging(false);
+  }
+  const onMouseMove = function () {
+    if (clicked.current) {
+      setIsDragging(true)
+    }
+  }
+  const onMouseUp = function () {
+    if (!isDragging) {
+      props.onClick(props.index, tabRem);
+    }
+    clicked.current = false
+    setIsDragging(false)
+  }
+
+  // onMouseUp not fired after dragging, so listen to the
+  // "drop" message from the react-dnd container onDrop callback
+  useOnMessageBroadcast(undefined, (data) => {
+    if (data.message === "drop" && isDragging) {
+      onMouseUp()
+    }
+  })
+
   return (
     <div
-      onMouseDown={() =>
-        props.setDraggingId && props.setDraggingId(props.tabRem._id)
-      }
-      onMouseUp={() => props.setDraggingId && props.setDraggingId(undefined)}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
       className={clsx(
         "h-[50px] box-border",
         "cursor-pointer",
@@ -298,11 +319,8 @@ function Tab(props: TabProps) {
         "!whitespace-nowrap",
         "flex items-center flex-row flex-shrink-0 flex-grow-0"
       )}
-      onClick={() => {
-        props.onClick(props.index, tabRem);
-      }}
     >
-      {!props.isDragging ? (
+      {!isDragging ? (
         <div onMouseDown={(e) => e.stopPropagation()}>
           <RemRichTextEditor
             width="expand"
@@ -317,9 +335,8 @@ function Tab(props: TabProps) {
         </div>
       ) : (
         <div
-          onMouseUp={(e) => e.stopPropagation()}
           className={clsx(
-            "font-inter text-md !whitespace-nowrap",
+            "font-inter text-sm !whitespace-nowrap",
             tabRem?.text.length === 0 && "italic"
           )}
         >
@@ -327,7 +344,8 @@ function Tab(props: TabProps) {
             ? "Untitled"
             : tabRem?.text.filter((e) => typeof e == "string")}
         </div>
-      )}
+      )
+      }
       {/* This renders the number of open windows in the tab: */}
       {/* {!!remIds && remIds.length > 1 && (
         <span className="text-gray-600 ml-1">({remIds?.length})</span>
