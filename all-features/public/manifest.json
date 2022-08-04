@@ -1,0 +1,21 @@
+{
+  "manifestVersion": 1,
+  "id": "demo_all_features",
+  "name": "All Features",
+  "author": "remnote",
+  "repoUrl": "",
+  "version": {
+    "major": 0,
+    "minor": 1,
+    "patch": 0
+  },
+  "description": "Demonstrates all plugin features.",
+  "authorizedActions": "ReadCreateModifyDelete",
+  "requestNative": false,
+  "requiredScopes": [
+    {
+      "type": "All",
+      "level": "ReadCreateModifyDelete"
+    }
+  ]
+}
