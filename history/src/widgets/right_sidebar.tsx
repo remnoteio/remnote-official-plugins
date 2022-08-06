@@ -48,7 +48,7 @@ function RightSidebar2() {
 
   return (
     <div
-      className="h-full overflow-y-auto rn-clr-background-primary"
+      className="h-full overflow-y-auto rn-clr-background-primary relative z-10"
       onMouseDown={(e) => e.stopPropagation()}
     >
       {remData.length == 0 && (
