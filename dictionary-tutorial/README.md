@@ -15,4 +15,4 @@ Definitions will get added under a Rem which you can specify using the "Dictiona
 
 This plugin is an example plugin built by the RemNote team to demonstrate how to build plugins using the new plugin SDK. The source code has been extensively documented to explain the various API functions.
 
-This repository represents the full source code for the [dictionary plugin project tutorial](https://plugins.remnote.com/tutorials/project) on our plugin documentation website. If you are interested in building your own plugins, we strongly recommend reading through that guide which walks you through building this plugin from scratch.
+This repository represents the full source code for the [dictionary plugin project tutorial](https://plugins.remnote.com/in-depth-tutorial/overview) on our plugin documentation website. If you are interested in building your own plugins, we strongly recommend reading through that guide which walks you through building this plugin from scratch.
