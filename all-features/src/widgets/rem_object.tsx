@@ -305,21 +305,11 @@ const remObjectMethodTests: TestResultMap<Rem> = {
     await refDeep?.setText(["Deep"]);
 
     const refShallow = await plugin.rem.createRem();
-    await refShallow?.setText([
-      {
-        i: "q",
-        _id: refDeep?._id!,
-      },
-    ]);
+    await refShallow?.setText(plugin.richText.rem(refDeep?._id!).value())
 
     // rem -> shallow -> deep
     const rem = await plugin.rem.createRem();
-    await rem?.setText([
-      {
-        i: "q",
-        _id: refShallow?._id!,
-      },
-    ]);
+    await rem?.setText(plugin.richText.rem(refShallow?._id!).value())
 
     const actual = ((await rem?.deepRemsBeingReferenced()) || [])
       .map((x) => x._id)
