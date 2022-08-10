@@ -1,0 +1,20 @@
+{
+  "manifestVersion": 1,
+  "id": "demo-tabs",
+  "name": "Tabs",
+  "author": "RemNote",
+  "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
+  "version": {
+    "major": 0,
+    "minor": 23,
+    "patch": 0
+  },
+  "description": "Organize your knowledgebase with workspaces and tabs.",
+  "requestNative": false,
+  "requiredScopes": [
+    {
+      "type": "All",
+      "level": "ReadCreateModifyDelete"
+    }
+  ]
+}
