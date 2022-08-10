@@ -271,7 +271,7 @@ function Tab(props: TabProps) {
   const debouncedValue = useDebounce(value, 200)
   useEffect(() => {
     const eff = async () => {
-      if (!debouncedValue) return;
+      if (debouncedValue === undefined) return;
       await props.tabRem.setText([debouncedValue]);
     }
     eff();
@@ -303,7 +303,7 @@ function Tab(props: TabProps) {
         className={clsx(
           !props.isSelected &&
             "cursor-pointer !whitespace-nowrap",
-         "focus:outline-none border-0 border-transparent focus:border-transparent focus:ring-0",
+         "focus:outline-none border-0 border-transparent focus:border-transparent focus:ring-0 w-[100px]",
          props.isSelected
             ? "rn-clr-background-primary"
             : "rn-clr-background-secondary",
@@ -315,12 +315,12 @@ function Tab(props: TabProps) {
       )} */}
       {props.deleteTab && (
         <span
-          onClick={(event) => {
+          onMouseDown={(event) => {
             props.deleteTab && props.deleteTab(event, props.index);
             event.preventDefault();
             event.stopPropagation();
           }}
-          className="p-0.5 rounded-sm items-center justify-center hover:rn-clr-background--hovered flex rn-clr-content-primary"
+          className="p-0.5 w-[10px] rounded-sm items-center justify-center hover:rn-clr-background--hovered flex rn-clr-content-primary"
         >
           <img
             src={`${plugin.rootURL}close.svg`}
