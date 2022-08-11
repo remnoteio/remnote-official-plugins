@@ -27,7 +27,7 @@ const renderAtLocation = async (plugin: RNPlugin, location: WidgetLocation) => {
       }
     );
 
-    await plugin.app.unregisterWidget(
+    await plugin.widget.unregisterWidget(
       "floating_widget",
       WidgetLocation.FloatingWidget
     );
@@ -39,7 +39,7 @@ const renderAtLocation = async (plugin: RNPlugin, location: WidgetLocation) => {
         dimensions: { height: "auto", width: "400px" },
       }
     );
-    await plugin.app.unregisterWidget(
+    await plugin.widget.unregisterWidget(
       "rem_ref_widget",
       WidgetLocation.RemReferencePopupRight
     );
