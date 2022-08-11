@@ -7,7 +7,7 @@
   "version": {
     "major": 0,
     "minor": 14,
-    "patch": 0
+    "patch": 1
   },
   "description": "Adds a right sidebar showing Rem history.",
   "requestNative": true,
