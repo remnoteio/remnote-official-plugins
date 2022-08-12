@@ -14,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Draggable } from "react-smooth-dnd";
 import { paneRemTreeToRemTree, useDebounce } from "../lib/utils";
 import { getOrCreateHomeWorkspace, HOME_TAB_NAME } from "../shared";
+import AutosizeInput from 'react-input-autosize';
 
 function TabsBar() {
   const plugin = usePlugin();
@@ -291,24 +292,39 @@ function Tab(props: TabProps) {
         props.index == 0 ? "px-4" : "pl-4 pr-3",
         "min-w-[50px] ",
         "!whitespace-nowrap",
-        "flex items-center flex-row flex-shrink-0 flex-grow-0"
+        "flex items-center flex-row flex-shrink-0 flex-grow-0",
+        !props.isSelected &&
+          "cursor-pointer !whitespace-nowrap",
       )}
     >
-      <input
-        value={value}
-        placeholder={"Untitled"}
-        onClick={e => e.stopPropagation()}
-        onChange={e => setValue(e.target.value)}
-        readOnly={!props.isSelected}
-        className={clsx(
-          !props.isSelected &&
-            "cursor-pointer !whitespace-nowrap",
-         "focus:outline-none border-0 border-transparent focus:border-transparent focus:ring-0 w-[100px]",
-         props.isSelected
-            ? "rn-clr-background-primary"
-            : "rn-clr-background-secondary",
-        )}
-      />
+      {
+        props.index === 0
+          ? <span
+              className={clsx(
+                !props.isSelected &&
+                  "cursor-pointer !whitespace-nowrap",
+              )}
+            >
+            {
+              value
+            }
+            </span>
+          : <AutosizeInput
+              value={value}
+              placeholder={"Untitled"}
+              onClick={e => e.stopPropagation()}
+              onChange={e => setValue(e.target.value)}
+              minWidth={50}
+              inputClassName={clsx(
+               "focus:outline-none border-0 border-transparent focus:border-transparent focus:ring-0 min-w-[50px]",
+               props.isSelected
+                  ? "rn-clr-background-primary"
+                  : "rn-clr-background-secondary",
+              !props.isSelected &&
+                  "cursor-pointer !whitespace-nowrap",
+              )}
+          />
+      }
       {/* This renders the number of open windows in the tab: */}
       {/* {!!remIds && remIds.length > 1 && (
         <span className="text-gray-600 ml-1">({remIds?.length})</span>
@@ -316,9 +332,9 @@ function Tab(props: TabProps) {
       {props.deleteTab && (
         <span
           onMouseDown={(event) => {
-            props.deleteTab && props.deleteTab(event, props.index);
             event.preventDefault();
             event.stopPropagation();
+            props.deleteTab && props.deleteTab(event, props.index);
           }}
           className="p-0.5 w-[10px] rounded-sm items-center justify-center hover:rn-clr-background--hovered flex rn-clr-content-primary"
         >
