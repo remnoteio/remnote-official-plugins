@@ -4,6 +4,20 @@ import { TestRunner } from "../components/TestRunner";
 import {sleep} from "../lib/utils";
 
 const cardNamespaceMethodTests: TestResultMap<RNPlugin["card"]> = {
+  // getAll: async (plugin, removeRem) => {
+  //   const rem = await plugin.rem.createRem();
+  //   await rem?.setText(["Question"]);
+  //   await rem?.setBackText(["Answer"]);
+  //   await rem?.setPracticeDirection("both");
+  //   await sleep(500);
+  //   const actual = (await plugin.card.getAll()).length;
+  //   const expected = 2
+  //   await removeRem(rem)
+  //   return {
+  //     actual,
+  //     expected,
+  //   }
+  // },
   findOne: async (plugin, removeRem) => {
     const rem = await plugin.rem.createRem();
     await rem?.setText(["Question"]);

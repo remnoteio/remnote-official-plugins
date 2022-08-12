@@ -18,7 +18,7 @@ const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
     }
   },
   getRemAndAliasIdsFromRichText: async (plugin) => {
-    const richText = plugin.richText.rem("id").value();
+    const richText = await plugin.richText.rem("id").value();
     const actual = await plugin.richText.deepGetRemIdsFromRichText(richText)
     const expected = ["id"];
     return {
@@ -27,7 +27,7 @@ const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
     }
   },
   getRemIdsFromRichText: async (plugin) => {
-    const richText = plugin.richText.rem("id").value();
+    const richText = await plugin.richText.rem("id").value();
     const actual = await plugin.richText.deepGetRemIdsFromRichText(richText)
     const expected = ["id"];
     return {
@@ -36,7 +36,7 @@ const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
     }
   },
   deepGetRemAndAliasIdsFromRichText: async (plugin) => {
-    const richText = plugin.richText.rem("id").value();
+    const richText = await plugin.richText.rem("id").value();
     const actual = await plugin.richText.deepGetRemIdsFromRichText(richText)
     const expected = ["id"];
     return {
@@ -45,7 +45,7 @@ const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
     }
   },
   deepGetRemIdsFromRichText: async (plugin) => {
-    const richText = plugin.richText.rem("id").value();
+    const richText = await plugin.richText.rem("id").value();
     const actual = await plugin.richText.deepGetRemIdsFromRichText(richText)
     const expected = ["id"];
     return {
@@ -94,7 +94,7 @@ const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
       expected,
     }
   },
-  toHTML: async (plugin) => {
+  toHTML: async () => {
     return {
       expected: "ignore",
       actual: "ignore",
@@ -133,7 +133,7 @@ const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
     }
   },
   code: async (plugin) => {
-    const actual = plugin.richText.code("print('hi!')", "python").value();
+    const actual = await plugin.richText.code("print('hi!')", "python").value();
     return {
       expected: [
         {
@@ -147,7 +147,7 @@ const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
     };
   },
   image: async (plugin) => {
-    const actual = plugin.richText
+    const actual = await plugin.richText
       .image(
         "https://post.medicalnewstoday.com/wp-content/uploads/sites/3/2020/02/322868_1100-800x825.jpg",
         200,
@@ -167,7 +167,7 @@ const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
     };
   },
   rem: async (plugin) => {
-    const actual = plugin.richText.rem("rem-id").value();
+    const actual = await plugin.richText.rem("rem-id").value();
     return {
       expected: [
         {
@@ -179,7 +179,7 @@ const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
     };
   },
   audio: async (plugin) => {
-    const actual = plugin.richText.audio("").value();
+    const actual = await plugin.richText.audio("").value();
     return {
       expected: [
         {
@@ -192,7 +192,7 @@ const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
     };
   },
   latex: async (plugin) => {
-    const actual = plugin.richText.latex("$ε$", false).value();
+    const actual = await plugin.richText.latex("$ε$", false).value();
     return {
       expected: [
         {
@@ -205,7 +205,7 @@ const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
     };
   },
   text: async (plugin) => {
-    const actual = plugin.richText
+    const actual = await plugin.richText
       .text("Hello World", ["underline", "bold",])
       .value();
     return {
@@ -221,7 +221,7 @@ const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
     };
   },
   video: async (plugin) => {
-    const actual = plugin.richText
+    const actual = await plugin.richText
       .video("https://www.youtube.com/watch?v=rTgj1HxmUbg")
       .value();
     return {
@@ -236,7 +236,7 @@ const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
     };
   },
   newline: async (plugin) => {
-    const actual = plugin.richText.newline().value();
+    const actual = await plugin.richText.newline().value();
     return {
       expected: ["\n"],
       actual,
