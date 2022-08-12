@@ -7,7 +7,7 @@
   "version": {
     "major": 0,
     "minor": 4,
-    "patch": 2
+    "patch": 3
   },
   "description": "Get autocomplete suggestions based on words in the current document.",
   "requestNative": true,
