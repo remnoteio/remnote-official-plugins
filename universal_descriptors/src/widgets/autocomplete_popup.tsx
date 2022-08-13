@@ -10,6 +10,7 @@ import {
 } from "@remnote/plugin-sdk";
 import clsx from "clsx";
 import * as R from "react";
+import { sortBy, uniqBy } from "remeda";
 import {
   insertSelectedKeyId,
   selectNextKeyId,
@@ -19,6 +20,7 @@ import { useSyncWidgetPositionWithCaret } from "../lib/hooks";
 
 interface UniversalSlot {
   _id: string;
+  aliasId: string;
   text: string;
   matchText: string;
 }
@@ -34,6 +36,7 @@ function AutocompletePopup() {
     return await Promise.all(
       [rem, ...(await rem.getAliases())].map(async (r: Rem) => ({
         _id: rem._id,
+        aliasId: r._id,
         matchText: (await plugin.richText.toString(r.text)).trim(),
         text: `${await plugin.richText.toString(rem.text)} ${await aliasText(
           rem,
@@ -54,9 +57,12 @@ function AutocompletePopup() {
       const tilde = await r.rem.findByName(["~"], null);
       const universalSlotChildren = (await tilde?.getChildrenRem()) || [];
 
-      return (
-        await Promise.all(universalSlotChildren.map(getUniversalSlotsForRem))
-      ).flat();
+      return sortBy(
+        (await Promise.all(universalSlotChildren.map(getUniversalSlotsForRem)))
+          .flat()
+          .filter((e) => e.matchText.length > 0 && e.text.length > 0),
+        (q) => q.matchText.length
+      );
     }, []) || [];
 
   // The last partial word is the current part of a word before the
@@ -163,7 +169,7 @@ function AutocompletePopup() {
       >
         {matches.map((word, idx) => (
           <div
-            key={word._id}
+            key={word.aliasId}
             className={clsx(
               "rounded-md p-2 truncate",
               idx === selectedIdx && "rn-clr-background--hovered"
