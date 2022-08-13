@@ -60,7 +60,7 @@ const remObjectMethodTests: TestResultMap<Rem> = {
       actual,
     }
   },
-  isPowerupPropertyListItem: async (plugin, removeRem) => {
+  isPowerupPropertyListItem: async () => {
     return {
       expected: "ignore",
       actual: "ignore",
@@ -305,11 +305,11 @@ const remObjectMethodTests: TestResultMap<Rem> = {
     await refDeep?.setText(["Deep"]);
 
     const refShallow = await plugin.rem.createRem();
-    await refShallow?.setText(plugin.richText.rem(refDeep?._id!).value())
+    await refShallow?.setText(await plugin.richText.rem(refDeep?._id!).value())
 
     // rem -> shallow -> deep
     const rem = await plugin.rem.createRem();
-    await rem?.setText(plugin.richText.rem(refShallow?._id!).value())
+    await rem?.setText(await plugin.richText.rem(refShallow?._id!).value())
 
     const actual = ((await rem?.deepRemsBeingReferenced()) || [])
       .map((x) => x._id)
@@ -840,6 +840,7 @@ const remObjectMethodTests: TestResultMap<Rem> = {
     const rem2 = await plugin.rem.createRem();
     await rem1?.setParent(parent?._id || "");
     await rem2?.setParent(parent?._id || "");
+    await sleep(500);
     const actual = ((await rem1?.siblingRem()) || []).map((x) => x._id);
     await removeRem(parent, rem1, rem2);
     return {
@@ -847,19 +848,19 @@ const remObjectMethodTests: TestResultMap<Rem> = {
       actual,
     };
   },
-  tagAncestorRem: async (plugin, removeRem) => {
+  ancestorTagRem: async (plugin, removeRem) => {
     const parent = await plugin.rem.createRem();
     const child1 = await plugin.rem.createRem();
     await child1?.setParent(parent?._id || "");
     await child1?.addTag(parent?._id || "");
-    const actual = ((await child1?.tagAncestorRem()) || []).map((x) => x._id);
+    const actual = ((await child1?.ancestorTagRem()) || []).map((x) => x._id);
     await removeRem(parent, child1);
     return {
       expected: [parent?._id],
       actual,
     };
   },
-  tagDescendantRem: async (plugin, removeRem) => {
+  descendantTagRem: async (plugin, removeRem) => {
     const grandparent = await plugin.rem.createRem();
     const parent = await plugin.rem.createRem();
     const child = await plugin.rem.createRem();
@@ -867,7 +868,7 @@ const remObjectMethodTests: TestResultMap<Rem> = {
     await parent?.setParent(grandparent?._id || "");
     await child?.addTag(parent?._id || "");
     await parent?.addTag(grandparent?._id || "");
-    const actual = ((await grandparent?.tagDescendantRem()) || []).map(
+    const actual = ((await grandparent?.descendantTagRem()) || []).map(
       (x) => x._id
     );
     await removeRem(grandparent, child, parent);

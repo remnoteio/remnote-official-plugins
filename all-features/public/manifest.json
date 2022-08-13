@@ -3,15 +3,15 @@
   "id": "demo_all_features",
   "name": "All Features",
   "author": "remnote",
-  "repoUrl": "",
+  "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
   "version": {
     "major": 0,
     "minor": 1,
-    "patch": 0
+    "patch": 1
   },
   "description": "Demonstrates all plugin features.",
   "authorizedActions": "ReadCreateModifyDelete",
-  "requestNative": false,
+  "requestNative": true,
   "requiredScopes": [
     {
       "type": "All",
