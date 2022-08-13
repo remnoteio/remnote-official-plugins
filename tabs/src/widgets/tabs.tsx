@@ -279,27 +279,27 @@ function Tab(props: TabProps) {
   const onMouseDown = function () {
     clicked.current = true;
     setIsDragging(false);
-  }
+  };
   const onMouseMove = function () {
     if (clicked.current) {
-      setIsDragging(true)
+      setIsDragging(true);
     }
-  }
+  };
   const onMouseUp = function () {
     if (!isDragging) {
       props.onClick(props.index, tabRem);
     }
-    clicked.current = false
-    setIsDragging(false)
-  }
+    clicked.current = false;
+    setIsDragging(false);
+  };
 
   // onMouseUp not fired after dragging, so listen to the
   // "drop" message from the react-dnd container onDrop callback
   useOnMessageBroadcast(undefined, (data) => {
     if (data.message === "drop" && isDragging) {
-      onMouseUp()
+      onMouseUp();
     }
-  })
+  });
 
   return (
     <div
@@ -344,8 +344,7 @@ function Tab(props: TabProps) {
             ? "Untitled"
             : tabRem?.text.filter((e) => typeof e == "string")}
         </div>
-      )
-      }
+      )}
       {/* This renders the number of open windows in the tab: */}
       {/* {!!remIds && remIds.length > 1 && (
         <span className="text-gray-600 ml-1">({remIds?.length})</span>

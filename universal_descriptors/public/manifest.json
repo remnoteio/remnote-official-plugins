@@ -1,0 +1,20 @@
+{
+  "manifestVersion": 1,
+  "id": "demo_universal_descriptors",
+  "name": "Universal Descriptors Quick-Input",
+  "author": "mfranzs",
+  "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
+  "version": {
+    "major": 0,
+    "minor": 4,
+    "patch": 0
+  },
+  "description": "Provides a ~ shortcut for quickly entering Universal Descriptors",
+  "requestNative": true,
+  "requiredScopes": [
+    {
+      "type": "All",
+      "level": "ReadCreateModifyDelete"
+    }
+  ]
+}
