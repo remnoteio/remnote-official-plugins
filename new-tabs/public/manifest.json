@@ -6,7 +6,7 @@
   "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
   "version": {
     "major": 0,
-    "minor": 23,
+    "minor": 24,
     "patch": 0
   },
   "description": "Organize your knowledgebase with workspaces and tabs.",
