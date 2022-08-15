@@ -139,20 +139,24 @@ const remObjectMethodTests: TestResultMap<Rem> = {
       actual,
     };
   },
-  setIsCollapsedPortal: async (plugin, removeRem) => {
+  setIsCollapsed: async (plugin, removeRem) => {
     const p = await plugin.rem.createPortal();
-    await p?.setIsCollapsedPortal(true);
-    const actual = await p?.isCollapsedPortal();
+    const r = await plugin.rem.createRem();
+    await r?.addToPortal(p!._id);
+    await r?.setIsCollapsed(true, p!._id);
+    const actual = await r?.isCollapsed(p!._id);
     await removeRem(p);
     return {
       expected: true,
       actual
     }
   },
-  isCollapsedPortal: async (plugin, removeRem) => {
+  isCollapsed: async (plugin, removeRem) => {
     const p = await plugin.rem.createPortal();
-    await p?.setIsCollapsedPortal(true);
-    const actual = await p?.isCollapsedPortal();
+    const r = await plugin.rem.createRem();
+    await r?.addToPortal(p!._id);
+    await r?.setIsCollapsed(true, p!._id);
+    const actual = await r?.isCollapsed(p!._id);
     await removeRem(p);
     return {
       expected: true,

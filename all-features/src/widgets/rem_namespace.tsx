@@ -3,18 +3,20 @@ import { TestResultMap } from "../lib/types";
 import { TestRunner } from "../components/TestRunner";
 
 const remNamespaceMethodTests: TestResultMap<RNPlugin["rem"]> = {
-  // getAll: async (plugin, removeRem) => {
-  //   const rem1 = await plugin.rem.createRem();
-  //   const rem2 = await plugin.rem.createRem();
-  //   const rem3 = await plugin.rem.createRem();
-  //   const actual = (await plugin.rem.getAll()).map(x => x._id).sort();
-  //   const expected = [rem1, rem2, rem3].map(x => x!._id).sort();
-  //   await removeRem(rem1, rem2, rem3);
-  //   return {
-  //     actual,
-  //     expected
-  //   }
-  // },
+  getAll: async (plugin, removeRem) => {
+    const rem1 = await plugin.rem.createRem();
+    const rem2 = await plugin.rem.createRem();
+    const rem3 = await plugin.rem.createRem();
+    const allRem = (await plugin.rem.getAll()).map(x => x._id);
+    const actual = [rem1, rem2, rem3]
+      .map(x => x!._id)
+      .every(id => allRem.includes(id));
+    await removeRem(rem1, rem2, rem3);
+    return {
+      actual,
+      expected: true,
+    }
+  },
   moveRems: async (plugin, removeRem) => {
     const rem1 = await plugin.rem.createRem();
     const rem2 = await plugin.rem.createRem();
@@ -37,7 +39,7 @@ const remNamespaceMethodTests: TestResultMap<RNPlugin["rem"]> = {
     const portal = await plugin.rem.createPortal();
     const actual = await portal?.getType()
     const expected = RemType.PORTAL;
-    removeRem(portal)
+    await removeRem(portal)
     return {
       actual,
       expected
