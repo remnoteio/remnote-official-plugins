@@ -55,6 +55,10 @@ async function onActivate(plugin: ReactRNPlugin) {
   await plugin.app.registerWidget("search_namespace", WidgetLocation.RightSidebar, {
     dimensions: { height: "auto", width: 350 },
   });
+
+  await plugin.app.registerWidget("date_namespace", WidgetLocation.RightSidebar, {
+    dimensions: { height: "auto", width: 350 },
+  })
 }
 
 async function onDeactivate(_: ReactRNPlugin) {}
