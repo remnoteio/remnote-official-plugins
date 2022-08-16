@@ -1,6 +1,7 @@
 import { renderWidget, Rem, RNPlugin, RemType } from "@remnote/plugin-sdk";
 import { TestResultMap } from "../lib/types";
 import { TestRunner } from "../components/TestRunner";
+import {sleep} from "../lib/utils";
 
 const remNamespaceMethodTests: TestResultMap<RNPlugin["rem"]> = {
   getAll: async (plugin, removeRem) => {
@@ -47,7 +48,8 @@ const remNamespaceMethodTests: TestResultMap<RNPlugin["rem"]> = {
   },
   findOne: async (plugin, removeRem) => {
     const rem = await plugin.rem.createRem();
-    const actual = rem && (await plugin.rem.findOne(rem._id))?._id;
+    await sleep(500)
+    const actual = (await plugin.rem.findOne(rem?._id))?._id;
     await removeRem(rem);
     return {
       expected: rem?._id,

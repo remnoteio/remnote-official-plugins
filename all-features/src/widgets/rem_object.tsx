@@ -567,13 +567,14 @@ const remObjectMethodTests: TestResultMap<Rem> = {
       expected: true,
     };
   },
-  mergeAndSetAlias: async (plugin) => {
+  mergeAndSetAlias: async (plugin, removeRem) => {
     const rem1 = await plugin.rem.createRem();
     const rem2 = await plugin.rem.createRem();
     await rem2?.setText(["Alias"]);
     await rem1?.mergeAndSetAlias(rem2?._id || "");
     await sleep(1000)
     const alias = (await rem1?.getAliases())?.[0];
+    await removeRem(rem1, rem2)
     return {
       expected: ["Alias"],
       actual: alias?.text,
@@ -705,10 +706,11 @@ const remObjectMethodTests: TestResultMap<Rem> = {
       actual,
     };
   },
-  setFontSize: async (plugin) => {
+  setFontSize: async (plugin, removeRem) => {
     const rem = await plugin.rem.createRem();
     await rem?.setPowerupProperty(BuiltInPowerupCodes.Header, "Size", ["H1"]);
     const actual = await rem?.getFontSize();
+    await removeRem(rem);
     return {
       expected: "H1",
       actual,
