@@ -7,8 +7,8 @@
   "enableOnMobile": false,
   "version": {
     "major": 0,
-    "minor": 4,
-    "patch": 3
+    "minor": 5,
+    "patch": 0
   },
   "description": "Get autocomplete suggestions based on words in the current document.",
   "requestNative": true,
