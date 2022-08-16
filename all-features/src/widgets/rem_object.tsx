@@ -28,7 +28,7 @@ const remObjectMethodTests: TestResultMap<Rem> = {
     const rem = await plugin.rem.createRem();
     await rem?.addPowerup(BuiltInPowerupCodes.Todo);
     await rem?.removePowerup(BuiltInPowerupCodes.Todo);
-    await sleep(100);
+    await sleep(1000);
     const actual = await rem?.hasPowerup(BuiltInPowerupCodes.Todo);
     const expected = false;
     await removeRem(rem);
@@ -347,7 +347,7 @@ const remObjectMethodTests: TestResultMap<Rem> = {
     await rem?.setText(["Hello"]);
     await rem?.setBackText(["World"]);
     await rem?.setPracticeDirection("forward");
-    await sleep(500);
+    await sleep(1000);
     const cards = (await rem?.getCards()) || [];
     await removeRem(rem);
     return {
@@ -572,6 +572,7 @@ const remObjectMethodTests: TestResultMap<Rem> = {
     const rem2 = await plugin.rem.createRem();
     await rem2?.setText(["Alias"]);
     await rem1?.mergeAndSetAlias(rem2?._id || "");
+    await sleep(1000)
     const alias = (await rem1?.getAliases())?.[0];
     return {
       expected: ["Alias"],
@@ -844,7 +845,7 @@ const remObjectMethodTests: TestResultMap<Rem> = {
     const rem2 = await plugin.rem.createRem();
     await rem1?.setParent(parent?._id || "");
     await rem2?.setParent(parent?._id || "");
-    await sleep(500);
+    await sleep(1000);
     const actual = ((await rem1?.siblingRem()) || []).map((x) => x._id);
     await removeRem(parent, rem1, rem2);
     return {

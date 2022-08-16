@@ -9,7 +9,7 @@ const cardObjectMethodTests: TestResultMap<Card> = {
     await rem?.setText(["Question"]);
     await rem?.setBackText(["Answer"]);
     await rem?.setPracticeDirection("forward")
-    await sleep(500);
+    await sleep(1000);
     const card = (await rem?.getCards())?.[0];
     const actual = (await card?.getRem())?._id;
     const expected = rem?._id
@@ -24,7 +24,7 @@ const cardObjectMethodTests: TestResultMap<Card> = {
     await rem?.setText(["Question"]);
     await rem?.setBackText(["Answer"]);
     await rem?.setPracticeDirection("forward")
-    await sleep(500);
+    await sleep(1000);
     const card = (await rem?.getCards())?.[0];
     const actual = await card?.getType();
     await removeRem(rem);
@@ -38,7 +38,7 @@ const cardObjectMethodTests: TestResultMap<Card> = {
     await rem?.setText(["Question"]);
     await rem?.setBackText(["Answer"]);
     await rem?.setPracticeDirection("forward")
-    await sleep(500);
+    await sleep(1000);
     const card = (await rem?.getCards())?.[0];
     await card?.remove();
     const actual = (await plugin.card.findOne(card?._id || "")) || null;
@@ -53,11 +53,11 @@ const cardObjectMethodTests: TestResultMap<Card> = {
     await rem?.setText(["Question"]);
     await rem?.setBackText(["Answer"]);
     await rem?.setPracticeDirection("forward")
-    await sleep(500);
+    await sleep(1000);
     const card = (await rem?.getCards())?.[0];
     const expected = QueueInteractionScore.HARD
     await card?.updateCardRepetitionStatus(expected);
-    await sleep(500);
+    await sleep(1000);
     const updatedCard = await plugin.card.findOne(card?._id!);
     const actual = updatedCard?.repetitionHistory
       ? updatedCard?.repetitionHistory[updatedCard?.repetitionHistory?.length - 1].score

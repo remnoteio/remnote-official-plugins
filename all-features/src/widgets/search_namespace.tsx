@@ -7,7 +7,7 @@ const searchNamespaceMethodTests: TestResultMap<RNPlugin["search"]> = {
   search: async (plugin, removeRem) => {
     const rem = await plugin.rem.createRem();
     await rem?.setText(["Can you find me?"]);
-    await sleep(500)
+    await sleep(1000)
     const res = await plugin.search.search(["find"]);
     const actual = res[0]?._id
     const expected = rem?._id;
