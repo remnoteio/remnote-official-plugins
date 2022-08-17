@@ -347,7 +347,7 @@ const remObjectMethodTests: TestResultMap<Rem> = {
     await rem?.setText(["Hello"]);
     await rem?.setBackText(["World"]);
     await rem?.setPracticeDirection("forward");
-    await sleep(1000);
+    await sleep(2000);
     const cards = (await rem?.getCards()) || [];
     await removeRem(rem);
     return {
@@ -571,8 +571,9 @@ const remObjectMethodTests: TestResultMap<Rem> = {
     const rem1 = await plugin.rem.createRem();
     const rem2 = await plugin.rem.createRem();
     await rem2?.setText(["Alias"]);
+    await sleep(500)
     await rem1?.mergeAndSetAlias(rem2?._id || "");
-    await sleep(1000)
+    await sleep(500)
     const alias = (await rem1?.getAliases())?.[0];
     await removeRem(rem1, rem2)
     return {

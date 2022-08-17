@@ -29,13 +29,11 @@ export const TestRunner = (props: TestRunnerProps) => {
       }
       const obj = Object.fromEntries(results);
       console.log(obj);
-      await Promise.all((await plugin.rem.getAll()).map(r => r?.remove()))
       setTestJson(obj);
     } catch (e) {
       const msg = `${currentTest!} test run failed with: ${e}`;
       console.log(msg);
       setError(msg);
-      await Promise.all((await plugin.rem.getAll()).map(r => r?.remove()))
     } finally {
       setRunning(false);
     }
