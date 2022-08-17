@@ -36,6 +36,7 @@ export const TestRunner = (props: TestRunnerProps) => {
       setError(msg);
     } finally {
       setRunning(false);
+      (await plugin.rem.getAll()).forEach(r => r?.remove());
     }
   };
 
