@@ -315,8 +315,9 @@ function Tab(props: TabProps) {
               onClick={e => e.stopPropagation()}
               onChange={e => setValue(e.target.value)}
               minWidth={50}
+              className="text-md"
               inputClassName={clsx(
-               "focus:outline-none border-0 border-transparent focus:border-transparent focus:ring-0 min-w-[50px]",
+               "text-md focus:outline-none border-0 border-transparent focus:border-transparent focus:ring-0 min-w-[50px]",
                props.isSelected
                   ? "rn-clr-background-primary"
                   : "rn-clr-background-secondary",
