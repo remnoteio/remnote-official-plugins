@@ -16,10 +16,12 @@
   },
   "dependencies": {
     "@remnote/plugin-sdk": "0.0.5",
+    "@types/deep-equal": "^1.0.1",
     "@types/underscore": "^1.11.4",
     "babel-loader": "^8.2.3",
     "clsx": "^1.1.1",
     "css-loader": "^6.7.1",
+    "deep-equal": "^2.0.5",
     "lodash.clonedeep": "^4.5.0",
     "mini-css-extract-plugin": "^2.6.0",
     "postcss-import": "^14.0.2",

@@ -7,7 +7,7 @@
   "enableOnMobile": false,
   "version": {
     "major": 0,
-    "minor": 25,
+    "minor": 26,
     "patch": 0
   },
   "description": "Organize your knowledgebase with workspaces and tabs.",
