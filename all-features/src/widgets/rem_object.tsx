@@ -10,6 +10,54 @@ import { TestRunner } from "../components/TestRunner";
 import {sleep} from "../lib/utils";
 
 const remObjectMethodTests: TestResultMap<Rem> = {
+  visibleSiblingRem: async (plugin, removeRem) => {
+    const parent = await plugin.rem.createRem();
+    const rem = await plugin.rem.createRem();
+    const rem1 = await plugin.rem.createRem();
+    const rem2 = await plugin.rem.createRem();
+    await rem?.setParent(parent!);
+    await rem1?.setParent(parent!);
+    await rem2?.setParent(parent!);
+    await rem?.setHiddenExplicitlyIncludedState("hidden");
+    const actual = ((await rem1?.visibleSiblingRem()) || []).map(x => x._id);
+    const expected = [rem2?._id];
+    await removeRem(parent, rem, rem1, rem2);
+    return {
+      actual,
+      expected,
+    }
+  },
+  positionAmongstVisibleSiblings: async (plugin, removeRem) => {
+    const parent = await plugin.rem.createRem();
+    const rem = await plugin.rem.createRem();
+    const rem1 = await plugin.rem.createRem();
+    const rem2 = await plugin.rem.createRem();
+    await rem?.setParent(parent!);
+    await rem1?.setParent(parent!);
+    await rem2?.setParent(parent!);
+    await rem?.setHiddenExplicitlyIncludedState("hidden");
+    const actual = [await rem1?.positionAmongstVisibleSiblings(), await rem2?.positionAmongstVisibleSiblings()]
+    const expected = [0, 1];
+    await removeRem(parent, rem, rem1, rem2);
+    return {
+      actual,
+      expected,
+    }
+  },
+  positionAmongstSiblings: async (plugin, removeRem) => {
+    const parent = await plugin.rem.createRem();
+    const rem1 = await plugin.rem.createRem();
+    const rem2 = await plugin.rem.createRem();
+    await rem1?.setParent(parent!);
+    await rem2?.setParent(parent!);
+    const actual = [await rem1?.positionAmongstSiblings(), await rem2?.positionAmongstSiblings()]
+    const expected = [0, 1];
+    await removeRem(parent, rem1, rem2);
+    return {
+      actual,
+      expected,
+    }
+  },
   removeTag: async (plugin, removeRem) => {
     const rem = await plugin.rem.createRem();
     const tag = await plugin.rem.createRem();
@@ -275,17 +323,6 @@ const remObjectMethodTests: TestResultMap<Rem> = {
       actual: children,
     };
   },
-  getDescendantIds: async (plugin, removeRem) => {
-    const parent = await plugin.rem.createRem();
-    const child = await plugin.rem.createRem();
-    await child?.setParent(parent?._id || "");
-    const children = (await parent?.getDescendantIds()) || [];
-    await removeRem(parent, child);
-    return {
-      expected: child?._id,
-      actual: children[0],
-    };
-  },
   collapse: async () => {
     return {
       expected: "ignore",
@@ -414,10 +451,10 @@ const remObjectMethodTests: TestResultMap<Rem> = {
       actual,
     };
   },
-  isCardItem: async (plugin, removeRem) => {
+  isMultilineCard: async (plugin, removeRem) => {
     const rem = await plugin.rem.createRem();
-    await rem?.setIsCardItem(true);
-    const actual = await rem?.isCardItem();
+    await rem?.setIsMultilineCard(true);
+    const actual = await rem?.isMultilineCard();
     await removeRem(rem);
     return {
       expected: true,
@@ -735,10 +772,10 @@ const remObjectMethodTests: TestResultMap<Rem> = {
       actual,
     };
   },
-  setIsCardItem: async (plugin, removeRem) => {
+  setIsMultilineCard: async (plugin, removeRem) => {
     const rem = await plugin.rem.createRem();
-    await rem?.setIsCardItem(true);
-    const actual = await rem?.isCardItem();
+    await rem?.setIsMultilineCard(true);
+    const actual = await rem?.isMultilineCard();
     await removeRem(rem);
     return {
       expected: true,
