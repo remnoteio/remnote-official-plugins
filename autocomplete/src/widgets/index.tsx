@@ -50,7 +50,7 @@ async function onActivate(plugin: ReactRNPlugin) {
   });
 
   const openAutocompleteWindow = async () => {
-    const caret = await plugin.editor.getCurrentCaretDOMRect();
+    const caret = await plugin.editor.getCaretPosition();
     lastFloatingWidgetId = await plugin.window.openFloatingWidget(
       "autocomplete_popup",
       { top: caret ? caret.y + POPUP_Y_OFFSET : undefined, left: caret?.x }

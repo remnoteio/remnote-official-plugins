@@ -6,6 +6,8 @@ import {
   useAPIEventListener,
   useRunAsync,
   useTracker,
+  WidgetLocation,
+  SelectionType,
 } from "@remnote/plugin-sdk";
 import * as R from "react";
 import clsx from "clsx";
@@ -22,7 +24,7 @@ import isURL from "isurl";
 function AutocompletePopup() {
   const plugin = usePlugin();
   const ctx = useRunAsync(
-    async () => await plugin.widget.getWidgetContext(),
+    async () => await plugin.widget.getWidgetContext<WidgetLocation.FloatingWidget>(),
     []
   );
 
@@ -168,23 +170,17 @@ function AutocompletePopup() {
     }
   }, [lastPartialWord, autocompleteSuggestions]);
 
-  const updateLastPartialWord = async (newText: RichTextInterface) => {
+  useTracker(async (reactivePlugin) => {
+    const editorText = await reactivePlugin.editor.getFocusedEditorText();
+    // intentionally non-reactive
     const selection = await plugin.editor.getSelection();
-    if (!selection) return;
+    if (!selection || !editorText || selection.type === SelectionType.Rem) return;
     const prevLine = await plugin.richText.toString(
-      await plugin.richText.substring(newText, 0, selection.anchor)
+      await plugin.richText.substring(editorText, 0, selection.range.start)
     );
     const lpw = prevLine?.match(/\b(\w+)$/)?.[0]?.toLowerCase();
     setLastPartialWord(lpw);
-  };
-
-  useAPIEventListener(
-    AppEvents.EditorTextEdited,
-    undefined,
-    async (newText: RichTextInterface) => {
-      updateLastPartialWord(newText);
-    }
-  );
+  }) 
 
   const [selectedIdx, setSelectedIdx] = R.useState(0);
 
