@@ -44,7 +44,7 @@ async function onActivate(plugin: ReactRNPlugin) {
       await plugin.settings.getSetting("cardInterval")
     );
     const seenCards: number =
-      (await plugin.storage.getSession("seenCards")) + 1;
+      ((await plugin.storage.getSession<number>("seenCards")) || 0) + 1;
     await plugin.storage.setSession("seenCards", seenCards);
     if (seenCards % cardInterval === 0) {
       // Opens a floating widget popup 180px above the show answer buttons.
