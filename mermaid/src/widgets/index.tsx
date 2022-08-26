@@ -22,8 +22,7 @@ async function onActivate(plugin: ReactRNPlugin) {
     id: "mermaid",
     name: "Mermaid",
     action: async () => {
-      const focusedRemId = await plugin.focus.getFocusedRemId();
-      const rem = await plugin.rem.findOne(focusedRemId);
+      const rem = await plugin.focus.getFocusedRem();
       await rem?.addPowerup(MERMAID_POWERUP);
       // TODO: change the rem to code block and add a sample into the text
       await rem?.setText(SAMPLE_MERMAID);
