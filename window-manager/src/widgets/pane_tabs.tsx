@@ -155,16 +155,16 @@ const PanesBar = () => {
           setRestoreLayout(newTree);
           setIsMonocleMode(false);
         } else {
-          const oldLayout = await plugin.storage.getSession(
+          const oldLayout = await plugin.storage.getSession<PaneRemWindowTree>(
             restoreLayoutStorageKey
           );
-          const oldAllPaneRems = getAllPaneRemIds(oldLayout);
-          const tabIdx = await plugin.storage.getSession(tabIdxStorageKey);
-          const oldPaneId = oldAllPaneRems[tabIdx].paneId;
+          const oldAllPaneRems = getAllPaneRemIds(oldLayout!);
+          const tabIdx = await plugin.storage.getSession<number>(tabIdxStorageKey);
+          const oldPaneId = oldAllPaneRems[tabIdx!].paneId;
           const focusedPaneId = await plugin.window.getFocusedPaneId();
           const remId = await plugin.window.getOpenPaneRemId(focusedPaneId);
           if (remId) {
-            const newLayout = replaceRemId(oldLayout, oldPaneId, remId);
+            const newLayout = replaceRemId(oldLayout!, oldPaneId, remId);
             setRestoreLayout(newLayout);
           }
         }
