@@ -3,8 +3,8 @@ import {
   usePlugin,
   RNPlugin,
   LoadingSpinner,
-  useRunAsync,
   useTracker,
+  SelectionType,
 } from "@remnote/plugin-sdk";
 import { PreviewDefinitions } from "../components/PreviewDefinitions";
 import { WordData, GroupedDefinition } from "../lib/models";
@@ -57,7 +57,7 @@ async function addSelectedDefinition(
     const child = await plugin.rem.createRem();
     await child?.setText([def]);
     await child?.setParent(wordRem!._id);
-    await child?.setIsCardItem(true);
+    await child?.setIsMultilineCard(true);
   }
   if (wordRem) {
     await wordRem.setParent(rootRem._id);
@@ -79,19 +79,18 @@ function SelectedTextDictionary() {
   // dictionary API calls, so we debounce the selected text
   // value to only set it once the selected text value has
   // not been updated for 0.3 seconds.
-  const selTextRichText = useDebounce(
+  const searchTerm = useDebounce(
     useTracker(async(reactivePlugin) => {
-      return await reactivePlugin.editor.getSelectedRichText()
+      const sel = await reactivePlugin.editor.getSelection()
+      if (sel?.type == SelectionType.Text) {
+        return cleanSelectedText(await plugin.richText.toString(sel.richText));
+      }
+      else {
+        return undefined;
+      }
     }),
     300
   )
-
-  const searchTerm = cleanSelectedText(
-    // The `useRunAsync` hook allows us to call the async
-    // plugin.richText.toString function inline, rather
-    // than needing to wrap things in useEffect and setState.
-    useRunAsync(async () => await plugin.richText.toString(selTextRichText || []), [selTextRichText])
-  );
 
   const { response, isLoading, isError } = useFetch<WordData[] | null>(
     // If the search term is not null, request the definition
