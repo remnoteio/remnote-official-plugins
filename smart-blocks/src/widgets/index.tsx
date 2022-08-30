@@ -30,8 +30,7 @@ async function onActivate(plugin: ReactRNPlugin) {
     id: "smart_block",
     name: "Smart Block",
     action: async () => {
-      const focusedRemId = await plugin.focus.getFocusedRemId();
-      const rem = await plugin.rem.findOne(focusedRemId);
+      const rem = await plugin.focus.getFocusedRem();
       await rem?.addPowerup(SMART_BLOCK_POWERUP);
       // TODO: change the rem to code block and add a sample into the text
       await rem?.setText([`Math.floor(Math.min((Math.cos(345)*345), 300))`]);

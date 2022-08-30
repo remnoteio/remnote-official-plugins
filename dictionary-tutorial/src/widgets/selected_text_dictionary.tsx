@@ -2,8 +2,8 @@ import {
   renderWidget,
   usePlugin,
   RNPlugin,
-  useRunAsync,
   useTracker,
+  SelectionType,
 } from "@remnote/plugin-sdk";
 import { PreviewDefinitions } from "../components/PreviewDefinitions";
 import { WordData, GroupedDefinition } from "../lib/models";
@@ -30,12 +30,12 @@ async function addSelectedDefinition(
   // Find the root Rem where we want to add the word defitions as children.
   const rootRemName = (await plugin.settings.getSetting("root")) as string;
   if (!rootRemName) {
-    plugin.app.toast("You need to set the Dictionary Root Rem setting!", { autoClose: 2000 });
+    plugin.app.toast("You need to set the Dictionary Root Rem setting!");
     return;
   }
   const rootRem = await plugin.rem.findByName([rootRemName], null);
   if (!rootRem) {
-    plugin.app.toast("Failed to find the root rem", { autoClose: 2000 });
+    plugin.app.toast("Failed to find the root rem");
     return;
   }
 
@@ -55,7 +55,7 @@ async function addSelectedDefinition(
       const child = await plugin.rem.createRem();
       await child?.setText([def]);
       await child?.setParent(wordRem._id);
-      await child?.setIsCardItem(true);
+      await child?.setIsMultilineCard(true);
     }
     // To make the wordRem a child of the rootRem, set its parent
     // to the rootRem.
@@ -63,11 +63,9 @@ async function addSelectedDefinition(
     // Practice the flashcard in both directions
     await wordRem.setPracticeDirection("both");
     // Success!
-    plugin.app.toast("Added!", { autoClose: 2000 });
+    plugin.app.toast("Added!");
   } else {
-    plugin.app.toast("Failed to save the word to your knowledge base.", {
-      autoClose: 2000,
-    });
+    plugin.app.toast("Failed to save the word to your knowledge base.");
   }
 }
 
@@ -101,25 +99,26 @@ function SelectedTextDictionary() {
   // This stores the response from the dictionary API.
   const [wordData, setWordData] = R.useState<WordData>();
 
-  // the `useEditorGetSelectedRichTextReactive` hook
-  // watches the current selected text in RemNote and
-  // rerenders our component every time it changes.
+  // Code inside the useTracker hook watches the
+  // current selected text in RemNote and rerenders
+  // our component every time it changes.
   //
   // This can lead to many unnecessary rerenders and
   // dictionary API calls - every character you select will
   // cause a rerender and an API call, so we debounce the
   // selected text value to only set it once the selected text
   // value has not been updated for 0.5 seconds.
-  const selTextRichText = useDebounce(
-    useTracker(async (reactivePlugin) => await reactivePlugin.editor.getSelectedRichText(), []),
+  const searchTerm = useDebounce(
+    useTracker(async (reactivePlugin) => {
+      const sel = await reactivePlugin.editor.getSelection();
+      if (sel?.type === SelectionType.Text) {
+        return cleanSelectedText(await plugin.richText.toString(sel.richText));
+      }
+      else {
+        return undefined;
+      }
+    }),
     500 // 0.5 seconds
-  );
-
-  const searchTerm = cleanSelectedText(
-    // `useRunAPIMethod` hook allows us to call the async
-    // plugin.richText.toString function inline, rather
-    // than needing to wrap things in useEffect and setState.
-    useRunAsync(async () => await plugin.richText.toString(selTextRichText || []), [selTextRichText])
   );
 
   // When the searchTerm value changes, and it is not null or undefined,

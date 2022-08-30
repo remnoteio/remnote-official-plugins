@@ -8,6 +8,7 @@ import {
   useAPIEventListener,
   usePlugin,
   useTracker,
+  RemIdWindowTree,
 } from "@remnote/plugin-sdk";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
@@ -15,6 +16,8 @@ import { Container, Draggable } from "react-smooth-dnd";
 import { paneRemTreeToRemTree, useDebounce } from "../lib/utils";
 import { getOrCreateHomeWorkspace, HOME_TAB_NAME } from "../shared";
 import AutosizeInput from 'react-input-autosize';
+import deepEqual from "deep-equal";
+
 
 function TabsBar() {
   const plugin = usePlugin();
@@ -64,17 +67,28 @@ function TabsBar() {
   };
 
   const findOpenTab = async () => {
-    if (tabs) {
-      const currentRemTree = JSON.stringify(
+    if (tabs.length > 1) {
+      const currentRemTree = paneRemTreeToRemTree(
         await plugin.window.getCurrentWindowTree()
-      );
-      const openIndex = (
-        await Promise.all(
-          tabs.map(
-            async (t) => await t.getPowerupProperty("workspace", "windowTree")
-          )
+      )
+      const tabTrees = await Promise.all(
+        tabs.map(
+          async (t) => {
+            try {
+              if (t.text[0] == HOME_TAB_NAME) {
+                return (await plugin.date.getTodaysDoc())?._id;
+              }
+              else {
+                const tree = JSON.parse(await t.getPowerupProperty("workspace", "windowTree")) as RemIdWindowTree
+                return tree
+              }
+            }
+            catch(e) {
+            }
+          }
         )
-      ).findIndex((url) => url == currentRemTree);
+      )
+      const openIndex = tabTrees.findIndex((remTree) => deepEqual(remTree, currentRemTree));
       setTabIndex(openIndex);
     }
   };
@@ -92,7 +106,7 @@ function TabsBar() {
 
   useEffect(() => {
     findOpenTab();
-  }, [!!tabs]);
+  }, [tabs.length > 1]);
 
   const onURLChange = async () => {
     if (currentTab) await setPowerupPropertiesForCurrentWindow(currentTab);
@@ -315,8 +329,9 @@ function Tab(props: TabProps) {
               onClick={e => e.stopPropagation()}
               onChange={e => setValue(e.target.value)}
               minWidth={50}
+              className="text-md"
               inputClassName={clsx(
-               "focus:outline-none border-0 border-transparent focus:border-transparent focus:ring-0 min-w-[50px]",
+               "text-md focus:outline-none border-0 border-transparent focus:border-transparent focus:ring-0 min-w-[50px]",
                props.isSelected
                   ? "rn-clr-background-primary"
                   : "rn-clr-background-secondary",

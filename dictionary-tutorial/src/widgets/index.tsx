@@ -19,7 +19,7 @@ async function onActivate(plugin: ReactRNPlugin) {
   await plugin.settings.registerStringSetting({
     id: "root",
     title: "Root Rem",
-    label: "The Rem to add words to.",
+    description: "The Rem to add words to.",
   });
 }
 

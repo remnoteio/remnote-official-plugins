@@ -4,6 +4,7 @@ import {
   AppEvents,
   useAPIEventListener,
   useRunAsync,
+  WidgetLocation,
 } from "@remnote/plugin-sdk";
 import { useEffect, useState } from "react";
 import mermaid from "mermaid";
@@ -17,7 +18,7 @@ export const MermaidWidget = () => {
   const plugin = usePlugin();
   const [id] = useState(nanoid());
 
-  const widgetContext = useRunAsync(() => plugin.widget.getWidgetContext(), []);
+  const widgetContext = useRunAsync(() => plugin.widget.getWidgetContext<WidgetLocation.UnderRemEditor>(), []);
 
   const getRemText = async (remId: string) => {
     const rem = await plugin.rem.findOne(remId);
@@ -27,7 +28,7 @@ export const MermaidWidget = () => {
 
   const renderMermaid = async () => {
     const remId = widgetContext?.remId;
-    const text = await getRemText(remId);
+    const text = remId && await getRemText(remId);
     if (text) {
       try {
         mermaid.render(id + MERMAID_WIDGET, text, (svgCode: string) => {

@@ -4,9 +4,10 @@
   "name": "Tabs",
   "author": "RemNote",
   "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
+  "enableOnMobile": false,
   "version": {
     "major": 0,
-    "minor": 23,
+    "minor": 26,
     "patch": 0
   },
   "description": "Organize your knowledgebase with workspaces and tabs.",

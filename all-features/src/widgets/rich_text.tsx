@@ -11,6 +11,43 @@ export const createBoldRichText = (text: string): RichTextInterface => [
 ];
 
 const richTextNamespaceMethodTests: TestResultMap<RNPlugin["richText"]> = {
+  toggleTextFormatOnRange: async (plugin) => {
+    const text = ["Hello World"]
+    const actual = await plugin.richText.toggleTextFormatOnRange(text, 0, text.length, "bold");
+    const expected = await plugin.richText.text(text[0], ["bold"]).value();
+    return {
+      actual,
+      expected,
+    }
+  },
+  applyTextFormatToRange: async (plugin) => {
+    const text = ["Hello World"]
+    const actual = await plugin.richText.applyTextFormatToRange(text, 0, text.length, "bold");
+    const expected = await plugin.richText.text(text[0], ["bold"]).value();
+    return {
+      actual,
+      expected,
+    }
+  },
+  removeTextFormatFromRange: async (plugin) => {
+    const text = "Hello World"
+    const rt = await plugin.richText.text(text, ["Blue", "bold"]).value();
+    const actual = await plugin.richText.removeTextFormatFromRange(rt, 0, text.length, "bold");
+    const expected = await plugin.richText.text(text, ["Blue"]).value();
+    return {
+      actual,
+      expected,
+    }
+  },
+  normalize: async (plugin) => {
+    const text = [' ', "Hello World"];
+    const actual = await plugin.richText.normalize(text);
+    const expected = ["Hello World"];
+    return {
+      actual,
+      expected,
+    }
+  },
   findAllExternalURLs: async () => {
      return {
       actual: "ignore",

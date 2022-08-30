@@ -41,9 +41,9 @@ async function onActivate(plugin: ReactRNPlugin) {
     const isMonocleMode = await plugin.storage.getSession(
       isMonocleModeStorageKey
     );
-    const cwt: PaneRemWindowTree = isMonocleMode
+    const cwt = (isMonocleMode
       ? await plugin.storage.getSession(restoreLayoutStorageKey)
-      : await plugin.window.getCurrentWindowTree();
+      : await plugin.window.getCurrentWindowTree()) as PaneRemWindowTree;
     const allPaneRemIds = getAllPaneRemIds(cwt) || [];
     const paneRem = allPaneRemIds[paneIdx];
     if (!paneRem) {

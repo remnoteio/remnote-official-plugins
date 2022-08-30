@@ -50,7 +50,7 @@ async function onActivate(plugin: ReactRNPlugin) {
   });
 
   const openAutocompleteWindow = async () => {
-    const caret = await plugin.editor.getCurrentCaretDOMRect();
+    const caret = await plugin.editor.getCaretPosition();
     lastFloatingWidgetId = await plugin.window.openFloatingWidget(
       "autocomplete_popup",
       { top: caret ? caret.y + POPUP_Y_OFFSET : undefined, left: caret?.x }
@@ -74,6 +74,13 @@ async function onActivate(plugin: ReactRNPlugin) {
   });
 }
 
-async function onDeactivate(_: ReactRNPlugin) {}
+async function onDeactivate(plugin: ReactRNPlugin) {
+  const keys = [
+    await plugin.settings.getSetting(selectNextKeyId),
+    await plugin.settings.getSetting(selectPrevKeyId),
+    await plugin.settings.getSetting(insertSelectedKeyId)
+  ] as string[];
+  await plugin.window.releaseKeys(keys, lastFloatingWidgetId );
+}
 
 declareIndexPlugin(onActivate, onDeactivate);

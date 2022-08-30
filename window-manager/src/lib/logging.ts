@@ -11,6 +11,6 @@ export function log(
 ) {
   console.log(`[${getTime()}] (Window Manager Plugin): ${message}`);
   if (notify) {
-    plugin.app.toast(message, { autoClose: 2000 });
+    plugin.app.toast(message);
   }
 }

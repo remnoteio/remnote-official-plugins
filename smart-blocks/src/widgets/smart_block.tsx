@@ -5,6 +5,7 @@ import {
   useAPIEventListener,
   usePlugin,
   useRunAsync,
+  WidgetLocation,
 } from "@remnote/plugin-sdk";
 
 const { useState, useEffect } = React;
@@ -12,7 +13,7 @@ const { useState, useEffect } = React;
 function SmartBlock() {
   const [text, setText] = useState("");
   const plugin = usePlugin();
-  const widgetContext = useRunAsync(() => plugin.widget.getWidgetContext(), []);
+  const widgetContext = useRunAsync(() => plugin.widget.getWidgetContext<WidgetLocation.UnderRemEditor>(), []);
 
   const getRemText = async (remId: string) => {
     const rem = await plugin.rem.findOne(remId);
@@ -22,8 +23,8 @@ function SmartBlock() {
 
   const renderText = async () => {
     const remId = widgetContext?.remId;
-    const text = await getRemText(remId);
-    setText(text);
+    const text = remId && await getRemText(remId);
+    setText(text || "");
   };
 
   useAPIEventListener(AppEvents.RemChanged, widgetContext?.remId, () =>
@@ -34,7 +35,7 @@ function SmartBlock() {
     renderText();
   }, [widgetContext?.remId]);
 
-  let val;
+  let val: any;
   try {
     val = eval(text || "");
   } catch {}

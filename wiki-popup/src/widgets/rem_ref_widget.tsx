@@ -12,9 +12,9 @@ function FloatingWikiPopup() {
   // to the type of widget. In this case we want to access
   // the remId of the link the user has right clicked on.
   const remId = useRunAsync(async () => {
-    const ctx = await plugin.widget.getWidgetContext();
+    const ctx = await plugin.widget.getWidgetContext<WidgetLocation.RemReferencePopupRight>();
     return ctx?.remId;
-  }, []);
+  }, [])!;
   return (
     <WikiPopup remId={remId} location={WidgetLocation.RemReferencePopupRight} />
   );

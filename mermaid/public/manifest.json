@@ -4,6 +4,7 @@
   "name": "Mermaid",
   "author": "karthikeyan",
   "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
+  "enableOnMobile": false,
   "version": {
     "major": 0,
     "minor": 1,
