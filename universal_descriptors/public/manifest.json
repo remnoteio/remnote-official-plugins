@@ -6,9 +6,10 @@
   "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
   "version": {
     "major": 0,
-    "minor": 6,
+    "minor": 7,
     "patch": 0
   },
+  "enableOnMobile": false,
   "description": "Provides a ~ shortcut for quickly entering Universal Descriptors",
   "requestNative": true,
   "requiredScopes": [
