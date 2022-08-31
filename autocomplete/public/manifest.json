@@ -7,8 +7,13 @@
   "enableOnMobile": false,
   "version": {
     "major": 0,
-    "minor": 5,
+    "minor": 6,
     "patch": 0
+  },
+  "minimumRemNoteVersion": {
+    "major": 1,
+    "minor": 1,
+    "patch": 18
   },
   "description": "Get autocomplete suggestions based on words in the current document.",
   "requestNative": true,
