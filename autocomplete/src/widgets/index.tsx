@@ -80,7 +80,7 @@ async function onDeactivate(plugin: ReactRNPlugin) {
     await plugin.settings.getSetting(selectPrevKeyId),
     await plugin.settings.getSetting(insertSelectedKeyId)
   ] as string[];
-  await plugin.window.releaseKeys(keys, lastFloatingWidgetId );
+  await plugin.window.releaseKeys(lastFloatingWidgetId, keys);
 }
 
 declareIndexPlugin(onActivate, onDeactivate);

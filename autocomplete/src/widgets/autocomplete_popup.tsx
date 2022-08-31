@@ -59,9 +59,9 @@ function AutocompletePopup() {
       return;
     }
     if (!hidden) {
-      plugin.window.stealKeys(keys, floatingWidgetId);
+      plugin.window.stealKeys(floatingWidgetId, keys);
     } else {
-      plugin.window.releaseKeys(keys, floatingWidgetId);
+      plugin.window.releaseKeys(floatingWidgetId, keys);
     }
   }, [hidden]);
 

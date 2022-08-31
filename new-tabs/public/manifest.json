@@ -7,8 +7,13 @@
   "enableOnMobile": false,
   "version": {
     "major": 0,
-    "minor": 26,
+    "minor": 27,
     "patch": 0
+  },
+  "minimumRemNoteVersion": {
+    "major": 1,
+    "minor": 8,
+    "patch": 18
   },
   "description": "Organize your knowledgebase with workspaces and tabs.",
   "requestNative": false,
