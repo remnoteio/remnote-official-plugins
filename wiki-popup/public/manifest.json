@@ -8,7 +8,12 @@
   "version": {
     "major": 0,
     "minor": 5,
-    "patch": 2
+    "patch": 4
+  },
+  "minimumRemNoteVersion": {
+    "major": 1,
+    "minor": 8,
+    "patch": 18
   },
   "description": "Right click on Wikipedia links to preview the article in the Rem reference window.",
   "authorizedActions": "Read",

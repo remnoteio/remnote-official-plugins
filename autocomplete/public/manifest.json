@@ -8,11 +8,11 @@
   "version": {
     "major": 0,
     "minor": 8,
-    "patch": 0
+    "patch": 3
   },
   "minimumRemNoteVersion": {
     "major": 1,
-    "minor": 1,
+    "minor": 8,
     "patch": 18
   },
   "description": "Get autocomplete suggestions based on words in the current document.",

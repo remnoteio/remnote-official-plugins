@@ -8,7 +8,12 @@
   "version": {
     "major": 0,
     "minor": 7,
-    "patch": 1
+    "patch": 2
+  },
+  "minimumRemNoteVersion": {
+    "major": 1,
+    "minor": 8,
+    "patch": 18
   },
   "description": "Shows motivational dog pics in the queue.",
   "requestNative": true,
