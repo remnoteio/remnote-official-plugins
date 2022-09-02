@@ -7,10 +7,11 @@ import {
   usePlugin,
   useRunAsync,
   useTracker,
+  WidgetLocation,
 } from "@remnote/plugin-sdk";
 import clsx from "clsx";
 import * as R from "react";
-import { sortBy, uniqBy } from "remeda";
+import { sortBy, } from "remeda";
 import {
   insertSelectedKeyId,
   selectNextKeyId,
@@ -28,7 +29,7 @@ interface UniversalSlot {
 function AutocompletePopup() {
   const plugin = usePlugin();
   const ctx = useRunAsync(
-    async () => await plugin.widget.getWidgetContext(),
+    async () => await plugin.widget.getWidgetContext<WidgetLocation.FloatingWidget>(),
     []
   );
 
@@ -114,9 +115,9 @@ function AutocompletePopup() {
       return;
     }
     if (!hidden) {
-      plugin.window.stealKeys(keys, floatingWidgetId);
+      plugin.window.stealKeys(floatingWidgetId, keys);
     } else {
-      plugin.window.releaseKeys(keys, floatingWidgetId);
+      plugin.window.releaseKeys(floatingWidgetId, keys);
     }
   }, [hidden]);
 
@@ -131,10 +132,10 @@ function AutocompletePopup() {
   });
 
   const updateLastPartialWord = async (newText: RichTextInterface) => {
-    const selection = await plugin.editor.getSelection();
+    const selection = await plugin.editor.getSelectedText();
     if (!selection) return;
     const prevLine: string | undefined = await plugin.richText.toMarkdown(
-      await plugin.richText.substring(newText, 0, selection.anchor)
+      await plugin.richText.substring(newText, 0, selection.range.start)
     );
 
     const i = prevLine?.lastIndexOf("~");

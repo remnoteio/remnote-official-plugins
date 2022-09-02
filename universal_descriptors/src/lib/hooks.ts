@@ -33,7 +33,7 @@ const useCaretPosition = (): DOMRect | null => {
     AppEvents.EditorTextEdited,
     undefined,
     async () => {
-      const caret = await plugin.editor.getCurrentCaretDOMRect();
+      const caret = await plugin.editor.getCaretPosition();
       setCaret(caret ? caret : null);
     }
   )
