@@ -21,6 +21,12 @@ async function onActivate(plugin: ReactRNPlugin) {
     id: rootRemSettingId,
     title: "Dictionary Root Rem",
   });
+
+  await plugin.app.registerCommand({
+    id: "test",
+    name: "Test Command",
+    action: () => plugin.app.toast("Hello World"),
+  })
 }
 
 async function onDeactivate(_: ReactRNPlugin) {}
