@@ -2,7 +2,7 @@ import { declareIndexPlugin, ReactRNPlugin } from "@remnote/plugin-sdk";
 import "../style.css";
 
 const CSS = `
-.rn-queue__content--answer-hidden [data-queue-rem-tags~="hide-in-queue"] .rn-rich-text{
+.rn-queue__content--answer-hidden [data-queue-rem-tags~="hide-in-queue"] .RichTextViewer{
   opacity: 0;
 } 
 .rn-queue__content--answer-hidden [data-queue-rem-tags~="hide-in-queue"] .rn-bullet-container:after{
