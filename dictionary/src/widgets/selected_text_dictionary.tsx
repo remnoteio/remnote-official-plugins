@@ -57,7 +57,7 @@ async function addSelectedDefinition(
     const child = await plugin.rem.createRem();
     await child?.setText([def]);
     await child?.setParent(wordRem!._id);
-    await child?.setIsMultilineCard(true);
+    await child?.setIsCardItem(true);
   }
   if (wordRem) {
     await wordRem.setParent(rootRem._id);
