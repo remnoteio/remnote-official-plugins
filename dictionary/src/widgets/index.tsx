@@ -25,7 +25,7 @@ async function onActivate(plugin: ReactRNPlugin) {
   await plugin.app.registerCommand({
     id: "test",
     name: "Test Command",
-    action: () => plugin.app.toast("Hello World"),
+    action: () => plugin.app.toast("Hello World 8.7"),
   })
 }
 
