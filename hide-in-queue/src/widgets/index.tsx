@@ -2,10 +2,10 @@ import { declareIndexPlugin, ReactRNPlugin } from "@remnote/plugin-sdk";
 import "../style.css";
 
 const CSS = `
-.rn-queue__content--answer-hidden [data-queue-rem-tags~="hide-in-queue"] .RichTextViewer{
-  opacity: 0;
+.rn-queue__content--answer-hidden [data-queue-rem-container-tags~="hide-in-queue"]:not(.rn-question-rem) > .rn-queue-rem > .RichTextViewer{
+  visibility: hidden;
 } 
-.rn-queue__content--answer-hidden [data-queue-rem-tags~="hide-in-queue"] .rn-bullet-container:after{
+.rn-queue__content--answer-hidden [data-queue-rem-container-tags~="hide-in-queue"]:not(.rn-question-rem) > .rn-queue-rem > .rn-bullet-container:after{
   content: "Hidden in queue";
   opacity: .3;
   white-space: nowrap;
