@@ -178,7 +178,13 @@ function AutocompletePopup() {
     const prevLine = await plugin.richText.toString(
       await plugin.richText.substring(editorText, 0, selection.range.start)
     );
-    const lpw = prevLine?.match(/\b(\w+)$/)?.[0]?.toLowerCase();
+    // don't match / command
+    const lpwMatch = prevLine?.match(/\b(\w+)$/)
+    const idx = lpwMatch?.index
+    if (idx && prevLine[idx - 1] === '/') {
+      return;
+    }
+    const lpw = lpwMatch?.[0]?.toLowerCase().trim();
     setLastPartialWord(lpw);
   }) 
 
