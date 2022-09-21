@@ -3,6 +3,8 @@
 - Highlight words to automatically lookup the definition.
 - Easily add definitions into your knowledge base.
 
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/images/dictionary.png)
+
 ## How to Use
 
 Highlight a word to open the selected text menu. Click on the plugin button and select the dictionary tab.
