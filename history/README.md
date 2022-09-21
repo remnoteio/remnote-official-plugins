@@ -1,6 +1,9 @@
 ## Features
 
 - Records the history of the Rem you have visited in the right sidebar.
+- You can expand and edit the Rem directly in the right sidebar.
+
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/images/history.gif)
 
 ## How to Use
 
