@@ -4,6 +4,8 @@
 
 Note: Currently only works with whitespace-delimited languages like English.
 
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/images/autocomplete.gif)
+
 ## How to Use
 
 - The default hotkeys are:
