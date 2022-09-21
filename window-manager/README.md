@@ -3,6 +3,8 @@
 - Absolute pane focusing mode - use hotkeys to focus a pane by its pane number, which is displayed in the pane header.
 - Pane zoom mode (aka Monocle Mode) - toggle between a single fullscreen pane and multiple panes.
 
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/images/window-manager.gif)
+
 Note: The Window Manager plugin does not currently work perfectly alongside the Tabs plugin. This will be fixed in a future update.
 
 ## How to Use
