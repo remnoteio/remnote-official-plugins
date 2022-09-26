@@ -12,12 +12,7 @@ const CSS = `
   position: absolute;
   left: 25px;
 } 
-
-
-.rn-queue__content--answer-hidden [data-queue-rem-tags~="remove-from-queue"] .rn-rich-text{
-  opacity: 0;
-} 
-.rn-queue__content--answer-hidden [data-queue-rem-tags~="remove-from-queue"] .rn-bullet-container:after{
+.rn-queue__content--answer-hidden [data-queue-rem-container-tags~="remove-from-queue"]:not(.rn-question-rem) > .rn-queue-rem {
   display: none;
 } 
 `;
