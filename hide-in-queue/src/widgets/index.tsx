@@ -12,6 +12,9 @@ const CSS = `
   position: absolute;
   left: 25px;
 } 
+.rn-queue__content--answer-hidden [data-queue-rem-container-tags~="remove-from-queue"]:not(.rn-question-rem) > .rn-queue-rem {
+  display: none;
+} 
 `;
 
 async function onActivate(plugin: ReactRNPlugin) {
@@ -19,6 +22,14 @@ async function onActivate(plugin: ReactRNPlugin) {
     "Hide in Queue",
     "hideInQueue",
     "Hides the tagged Rem in the queue view.",
+    {
+      slots: [],
+    }
+  );
+  await plugin.app.registerPowerup(
+    "Remove from Queue",
+    "removeFromQueue",
+    "Removes the tagged Rem in the queue view.",
     {
       slots: [],
     }
