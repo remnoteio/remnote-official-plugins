@@ -160,6 +160,26 @@ function TabsBar() {
     }, 100);
   };
 
+  plugin.app.registerCommand({
+    id: "next-tab",
+    name: "Focus Next Tab",
+    description: "Focus the tab to the right of the currently focused tab.",
+    action: () => {
+      const newTabIndex = ((tabIndex + 1) % tabs.length + tabs.length) % tabs.length
+      onClickTab(newTabIndex)
+    }
+  })
+
+  plugin.app.registerCommand({
+    id: "prev-tab",
+    name: "Focus Previous Tab",
+    description: "Focus the tab to the left of the currently focused tab.",
+    action: () => {
+      const newTabIndex = ((tabIndex - 1) % tabs.length + tabs.length) % tabs.length
+      onClickTab(newTabIndex)
+    }
+  })
+
   const deleteTab = async (event: any, index: number) => {
     const tabRem = tabs[index];
     await tabRem?.remove();

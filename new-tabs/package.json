@@ -15,7 +15,7 @@
     ]
   },
   "dependencies": {
-    "@remnote/plugin-sdk": "0.0.5",
+    "@remnote/plugin-sdk": "0.0.14",
     "@types/deep-equal": "^1.0.1",
     "@types/underscore": "^1.11.4",
     "babel-loader": "^8.2.3",
