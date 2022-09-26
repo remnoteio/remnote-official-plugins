@@ -1,6 +1,7 @@
 ## Features
 
 - Provides a "Hide in Queue" powerup that hides the tagged Rem in the queue.
+- Also provides a "Remove from Queue" powerup which removes the targged Rem from the hierarchy in the queue.
 
 ## How to Use
 
