@@ -8,7 +8,7 @@
   "version": {
     "major": 0,
     "minor": 1,
-    "patch": 0
+    "patch": 1
   },
   "description": "Mermaid library integration with RemNote",
   "requestNative": false,
