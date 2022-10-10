@@ -8,6 +8,7 @@ import {
   useTracker,
   WidgetLocation,
   SelectionType,
+  RICH_TEXT_FORMATTING,
 } from "@remnote/plugin-sdk";
 import * as R from "react";
 import clsx from "clsx";
@@ -173,12 +174,20 @@ function AutocompletePopup() {
   useTracker(async (reactivePlugin) => {
     const editorText = await reactivePlugin.editor.getFocusedEditorText();
     // intentionally non-reactive
-    const selection = await plugin.editor.getSelection();
-    if (!selection || !editorText || selection.type === SelectionType.Rem) return;
+    const sel = await plugin.editor.getSelection();
+    // don't open autocomplete popup if the user is writing a reference or tag
+    if (!sel
+      || !editorText
+      || sel.type === SelectionType.Rem
+      || sel.range.start !== sel.range.end
+      || editorText.some(x => x["workInProgressTag"] || x["workInProgressRem"])
+     ) {
+      return;
+    }
     const prevLine = await plugin.richText.toString(
-      await plugin.richText.substring(editorText, 0, selection.range.start)
+      await plugin.richText.substring(editorText, 0, sel.range.start)
     );
-    // don't match / command
+    // don't match slash command
     const lpwMatch = prevLine?.match(/\b(\w+)$/)
     const idx = lpwMatch?.index
     if (idx && prevLine[idx - 1] === '/') {
