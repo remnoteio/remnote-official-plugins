@@ -12,7 +12,6 @@ import {
   restoreLayoutStorageKey,
   tabIdxStorageKey,
 } from "../lib/constants";
-import { log } from "../lib/logging";
 import { getAllPaneRemIds } from "../lib/windowTreeUtils";
 
 let absolutePaneFocusModeTimeout: NodeJS.Timeout | undefined;
@@ -102,10 +101,6 @@ async function onActivate(plugin: ReactRNPlugin) {
       if (!isMonocleMode && pane) {
         const currentWindowTree = await plugin.window.getCurrentWindowTree();
         if ("remId" in currentWindowTree) {
-          log(
-            plugin,
-            "Ignoring monocle mode - there is only one current pane."
-          );
           return;
         } else {
           await plugin.storage.setSession(isMonocleModeStorageKey, true);
