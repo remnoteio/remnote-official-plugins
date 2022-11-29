@@ -5,13 +5,25 @@
 
 ## How to Use
 
-Tag any Rem with "Hide in Queue":
+### Hide In Queue
+
+Tag any Rem with "Hide in Queue". Its content will be replaced with "Hidden in Queue":
 
 **Editor:**
 ![](https://i.imgur.com/06IHTFp.png)
 
 **Queue:**
 ![](https://i.imgur.com/nntgSw1.png)
+
+### Remove from Queue
+
+Tag any Rem with "Remove from Queue". Its content will be completely removed.
+
+**Editor:**
+![](https://raw.githubusercontent.com/remnote/remnote-official-plugins/main/hide-in-queue/images/editor.png)
+
+**Queue:**
+![](https://raw.githubusercontent.com/remnote/remnote-official-plugins/main/hide-in-queue/images/queue.png)
 
 ## Developers
 
