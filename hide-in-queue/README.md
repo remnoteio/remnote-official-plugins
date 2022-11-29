@@ -20,10 +20,12 @@ Tag any Rem with "Hide in Queue". Its content will be replaced with "Hidden in Q
 Tag any Rem with "Remove from Queue". Its content will be completely removed.
 
 **Editor:**
-![](https://raw.githubusercontent.com/remnote/remnote-official-plugins/main/hide-in-queue/images/editor.png)
+<br/>
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/editor.png)
 
 **Queue:**
-![](https://raw.githubusercontent.com/remnote/remnote-official-plugins/main/hide-in-queue/images/queue.png)
+<br/>
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/queue.png)
 
 ## Developers
 
