@@ -14,7 +14,11 @@ const CSS = `
 } 
 .rn-queue__content--answer-hidden [data-queue-rem-container-tags~="remove-from-queue"]:not(.rn-question-rem) > .rn-queue-rem {
   display: none;
-} 
+}
+
+.rn-queue__content--answer-hidden [data-queue-rem-container-tags~="remove-from-queue"]:not(.rn-question-rem) {
+  margin-left: 0px !important;
+}
 `;
 
 async function onActivate(plugin: ReactRNPlugin) {
