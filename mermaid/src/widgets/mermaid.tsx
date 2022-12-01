@@ -6,17 +6,20 @@ import {
   useRunAsync,
   WidgetLocation,
 } from "@remnote/plugin-sdk";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import mermaid from "mermaid";
-import { nanoid } from "nanoid";
 import { debounce } from "debounce";
+import {nanoid} from 'nanoid';
 
 const MERMAID_WIDGET = "mermaid_widget";
 const MERMAID_WIDGET_RENDERER = "mermaid_widget_renderer";
 
 export const MermaidWidget = () => {
   const plugin = usePlugin();
-  const [id] = useState(nanoid());
+  const [id] = useState(nanoid())
+
+  const widgetRef = useRef<HTMLDivElement | null>(null);
+  const rendererRef = useRef<HTMLDivElement | null>(null);
 
   const widgetContext = useRunAsync(() => plugin.widget.getWidgetContext<WidgetLocation.UnderRemEditor>(), []);
 
@@ -30,14 +33,9 @@ export const MermaidWidget = () => {
     const remId = widgetContext?.remId;
     const text = remId && await getRemText(remId);
     if (text) {
-      try {
-        mermaid.render(id + MERMAID_WIDGET, text, (svgCode: string) => {
-          const elem = document.getElementById(id + MERMAID_WIDGET_RENDERER);
-          if (elem) {
-            elem.innerHTML = svgCode;
-          }
-        });
-      } catch (error) {}
+      mermaid.render(MERMAID_WIDGET + id, text, (svgCode: string) => {
+        rendererRef.current!.innerHTML = svgCode;
+      });
     }
   };
 
@@ -48,13 +46,15 @@ export const MermaidWidget = () => {
   );
 
   useEffect(() => {
-    renderMermaid()
-  }, [widgetContext?.remId])
+    if (widgetContext?.remId && widgetRef.current && rendererRef.current) {
+      renderMermaid();
+    }
+  }, [widgetContext?.remId, widgetRef.current, rendererRef.current])
 
   return (
     <div>
-      <div id={id + MERMAID_WIDGET} />
-      <div id={id + MERMAID_WIDGET_RENDERER} />
+      <div ref={widgetRef} id={MERMAID_WIDGET + id} />
+      <div ref={rendererRef} id={MERMAID_WIDGET_RENDERER + id} />
     </div>
   );
 };
