@@ -10,7 +10,6 @@ async function onActivate(plugin: ReactRNPlugin) {
   await plugin.app.registerPowerup("workspace", "workspace", "workspace", {
     slots: [
       { code: "windowTree", name: "Window Tree" },
-      { code: "remIds", name: "Open Rem" },
     ],
   });
 

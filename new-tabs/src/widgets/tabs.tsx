@@ -13,7 +13,7 @@ import {
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import { Container, Draggable } from "react-smooth-dnd";
-import { paneRemTreeToRemTree, useDebounce } from "../lib/utils";
+import { paneRemTreeToRemTree, useDebounce, removeDeletedRem } from "../lib/utils";
 import { getOrCreateHomeWorkspace, HOME_TAB_NAME } from "../shared";
 import AutosizeInput from 'react-input-autosize';
 import deepEqual from "deep-equal";
@@ -80,7 +80,8 @@ function TabsBar() {
               }
               else {
                 const tree = JSON.parse(await t.getPowerupProperty("workspace", "windowTree")) as RemIdWindowTree
-                return tree
+                const withoutDeletedDocs = await removeDeletedRem(plugin, tree)
+                return withoutDeletedDocs
               }
             }
             catch(e) {
@@ -121,17 +122,7 @@ function TabsBar() {
   const setPowerupPropertiesForCurrentWindow = async (tabPlugin: Rem) => {
     const tree = await plugin.window.getCurrentWindowTree();
     const remTree = JSON.stringify(paneRemTreeToRemTree(tree));
-    const openRemIds = await plugin.window.getOpenPaneRemIds();
-
     tabPlugin?.setPowerupProperty("workspace", "windowTree", [remTree]);
-    tabPlugin?.setPowerupProperty(
-      "workspace",
-      "remIds",
-      openRemIds.map((_id) => ({
-        i: "q",
-        _id,
-      }))
-    );
   };
 
   useAPIEventListener(AppEvents.URLChange, undefined, onURLChange);
@@ -150,9 +141,18 @@ function TabsBar() {
           const tree = JSON.parse(
             await tabRem?.getPowerupProperty("workspace", "windowTree")
           );
-          if (tree) {
-            plugin.window.setRemWindowTree(tree);
+          if (!tree) {
+            return
           }
+          const withoutDeletedDocs = (await removeDeletedRem(plugin, tree as RemIdWindowTree))
+          const newTree = withoutDeletedDocs
+            ? withoutDeletedDocs
+            : (await plugin.date.getTodaysDoc())?._id;
+          if (!newTree) {
+            return;
+          }
+          plugin.window.setRemWindowTree(newTree);
+          
         } catch (e) {
           console.log("Failed to parse JSON windowTree");
         }
