@@ -27,6 +27,18 @@ Tag any Rem with "Remove from Queue". Its content will be completely removed.
 <br/>
 ![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/queue.png)
 
+### No Hierarchy
+
+Tag any Rem with "No Hierarchy". Any ancestors will be hidden on the front and back of the flashcard.
+
+**Editor:**
+<br/>
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/no-hier-ed.png)
+
+**Queue:**
+<br/>
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/no-hier-queue.png)
+
 ## Developers
 
 This plugin is an example plugin built by the RemNote team to demonstrate how to build plugins using the new plugin SDK. The source code has been extensively documented to explain the various API functions.
