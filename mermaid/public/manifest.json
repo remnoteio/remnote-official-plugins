@@ -4,10 +4,10 @@
   "name": "Mermaid",
   "author": "karthikeyan",
   "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
-  "enableOnMobile": false,
+  "enableOnMobile": true,
   "version": {
     "major": 0,
-    "minor": 4,
+    "minor": 5,
     "patch": 0
   },
   "description": "Mermaid library integration with RemNote",
