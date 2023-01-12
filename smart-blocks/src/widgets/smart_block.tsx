@@ -40,7 +40,7 @@ function SmartBlock() {
     val = eval(text || "");
   } catch {}
 
-  return val != undefined && "" + val != text?.trim() ? (
+  return (val && "" + val != text?.trim()) ? (
     <div className="ml-10 text-blue-500">= {val}</div>
   ) : null;
 }
