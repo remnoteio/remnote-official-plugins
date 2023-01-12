@@ -22,7 +22,8 @@
     "postcss-loader": "^6.2.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "style-loader": "^3.3.1"
+    "style-loader": "^3.3.1",
+    "@remnote/plugin-sdk": "0.0.18"
   },
   "devDependencies": {
     "@babel/core": "^7.7.7",
