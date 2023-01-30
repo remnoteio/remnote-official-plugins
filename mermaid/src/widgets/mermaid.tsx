@@ -9,14 +9,14 @@ import {
 import { useEffect, useState, useRef } from "react";
 import mermaid from "mermaid";
 import { debounce } from "debounce";
-import {nanoid} from 'nanoid';
+import { nanoid } from "nanoid";
 
 const MERMAID_WIDGET = "mermaid_widget";
 const MERMAID_WIDGET_RENDERER = "mermaid_widget_renderer";
 
 export const MermaidWidget = () => {
   const plugin = usePlugin();
-  const [id] = useState(nanoid())
+  const [id] = useState(nanoid());
 
   const widgetRef = useRef<HTMLDivElement | null>(null);
   const rendererRef = useRef<HTMLDivElement | null>(null);
@@ -31,7 +31,7 @@ export const MermaidWidget = () => {
 
   const renderMermaid = async () => {
     const remId = widgetContext?.remId;
-    const text = remId && await getRemText(remId);
+    const text = remId && (await getRemText(remId));
     if (text) {
       mermaid.render(MERMAID_WIDGET + id, text, (svgCode: string) => {
         rendererRef.current!.innerHTML = svgCode;
@@ -49,10 +49,11 @@ export const MermaidWidget = () => {
     if (widgetContext?.remId && widgetRef.current && rendererRef.current) {
       renderMermaid();
     }
-  }, [widgetContext?.remId, widgetRef.current, rendererRef.current])
+  }, [widgetContext?.remId, widgetRef.current, rendererRef.current]);
 
   return (
     <div>
+      {/* className="border-2 border-stone-200 dark:border-stone-600 rounded p-2 ml-6" */}
       <div ref={widgetRef} id={MERMAID_WIDGET + id} />
       <div ref={rendererRef} id={MERMAID_WIDGET_RENDERER + id} />
     </div>
