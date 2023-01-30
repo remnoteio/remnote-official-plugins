@@ -1,0 +1,53 @@
+:root {
+    --mermaid-border: #ddd;
+    --mermaid-border-dark: #535353;
+    --mermaid-block: #f7f6f3;
+    --mermaid-block-dark: #2b2b33;
+    --mermaid-input: #f7f6f3;
+    --mermaid-input-dark: #2b2b33;
+}
+
+@mixin Mermaid(
+    $mermaid-border, 
+    $mermaid-block, 
+    $mermaid-input
+) {
+    [data-rem-container-tags~="mermaid"] {
+        border: 1px solid $mermaid-border;
+        border-radius: 4px;
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        [data-rem-tags~="mermaid"] {
+            background-color: $mermaid-input;
+            .hierarchy-editor__tag-bar__tag {
+                display: none;
+            }
+            #code-node {
+                background-color: $mermaid-block;
+            }
+            &:not(rem-container--focused) {
+                #code-node {
+                    display: none;
+                }
+            }
+            &.rem-container--focused {
+                #code-node {
+                    display: block;
+                }
+            }
+        }
+    }
+}
+@include Mermaid(
+    var(--mermaid-border), 
+    var(--mermaid-block), 
+    var(--mermaid-input)
+);
+.dark {
+    @include Mermaid(
+        var(--mermaid-border-dark), 
+        var(--mermaid-block-dark), 
+        var(--mermaid-input-dark)
+    );
+}
