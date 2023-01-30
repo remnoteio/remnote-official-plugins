@@ -4,10 +4,11 @@
   "license": "MIT",
   "scripts": {
     "check-types": "tsc",
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --color --progress",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --color --progress --no-open",
     "build": "rm -rf dist && cross-env NODE_ENV=production webpack --color --progress && cp README.md dist && cd dist && zip -r ../PluginZip.zip ./*",
     "build-watch": "nodemon --watch 'src/**/* public/**/*' --exec \"npm run build\" -e '*'",
-    "start": "http-server --cors -p 7000 dist -c-1"
+    "start": "http-server --cors -p 7000 dist -c-1",
+    "sass": "sass --watch --style=compressed --no-source-map src/scss/App.scss:src/App.css"
   },
   "nodemonConfig": {
     "ignore": [
@@ -50,7 +51,9 @@
     "html-webpack-plugin": "^5.5.0",
     "nodemon": "^2.0.15",
     "postcss": "^8.4.8",
+    "prettier": "^2.8.3",
     "react-refresh": "^0.12.0",
+    "sass": "^1.57.1",
     "serve": "^11.3.0",
     "tailwindcss": "^3.0.23",
     "typescript": "^3.7.4",
