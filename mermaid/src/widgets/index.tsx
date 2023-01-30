@@ -1,12 +1,22 @@
-import {
-  declareIndexPlugin,
-  ReactRNPlugin,
-  RichTextInterface,
-  WidgetLocation,
-} from "@remnote/plugin-sdk";
+import { declareIndexPlugin, ReactRNPlugin, RichTextInterface, WidgetLocation } from "@remnote/plugin-sdk";
 import "../style.css";
 
 export const MERMAID_POWERUP = "memaid_powerup";
+
+const STYLE = `
+:root{--mermaid-border: #ddd;--mermaid-border-dark: #535353;--mermaid-block: #f7f6f3;--mermaid-block-dark: #2b2b33;--mermaid-input: #f7f6f3;--mermaid-input-dark: #2b2b33}[data-rem-container-tags~=mermaid]{border:1px solid var(--mermaid-border);border-radius:4px;padding:.5rem;margin-top:.5rem;margin-bottom:.5rem}[data-rem-container-tags~=mermaid] [data-rem-tags~=mermaid]{background-color:var(--mermaid-input)}[data-rem-container-tags~=mermaid] [data-rem-tags~=mermaid] .hierarchy-editor__tag-bar__tag{display:none}[data-rem-container-tags~=mermaid] [data-rem-tags~=mermaid] #code-node{background-color:var(--mermaid-block)}[data-rem-container-tags~=mermaid] [data-rem-tags~=mermaid]:not(rem-container--focused) #code-node{display:none}[data-rem-container-tags~=mermaid] [data-rem-tags~=mermaid].rem-container--focused #code-node{display:block}.dark [data-rem-container-tags~=mermaid]{border:1px solid var(--mermaid-border-dark);border-radius:4px;padding:.5rem;margin-top:.5rem;margin-bottom:.5rem}.dark [data-rem-container-tags~=mermaid] [data-rem-tags~=mermaid]{background-color:var(--mermaid-input-dark)}.dark [data-rem-container-tags~=mermaid] [data-rem-tags~=mermaid] .hierarchy-editor__tag-bar__tag{display:none}.dark [data-rem-container-tags~=mermaid] [data-rem-tags~=mermaid] #code-node{background-color:var(--mermaid-block-dark)}.dark [data-rem-container-tags~=mermaid] [data-rem-tags~=mermaid]:not(rem-container--focused) #code-node{display:none}.dark [data-rem-container-tags~=mermaid] [data-rem-tags~=mermaid].rem-container--focused #code-node{display:block}
+`;
+
+const SAMPLE_MERMAID: RichTextInterface = [
+  {
+    text: `
+flowchart TD
+  Start
+    `.trim(),
+    i: "m",
+    code: true,
+  },
+];
 
 async function onActivate(plugin: ReactRNPlugin) {
   await plugin.app.registerPowerup("Mermaid", MERMAID_POWERUP, "A Mermaid plugin", {
@@ -24,32 +34,12 @@ async function onActivate(plugin: ReactRNPlugin) {
     action: async () => {
       const rem = await plugin.focus.getFocusedRem();
       await rem?.addPowerup(MERMAID_POWERUP);
-      // TODO: change the rem to code block and add a sample into the text
       await rem?.setText(SAMPLE_MERMAID);
     },
   });
-
-
+  await plugin.app.registerCSS("mermaidcss", STYLE);
 }
 
 async function onDeactivate(_: ReactRNPlugin) {}
 
 declareIndexPlugin(onActivate, onDeactivate);
-
-const SAMPLE_MERMAID: RichTextInterface = [
-  {
-    text: `
-journey
-  title My working day
-  section Go to work
-    Make tea: 5: Me
-    Go upstairs: 3: Me
-    Do work: 1: Me, Cat
-  section Go home
-    Go downstairs: 5: Me
-    Sit down: 5: Me
-    `.trim(),
-    i: "m",
-    code: true,
-  },
-];
