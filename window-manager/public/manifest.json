@@ -8,7 +8,7 @@
   "version": {
     "major": 0,
     "minor": 2,
-    "patch": 4
+    "patch": 6
   },
   "minimumRemNoteVersion": {
     "major": 1,
@@ -20,7 +20,7 @@
   "requiredScopes": [
     {
       "type": "All",
-      "level": "Read"
+      "level": "ReadCreateModify"
     }
   ]
 }
