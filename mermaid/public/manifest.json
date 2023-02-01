@@ -7,11 +7,11 @@
   "enableOnMobile": true,
   "version": {
     "major": 0,
-    "minor": 5,
+    "minor": 6,
     "patch": 0
   },
   "description": "Mermaid library integration with RemNote",
-  "requestNative": false,
+  "requestNative": true,
   "requiredScopes": [
     {
       "type": "All",
