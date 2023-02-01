@@ -33,9 +33,14 @@ export const MermaidWidget = () => {
     const remId = widgetContext?.remId;
     const text = remId && (await getRemText(remId));
     if (text) {
-      mermaid.render(MERMAID_WIDGET + id, text, (svgCode: string) => {
-        rendererRef.current!.innerHTML = svgCode;
-      });
+      try {
+        mermaid.render(MERMAID_WIDGET + id, text, (svgCode: string) => {
+          rendererRef.current!.innerHTML = svgCode;
+        });
+      }
+      catch (e) {
+        console.log("Mermaid failed to render: ", e)
+      }
     }
   };
 
