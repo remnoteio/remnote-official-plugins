@@ -10,7 +10,7 @@ import "../style.css";
 import { tryCreateWikiExtractURL } from "../lib/wikipedia";
 import { remIdKey, locationKey } from "../lib/constants";
 
-let timer: number;
+let timer: NodeJS.Timeout;
 let openWidgetInfo: { floatingWidgetId: string; remId: string } | undefined;
 let renderLocation: WidgetLocation;
 
@@ -50,7 +50,7 @@ async function onActivate(plugin: ReactRNPlugin) {
   await plugin.settings.registerDropdownSetting({
     id: locationKey,
     title: "Render Location",
-    defaultValue: WidgetLocation.RemReferencePopupRight,
+    defaultValue: WidgetLocation.FloatingWidget,
     options: [
       {
         key: "0",
@@ -82,6 +82,7 @@ async function onActivate(plugin: ReactRNPlugin) {
   plugin.event.addListener(AppEvents.MouseOverLink, undefined, (args) => {
     clearTimeout(timer);
     timer = setTimeout(async () => {
+      debugger;
       if (renderLocation !== WidgetLocation.FloatingWidget) {
         return;
       }
