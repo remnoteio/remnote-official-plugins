@@ -29,23 +29,45 @@ const CSS = `
 }
 `;
 
+const HIDE_IN_QUEUE_POWERUP_CODE = "hideInQueue";
+const REMOVE_FROM_QUEUE_POWERUP_CODE = "removeFromQueue";
+
 async function onActivate(plugin: ReactRNPlugin) {
   await plugin.app.registerPowerup(
     "Hide in Queue",
-    "hideInQueue",
+    HIDE_IN_QUEUE_POWERUP_CODE,
     "Hides the tagged Rem in the queue view.",
     {
       slots: [],
     }
   );
+
+  await plugin.app.registerCommand({
+    id: `${HIDE_IN_QUEUE_POWERUP_CODE}Cmd`,
+    name: "Hide in Queue",
+    action: async () => {
+      const rem = await plugin.focus.getFocusedRem();
+      await rem?.addPowerup(HIDE_IN_QUEUE_POWERUP_CODE);
+    },
+  });
+
   await plugin.app.registerPowerup(
     "Remove from Queue",
-    "removeFromQueue",
+    REMOVE_FROM_QUEUE_POWERUP_CODE,
     "Removes the tagged Rem in the queue view.",
     {
       slots: [],
     }
   );
+
+  await plugin.app.registerCommand({
+    id: `${REMOVE_FROM_QUEUE_POWERUP_CODE}Cmd`,
+    name: "Remove from Queue",
+    action: async () => {
+      const rem = await plugin.focus.getFocusedRem();
+      await rem?.addPowerup(REMOVE_FROM_QUEUE_POWERUP_CODE);
+    },
+  });
 
   await plugin.app.registerCSS("powerup", CSS);
 }
