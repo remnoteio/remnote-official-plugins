@@ -31,8 +31,27 @@ const CSS = `
 
 const HIDE_IN_QUEUE_POWERUP_CODE = "hideInQueue";
 const REMOVE_FROM_QUEUE_POWERUP_CODE = "removeFromQueue";
+const NO_HIERARCHY_POWERUP_CODE = "noHierarchy";
 
 async function onActivate(plugin: ReactRNPlugin) {
+  await plugin.app.registerPowerup(
+    "No Hierarchy",
+    NO_HIERARCHY_POWERUP_CODE,
+    "Removes the ancestor hierarchy of the tagged Rem in the queue view.",
+    {
+      slots: [],
+    }
+  );
+
+  await plugin.app.registerCommand({
+    id: `${NO_HIERARCHY_POWERUP_CODE}Cmd`,
+    name: "No Hierarchy",
+    action: async () => {
+      const rem = await plugin.focus.getFocusedRem();
+      await rem?.addPowerup(NO_HIERARCHY_POWERUP_CODE);
+    },
+  });
+
   await plugin.app.registerPowerup(
     "Hide in Queue",
     HIDE_IN_QUEUE_POWERUP_CODE,
