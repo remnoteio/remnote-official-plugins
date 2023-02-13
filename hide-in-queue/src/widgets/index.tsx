@@ -1,4 +1,8 @@
-import { declareIndexPlugin, ReactRNPlugin } from "@remnote/plugin-sdk";
+import {
+  declareIndexPlugin,
+  ReactRNPlugin,
+  SelectionType,
+} from "@remnote/plugin-sdk";
 import "../style.css";
 
 const CSS = `
@@ -43,12 +47,26 @@ async function onActivate(plugin: ReactRNPlugin) {
     }
   );
 
+  const runAddPowerupCommand = async (powerup: string) => {
+    const sel = await plugin.editor.getSelection();
+    const selType = sel?.type;
+    if (!selType) {
+      return;
+    }
+    if (selType === SelectionType.Rem) {
+      const rems = (await plugin.rem.findMany(sel.remIds)) || [];
+      rems.forEach((r) => r.addPowerup(powerup));
+    } else {
+      const rem = await plugin.rem.findOne(sel.remId);
+      rem?.addPowerup(powerup);
+    }
+  };
+
   await plugin.app.registerCommand({
     id: `${NO_HIERARCHY_POWERUP_CODE}Cmd`,
     name: "No Hierarchy",
     action: async () => {
-      const rem = await plugin.focus.getFocusedRem();
-      await rem?.addPowerup(NO_HIERARCHY_POWERUP_CODE);
+      await runAddPowerupCommand(NO_HIERARCHY_POWERUP_CODE);
     },
   });
 
@@ -65,8 +83,7 @@ async function onActivate(plugin: ReactRNPlugin) {
     id: `${HIDE_IN_QUEUE_POWERUP_CODE}Cmd`,
     name: "Hide in Queue",
     action: async () => {
-      const rem = await plugin.focus.getFocusedRem();
-      await rem?.addPowerup(HIDE_IN_QUEUE_POWERUP_CODE);
+      await runAddPowerupCommand(HIDE_IN_QUEUE_POWERUP_CODE);
     },
   });
 
@@ -83,8 +100,7 @@ async function onActivate(plugin: ReactRNPlugin) {
     id: `${REMOVE_FROM_QUEUE_POWERUP_CODE}Cmd`,
     name: "Remove from Queue",
     action: async () => {
-      const rem = await plugin.focus.getFocusedRem();
-      await rem?.addPowerup(REMOVE_FROM_QUEUE_POWERUP_CODE);
+      await runAddPowerupCommand(REMOVE_FROM_QUEUE_POWERUP_CODE);
     },
   });
 
