@@ -18,8 +18,16 @@
         padding: 0.5rem;
         margin-top: 0.5rem;
         margin-bottom: 0.5rem;
+        margin-left: 1.6rem;
         [data-rem-tags~="mermaid"] {
             background-color: $mermaid-input;
+            > .rn-editor__rem__body__text,
+            > div > .rn-editor__rem__body__text {
+                min-height: 2rem;
+            }
+            .rem-button__container {
+                left: -5.2rem;
+            }
             .hierarchy-editor__tag-bar__tag {
                 display: none;
             }
@@ -34,6 +42,20 @@
             &.rem-container--focused {
                 #code-node {
                     display: block;
+                }
+            }
+        }
+    }
+    [data-document-tags~="mermaid"] {
+        .rn-doc-title {
+            #code-node {
+                font-size: 1rem;
+            }
+        }
+        [data-rem-container-tags~="mermaid"] {
+            > div {
+                > div:first-child {
+                    display: none;
                 }
             }
         }
