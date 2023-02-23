@@ -53,7 +53,7 @@ async function onActivate(plugin: ReactRNPlugin) {
       // We use a small setTimeout delay to make sure the queue and show answer
       // button have finished rendering before trying to show the popup.
       setTimeout(() => {
-        showDoggo(plugin, { top: -180 }, "rn-queue__show-answer-btn");
+        showDoggo(plugin, { top: -180, left: 0 }, "rn-queue__show-answer-btn");
       }, 25);
     }
   });
