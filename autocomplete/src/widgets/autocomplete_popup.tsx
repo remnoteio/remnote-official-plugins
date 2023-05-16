@@ -221,7 +221,7 @@ function AutocompletePopup() {
               idx === selectedIdx && "rn-clr-background--hovered"
             )}
             onMouseEnter={() => setSelectedIdx(idx)}
-            onClick={() => insertWord(idx)}
+            onMouseDown={() => insertWord(idx)}
           >
             {word}
           </div>
