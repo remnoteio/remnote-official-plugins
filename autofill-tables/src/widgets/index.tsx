@@ -30,7 +30,7 @@ async function onActivate(plugin: ReactRNPlugin) {
 
       if (!openAIKey) {
         plugin.app.toast(
-          "Go to Settings>Plugins Settings and add your OpenAI Key"
+          "Go to the Top Left Menu > Settings > Plugins Settings and add your OpenAI Key."
         );
       } else {
         console.log("Args", args, openAIKey);

@@ -4,6 +4,12 @@
 
 ![](https://i.imgur.com/5WGICko.mp4)
 
+## Installation
+
+This plugin uses OpenAI's API (similar to ChatGPT).
+Go to https://platform.openai.com/account/api-keys and get your secret key.
+Then, go to the top-left menu, Settings > Plugins Settings and add your OpenAI Key
+
 ## How to Use
 
 1. Create a table, and ensure that you:
