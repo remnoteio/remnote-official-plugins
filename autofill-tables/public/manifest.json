@@ -1,0 +1,26 @@
+{
+  "manifestVersion": 1,
+  "id": "demo_autofill_tables",
+  "name": "Autofill Tables",
+  "author": "RemNote",
+  "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
+  "enableOnMobile": false,
+  "version": {
+    "major": 0,
+    "minor": 2,
+    "patch": 6
+  },
+  "minimumRemNoteVersion": {
+    "major": 1,
+    "minor": 8,
+    "patch": 18
+  },
+  "description": "Autofill table cells.",
+  "requestNative": true,
+  "requiredScopes": [
+    {
+      "type": "All",
+      "level": "ReadCreateModify"
+    }
+  ]
+}

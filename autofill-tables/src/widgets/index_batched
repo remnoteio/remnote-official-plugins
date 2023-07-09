@@ -1,0 +1,157 @@
+import {
+  PluginCommandMenuLocation,
+  ReactRNPlugin,
+  RemId,
+  declareIndexPlugin,
+} from "@remnote/plugin-sdk";
+import { Configuration, OpenAIApi } from "openai";
+import _ from "underscore";
+
+const openAIKeySettingId = "openAIKey";
+
+async function onActivate(plugin: ReactRNPlugin) {
+  console.log("onActivate", plugin.app);
+
+  await plugin.settings.registerStringSetting({
+    id: openAIKeySettingId,
+    title: "OpenAI Key",
+    description:
+      "This plugin uses OpenAI's API (similar to ChatGPT). Go to https://platform.openai.com/account/api-keys and get your secret key.",
+  });
+
+  await plugin.app.registerMenuItem({
+    id: "autofill",
+    name: "AI Autofill",
+    location: PluginCommandMenuLocation.PropertyConfigMenu,
+    action: async (args: { rowIds: RemId[]; columnPropertyId: RemId }) => {
+      const openAIKey: string | undefined = await plugin.settings.getSetting(
+        openAIKeySettingId
+      );
+
+      if (!openAIKey) {
+        plugin.app.toast(
+          "Go to Settings>Plugins Settings and add your OpenAI Key"
+        );
+      } else {
+        console.log("Args", args, openAIKey);
+        const allRows = (await plugin.rem.findMany(args.rowIds)) || [];
+
+        const property = await plugin.rem.findOne(args.columnPropertyId);
+        const propertyText = await plugin.richText.toString(
+          property?.text ?? []
+        );
+
+        const tableText = await plugin.richText.toString(
+          (await property?.getParentRem())?.text ?? []
+        );
+
+        if (property && propertyText) {
+          const rowsEmpty = await Promise.all(
+            allRows.map(async (row) => {
+              const currentValue = await row.getTagPropertyValue(
+                args.columnPropertyId
+              );
+              return await plugin.richText.empty(currentValue ?? []);
+            })
+          );
+
+          const emptyRows = _.zip(allRows, rowsEmpty)
+            .filter(([row, rowEmpty]) => rowEmpty)
+            .map(([row, rowEmpty]) => row);
+
+          const rowTexts = await Promise.all(
+            emptyRows.map(
+              async (row) => await plugin.richText.toString(row.text ?? [])
+            )
+          );
+
+          const values = await promptMultipleAI(
+            openAIKey,
+            `
+You're filling out a cell in a table.
+Always try to guess something that seems relevant and useful.
+Print only the value of the table cell, and nothing else.
+Don't output the property again.`,
+            _.zip(allRows, rowTexts).map(
+              ([row, rowText]) =>
+                `For a ${tableText} named ${rowText}, output the property for ${propertyText}.`
+            )
+          );
+
+          console.log("values", emptyRows, rowTexts, values);
+
+          await Promise.all(
+            _.zip(emptyRows, values).map(async ([row, value]) => {
+              // console.log("Row", row, row.text, property.text);
+
+              // console.log("value", value);
+
+              await row.setTagPropertyValue(args.columnPropertyId, [value]);
+            })
+          );
+        } else {
+          plugin.app.toast("Give your column a name.");
+        }
+      }
+    },
+  });
+}
+
+async function promptAI(
+  openAIKey: string,
+  systemPrompt: string,
+  userPrompt: string
+): Promise<string> {
+  const configuration = new Configuration({
+    apiKey: openAIKey,
+  });
+  const openai = new OpenAIApi(configuration);
+
+  const chatCompletion = await openai.createChatCompletion({
+    model: "gpt-3.5-turbo",
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+  });
+  console.log(systemPrompt, userPrompt, chatCompletion.data.choices[0].message);
+
+  return chatCompletion.data.choices[0].message?.content!;
+}
+
+async function promptMultipleAI(
+  openAIKey: string,
+  systemPrompt: string,
+  userPrompts: string[]
+): Promise<string[]> {
+  const configuration = new Configuration({
+    apiKey: openAIKey,
+  });
+  const openai = new OpenAIApi(configuration);
+
+  const messages = {
+    model: "gpt-3.5-turbo",
+    messages: [
+      { role: "system", content: systemPrompt },
+      ...userPrompts.map((userPrompt) => ({
+        role: "user",
+        content: userPrompt,
+      })),
+    ],
+  };
+  const chatCompletion = await openai.createChatCompletion(messages);
+  console.log(
+    "chatCompletion",
+    messages,
+    systemPrompt,
+    userPrompts,
+    chatCompletion.data.choices[0].message,
+    chatCompletion
+  );
+
+  return chatCompletion.data.choices.map((x) => x.message?.content!);
+}
+
+async function onDeactivate(_: ReactRNPlugin) {}
+
+declareIndexPlugin(onActivate, onDeactivate);
