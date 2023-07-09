@@ -10,7 +10,7 @@ import { Configuration, OpenAIApi } from "openai";
 const openAIKeySettingId = "openAIKey";
 
 async function onActivate(plugin: ReactRNPlugin) {
-  console.log("onActivate", plugin.app);
+  // console.log("onActivate", plugin.app);
 
   await plugin.settings.registerStringSetting({
     id: openAIKeySettingId,
@@ -33,7 +33,7 @@ async function onActivate(plugin: ReactRNPlugin) {
           "Go to the Top Left Menu > Settings > Plugins Settings and add your OpenAI Key."
         );
       } else {
-        console.log("Args", args, openAIKey);
+        // console.log("Args", args, openAIKey);
         const rows = (await plugin.rem.findMany(args.rowIds)) || [];
 
         const property = await plugin.rem.findOne(args.columnPropertyId);
@@ -70,7 +70,7 @@ async function onActivate(plugin: ReactRNPlugin) {
               "\n"
             : "";
 
-        console.log("propertyTypePrompt", propertyTypePrompt);
+        // console.log("propertyTypePrompt", propertyTypePrompt);
 
         if (propertyText) {
           await Promise.all(
@@ -80,7 +80,7 @@ async function onActivate(plugin: ReactRNPlugin) {
               );
 
               if (await plugin.richText.empty(currentValue ?? [])) {
-                console.log("Row", row, row.text, property.text);
+                // console.log("Row", row, row.text, property.text);
                 const rowText = await plugin.richText.toString(row.text ?? []);
 
                 const value = await promptAI(
@@ -99,7 +99,7 @@ Rule: Don't output the exact text "${propertyText}".`,
                   // Column Name: ${propertyText}`
                 );
 
-                console.log("value", value);
+                // console.log("value", value);
 
                 await row.setTagPropertyValue(args.columnPropertyId, [value]);
               }
@@ -130,7 +130,7 @@ async function promptAI(
       { role: "user", content: userPrompt },
     ],
   });
-  console.log(systemPrompt, userPrompt, chatCompletion.data.choices[0].message);
+  // console.log(systemPrompt, userPrompt, chatCompletion.data.choices[0].message);
 
   return chatCompletion.data.choices[0].message?.content!;
 }
