@@ -1,20 +1,16 @@
 ## Features
 
-- Absolute pane focusing mode - use hotkeys to focus a pane by its pane number, which is displayed in the pane header.
-- Pane zoom mode (aka Monocle Mode) - toggle between a single fullscreen pane and multiple panes.
+- Use AI to autofill cells in tables!
 
-![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/images/window-manager.gif)
-
-Note: The Window Manager plugin does not currently work perfectly alongside the Tabs plugin. This will be fixed in a future update.
+![](https://i.imgur.com/5WGICko.mp4)
 
 ## How to Use
 
-- In multiple panes mode you can press alt+number to focus a particular pane.
-  - Note that the numbers in the pane header only show when you press the alt/opt key.
-- You can also press alt/opt+shift+m to "zoom" in to a particular pane.
-- In pane zoom mode you can use alt+number to focus a particular pane, alt/opt+pageup/pagedown to focus the next/previous pane or click on the tabs.
-- To restore your layout to the multiple panes view, press alt/opt+shift+m again.
-- Keyboard shortcuts can be customised.
+1. Create a table, and ensure that you:
+   1. Give your table a name
+   1. Fill out the "Name" column
+   1. Name your column
+1. Click on a column and press 'AI Autofill'.
 
 ## Developers
 

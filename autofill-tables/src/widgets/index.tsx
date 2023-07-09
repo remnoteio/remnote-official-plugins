@@ -58,15 +58,16 @@ async function onActivate(plugin: ReactRNPlugin) {
 
         const propertyTypePrompt =
           propertyType == PropertyType.CHECKBOX
-            ? "You MUST output only the single word Yes or No."
+            ? "Rule: You MUST output only the single word Yes or No."
             : propertyType == PropertyType.NUMBER
-            ? "You MUST output a number."
+            ? "Rule: You MUST output a number."
             : propertyType == PropertyType.SINGLE_SELECT ||
               propertyText == PropertyType.MULTI_SELECT
-            ? "You MUST output only a single one of these options: " +
+            ? "Rule: You MUST output only a single one of these options:" +
               propertyOptionsText
-                .map((option) => replaceAll(option, ",", ""))
-                .join(", ")
+                .map((option) => "\n - " + replaceAll(option, ",", ""))
+                .join(", ") +
+              "\n"
             : "";
 
         console.log("propertyTypePrompt", propertyTypePrompt);
@@ -85,11 +86,13 @@ async function onActivate(plugin: ReactRNPlugin) {
                 const value = await promptAI(
                   openAIKey,
                   `
-You're filling out a cell in a table.
-Always try to guess something that seems relevant and useful.
-Print only the value of the table cell, and nothing else.
+Your Goal: You're filling out a cell in a table.
+Rule: Always try to guess something that seems relevant and useful.
+Rule: Print only the value of the table cell, and nothing else.
+Rule: Start each response with a capital letter. 
+Rule: Do not include any punctuation.
 ${propertyTypePrompt}
-Don't output the word ${propertyText}.`,
+Rule: Don't output the exact text "${propertyText}".`,
                   `For a ${tableText} named ${rowText}, output the property for ${propertyText}.` //                 `
                   // Table Name: ${tableText}
                   // Row Name: ${rowText}
