@@ -25,7 +25,8 @@ import isURL from "isurl";
 function AutocompletePopup() {
   const plugin = usePlugin();
   const ctx = useRunAsync(
-    async () => await plugin.widget.getWidgetContext<WidgetLocation.FloatingWidget>(),
+    async () =>
+      await plugin.widget.getWidgetContext<WidgetLocation.FloatingWidget>(),
     []
   );
 
@@ -176,26 +177,33 @@ function AutocompletePopup() {
     // intentionally non-reactive
     const sel = await plugin.editor.getSelection();
     // don't open autocomplete popup if the user is writing a reference or tag
-    if (!sel
-      || !editorText
-      || sel.type === SelectionType.Rem
-      || sel.range.start !== sel.range.end
-      || editorText.some(x => x["workInProgressTag"] || x["workInProgressRem"])
-     ) {
+    if (
+      !sel ||
+      !editorText ||
+      sel.type === SelectionType.Rem ||
+      sel.range.start !== sel.range.end ||
+      editorText.some(
+        (x) =>
+          x["workInProgressTag"] ||
+          x["workInProgressRem"] ||
+          x["workInProgressPortal"] ||
+          x["workInProgressTemplate"]
+      )
+    ) {
       return;
     }
     const prevLine = await plugin.richText.toString(
       await plugin.richText.substring(editorText, 0, sel.range.start)
     );
     // don't match slash command
-    const lpwMatch = prevLine?.match(/\b(\w+)$/)
-    const idx = lpwMatch?.index
-    if (idx && prevLine[idx - 1] === '/') {
+    const lpwMatch = prevLine?.match(/\b(\w+)$/);
+    const idx = lpwMatch?.index;
+    if (idx && prevLine[idx - 1] === "/") {
       return;
     }
     const lpw = lpwMatch?.[0]?.toLowerCase().trim();
     setLastPartialWord(lpw);
-  }) 
+  });
 
   const [selectedIdx, setSelectedIdx] = R.useState(0);
 
@@ -210,7 +218,7 @@ function AutocompletePopup() {
       <div
         className={clsx(
           "flex flex-col content-start gap-[0.5] w-full box-border p-2",
-          "rounded-lg rn-clr-background-primary rn-clr-content-primary shadow-md border border-gray-100",
+          "rounded-lg rn-clr-background-primary rn-clr-content-primary shadow-md border border-gray-100"
         )}
       >
         {autocompleteSuggestions.map((word, idx) => (

@@ -3,6 +3,7 @@ import {
   declareIndexPlugin,
   ReactRNPlugin,
   AppEvents,
+  SelectionType,
 } from "@remnote/plugin-sdk";
 import "../style.css";
 import {
@@ -22,7 +23,6 @@ async function onActivate(plugin: ReactRNPlugin) {
       dimensions: { height: "auto", width: "250px" },
     }
   );
-
   // The floating widget hotkey system currently uses
   // a different hotkey system than the regular hotkey
   // system because it needs to 'steal' hotkeys like
@@ -75,6 +75,7 @@ async function onActivate(plugin: ReactRNPlugin) {
 }
 
 async function onDeactivate(plugin: ReactRNPlugin) {
+  console.log("deactivate autocomplete")
 }
 
 declareIndexPlugin(onActivate, onDeactivate);
