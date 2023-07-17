@@ -5,9 +5,26 @@ import {
   RemId,
   declareIndexPlugin,
 } from "@remnote/plugin-sdk";
-import { Configuration, OpenAIApi } from "openai";
+import {
+  ChatCompletionFunctions,
+  ChatCompletionRequestMessage,
+  Configuration,
+  OpenAIApi,
+} from "openai";
 
 const openAIKeySettingId = "openAIKey";
+
+async function findFirstAsync<T>(
+  array: T[],
+  predicate: (item: T) => Promise<boolean>
+): Promise<T | undefined> {
+  for (const item of array) {
+    if (await predicate(item)) {
+      return item;
+    }
+  }
+  return undefined;
+}
 
 async function onActivate(plugin: ReactRNPlugin) {
   // console.log("onActivate", plugin.app);
@@ -33,18 +50,14 @@ async function onActivate(plugin: ReactRNPlugin) {
           "Go to the Top Left Menu > Settings > Plugins Settings and add your OpenAI Key."
         );
       } else {
-        // console.log("Args", args, openAIKey);
         const rows = (await plugin.rem.findMany(args.rowIds)) || [];
-
         const property = await plugin.rem.findOne(args.columnPropertyId);
-        if (!property) return;
+        if (!property || rows.length === 0) return;
 
         const propertyText = await plugin.richText.toString(
-          property?.text ?? []
+          property.text ?? []
         );
-
         const propertyType = await property.getPropertyType();
-
         const propertyOptions = await property.getChildrenRem();
         const propertyOptionsText = await Promise.all(
           await propertyOptions.map(
@@ -52,27 +65,40 @@ async function onActivate(plugin: ReactRNPlugin) {
           )
         );
 
-        const tableText = await plugin.richText.toString(
+        const tableName = await plugin.richText.toString(
           (await property?.getParentRem())?.text ?? []
         );
 
         const propertyTypePrompt =
           propertyType == PropertyType.CHECKBOX
-            ? "Rule: You MUST output only the single word Yes or No."
+            ? { type: "boolean" }
             : propertyType == PropertyType.NUMBER
-            ? "Rule: You MUST output a number."
-            : propertyType == PropertyType.SINGLE_SELECT ||
-              propertyText == PropertyType.MULTI_SELECT
-            ? "Rule: You MUST output only a single one of these options:" +
-              propertyOptionsText
-                .map((option) => "\n - " + replaceAll(option, ",", ""))
-                .join(", ") +
-              "\n"
-            : "";
-
-        // console.log("propertyTypePrompt", propertyTypePrompt);
+            ? { type: "number" }
+            : propertyType == PropertyType.SINGLE_SELECT
+            ? { type: "string", enum: propertyOptionsText }
+            : propertyType == PropertyType.MULTI_SELECT
+            ? { type: "array", enum: propertyOptionsText }
+            : { type: "string" };
 
         if (propertyText) {
+          // try to find a row that already has a value
+          // to use in the prompt to guide the AI
+
+          const filledRow = await findFirstAsync(rows, async (row) => {
+            const value = await row.getTagPropertyValue(args.columnPropertyId);
+            return value ? !(await plugin.richText.empty(value)) : false;
+          });
+          const filledRowText = await plugin.richText.toString(
+            filledRow?.text ?? []
+          );
+          const filledRowColumnValue = await filledRow?.getTagPropertyValue(
+            args.columnPropertyId
+          );
+          const fakeCSV = `
+name,${propertyText}
+${filledRowText ? `${filledRowText},${filledRowColumnValue}` : ""}
+`.trim();
+
           await Promise.all(
             rows.map(async (row) => {
               const currentValue = await row.getTagPropertyValue(
@@ -80,28 +106,41 @@ async function onActivate(plugin: ReactRNPlugin) {
               );
 
               if (await plugin.richText.empty(currentValue ?? [])) {
-                // console.log("Row", row, row.text, property.text);
                 const rowText = await plugin.richText.toString(row.text ?? []);
+                if (!rowText.trim()) {
+                  return;
+                }
 
-                const value = await promptAI(
+                const response = await promptAI(
                   openAIKey,
-                  `
-Your Goal: You're filling out a cell in a table.
-Rule: Always try to guess something that seems relevant and useful.
-Rule: Print only the value of the table cell, and nothing else.
-Rule: Start each response with a capital letter. 
-Rule: Do not include any punctuation.
-${propertyTypePrompt}
-Rule: Don't output the exact text "${propertyText}".`,
-                  `For a ${tableText} named ${rowText}, output the property for ${propertyText}.` //                 `
-                  // Table Name: ${tableText}
-                  // Row Name: ${rowText}
-                  // Column Name: ${propertyText}`
+                  [
+                    {
+                      role: "system",
+                      content: `Please complete the final row of the "${
+                        tableName + ".csv"
+                      }" CSV table:
+${fakeCSV}
+${rowText},`,
+                    },
+                  ],
+                  [
+                    {
+                      name: "complete_row",
+                      description: "Complete the final row of the CSV table.",
+                      parameters: {
+                        type: "object",
+                        properties: {
+                          [propertyText]: propertyTypePrompt,
+                        },
+                      },
+                    },
+                  ]
                 );
 
-                // console.log("value", value);
-
-                await row.setTagPropertyValue(args.columnPropertyId, [value]);
+                const value = response?.[propertyText];
+                if (value) {
+                  await row.setTagPropertyValue(args.columnPropertyId, [value]);
+                }
               }
             })
           );
@@ -115,9 +154,9 @@ Rule: Don't output the exact text "${propertyText}".`,
 
 async function promptAI(
   openAIKey: string,
-  systemPrompt: string,
-  userPrompt: string
-): Promise<string> {
+  messages: ChatCompletionRequestMessage[],
+  functions: ChatCompletionFunctions[]
+): Promise<Record<string, any> | null> {
   const configuration = new Configuration({
     apiKey: openAIKey,
   });
@@ -125,14 +164,22 @@ async function promptAI(
 
   const chatCompletion = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt },
-    ],
+    messages,
+    functions,
+    function_call: {
+      // forces the AI to use the function we defined
+      name: "complete_row",
+    },
   });
-  // console.log(systemPrompt, userPrompt, chatCompletion.data.choices[0].message);
 
-  return chatCompletion.data.choices[0].message?.content!;
+  try {
+    return `function_call` in chatCompletion
+      ? JSON.parse(chatCompletion["function_call"]?.["arguments"])
+      : null;
+  } catch (e) {
+    console.log("error", e);
+    return null;
+  }
 }
 
 async function onDeactivate(_: ReactRNPlugin) {}
