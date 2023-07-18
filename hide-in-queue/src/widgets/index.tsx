@@ -38,12 +38,20 @@ const CSS = `
   left: 25px;
 }
 
+.rn-breadcrumb-item[data-rem-tags~="hide-in-queue"] {
+  opacity: 0;
+}
+
 .rn-queue__content--answer-hidden [data-queue-rem-container-tags~="remove-from-queue"]:not(.rn-question-rem) > .rn-queue-rem {
   display: none;
 }
 
 .rn-queue__content--answer-hidden [data-queue-rem-container-tags~="remove-from-queue"]:not(.rn-question-rem) {
   margin-left: 0px !important;
+}
+
+.rn-breadcrumb-item[data-rem-tags~="remove-from-queue"] {
+  opacity: 0;
 }
 
 .rn-queue__content:has(.rn-question-rem[data-queue-rem-container-tags~="no-hierarchy"]) .indented-rem:not(.rn-question-rem) {
