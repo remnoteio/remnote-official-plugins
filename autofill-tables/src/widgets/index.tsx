@@ -160,6 +160,8 @@ async function promptAI(
   const configuration = new Configuration({
     apiKey: openAIKey,
   });
+  // circumvent unsafe header error
+  delete configuration.baseOptions.headers["User-Agent"];
   const openai = new OpenAIApi(configuration);
 
   const chatCompletion = await openai.createChatCompletion({
@@ -172,10 +174,11 @@ async function promptAI(
     },
   });
 
+  const fnCall =
+    chatCompletion?.data?.["choices"]?.[0]?.message?.["function_call"];
+
   try {
-    return `function_call` in chatCompletion
-      ? JSON.parse(chatCompletion["function_call"]?.["arguments"])
-      : null;
+    return fnCall ? JSON.parse(fnCall?.["arguments"] || "") : null;
   } catch (e) {
     console.log("error", e);
     return null;
