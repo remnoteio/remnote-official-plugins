@@ -2,7 +2,7 @@
 
 - Use AI to autofill cells in tables!
 
-![](https://i.imgur.com/5WGICko.mp4)
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/autofill-tables/images/tables.gif)
 
 ## Installation
 
