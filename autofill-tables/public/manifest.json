@@ -1,14 +1,14 @@
 {
   "manifestVersion": 1,
   "id": "demo_autofill_tables",
-  "name": "Autofill Tables",
+  "name": "AI Autofill Tables",
   "author": "RemNote",
   "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
   "enableOnMobile": false,
   "version": {
     "major": 0,
     "minor": 2,
-    "patch": 7
+    "patch": 9
   },
   "minimumRemNoteVersion": {
     "major": 1,
