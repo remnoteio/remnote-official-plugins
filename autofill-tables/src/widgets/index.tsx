@@ -140,6 +140,10 @@ ${rowText},`,
                 const value = response?.[propertyText];
                 if (value) {
                   await row.setTagPropertyValue(args.columnPropertyId, [value]);
+                } else {
+                  await plugin.app.toast(
+                    `No value returned by AI for row "${rowText}. Try providing one row with a value to guide the AI.`
+                  );
                 }
               }
             })
@@ -173,6 +177,8 @@ async function promptAI(
       name: "complete_row",
     },
   });
+
+  console.log("openai messages", messages);
 
   const fnCall =
     chatCompletion?.data?.["choices"]?.[0]?.message?.["function_call"];
