@@ -15,7 +15,7 @@
     ]
   },
   "dependencies": {
-    "@remnote/plugin-sdk": "0.0.9",
+    "@remnote/plugin-sdk": "0.0.30",
     "@types/is-url": "^1.2.30",
     "@types/mustache": "^4.1.2",
     "babel-loader": "^8.2.3",
