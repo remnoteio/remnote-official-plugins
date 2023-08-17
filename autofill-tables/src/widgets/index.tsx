@@ -77,7 +77,13 @@ async function onActivate(plugin: ReactRNPlugin) {
             : propertyType == PropertyType.SINGLE_SELECT
             ? { type: "string", enum: propertyOptionsText }
             : propertyType == PropertyType.MULTI_SELECT
-            ? { type: "array", enum: propertyOptionsText }
+            ? {
+                type: "array",
+                items: {
+                  enum: propertyOptionsText,
+                  type: "string",
+                },
+              }
             : { type: "string" };
 
         if (propertyText) {
