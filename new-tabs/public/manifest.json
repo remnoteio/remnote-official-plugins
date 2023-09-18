@@ -4,10 +4,10 @@
   "name": "Tabs",
   "author": "RemNote",
   "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
-  "enableOnMobile": true,
+  "enableOnMobile": false,
   "version": {
     "major": 0,
-    "minor": 32,
+    "minor": 33,
     "patch": 1
   },
   "minimumRemNoteVersion": {
