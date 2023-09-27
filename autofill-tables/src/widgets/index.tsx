@@ -4,6 +4,7 @@ import {
   ReactRNPlugin,
   RemId,
   declareIndexPlugin,
+  RNPlugin,
 } from "@remnote/plugin-sdk";
 import {
   ChatCompletionFunctions,
@@ -118,6 +119,7 @@ ${filledRowText ? `${filledRowText},${filledRowColumnValue}` : ""}
                 }
 
                 const response = await promptAI(
+                  plugin,
                   openAIKey,
                   [
                     {
@@ -163,6 +165,7 @@ ${rowText},`,
 }
 
 async function promptAI(
+  plugin: RNPlugin,
   openAIKey: string,
   messages: ChatCompletionRequestMessage[],
   functions: ChatCompletionFunctions[]
@@ -193,6 +196,7 @@ async function promptAI(
     return fnCall ? JSON.parse(fnCall?.["arguments"] || "") : null;
   } catch (e) {
     console.log("error", e);
+    plugin.app.toast("Error sending OpenAI request: " + (e as any).message);
     return null;
   }
 }
