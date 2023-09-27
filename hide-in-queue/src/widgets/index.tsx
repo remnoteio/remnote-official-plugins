@@ -7,14 +7,17 @@ import "../style.css";
 
 const CSS = `
 .rn-queue__content--answer-hidden [data-queue-rem-container-tags~="hide-in-queue"]:not(.rn-question-rem) > .rn-queue-rem > .RichTextViewer{
+  opacity: 0;
   visibility: hidden;
 }
 
 .rn-queue__content--answer-hidden [data-queue-rem-container-tags~="hide-in-queue"]:not(.rn-question-rem) > .rn-flashcard-delimiter {
+  opacity: 0;
   visibility: hidden;
 } 
 
 .rn-queue__content--answer-hidden [data-queue-rem-container-tags~="hide-in-queue"]:not(.rn-question-rem) > .RichTextViewer {
+  opacity: 0;
   visibility: hidden;
 } 
 
