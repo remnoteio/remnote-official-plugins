@@ -140,10 +140,12 @@ function AutocompletePopup() {
       const allWordsAsString = await plugin.richText.toString(
         allWordsAsRichText
       );
+
       const matchingWords = Re.pipe(
         allWordsAsString,
         // remove punctuation at word boundaries
-        (s: string) => s?.replace(/\b[^\w\s]+\B|\B[^\w\s]+\b/g, ""),
+        (s: string) =>
+          s?.replace(/\b[^\p{L}\p{N}\s]+\B|\B[^\p{L}\p{N}\s]+\b/gu, ""),
         // split on whitespace
         (s: string) => s?.split(/(\s+)/) || [],
         Re.filter((word) => {
