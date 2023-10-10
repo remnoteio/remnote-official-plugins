@@ -8,7 +8,6 @@ import {
   useTracker,
   WidgetLocation,
   SelectionType,
-  RICH_TEXT_FORMATTING,
 } from "@remnote/plugin-sdk";
 import * as R from "react";
 import clsx from "clsx";
@@ -197,13 +196,19 @@ function AutocompletePopup() {
     const prevLine = await plugin.richText.toString(
       await plugin.richText.substring(editorText, 0, sel.range.start)
     );
+    console.log("prevLine", prevLine);
+    // (?:^|\W) unicode word boundary
+    // [\p{L}\p{N}\d_]+ unicode word
+    const lastPartialWordMatch = prevLine?.match(
+      /(?:^|\W)([\p{L}\p{N}\d_]+)$/gu
+    );
+    console.log("lastPartialWordMatch", lastPartialWordMatch);
+    const idx = lastPartialWordMatch?.index;
     // don't match slash command
-    const lpwMatch = prevLine?.match(/\b(\w+)$/);
-    const idx = lpwMatch?.index;
-    if (idx && prevLine[idx - 1] === "/") {
+    if (idx !== undefined && idx > -1 && prevLine[idx - 1] === "/") {
       return;
     }
-    const lpw = lpwMatch?.[0]?.toLowerCase().trim();
+    const lpw = lastPartialWordMatch?.[0]?.toLowerCase().trim();
     setLastPartialWord(lpw);
   });
 
