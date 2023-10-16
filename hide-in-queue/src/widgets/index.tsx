@@ -64,6 +64,14 @@ const CSS = `
 .rn-queue__content:has(.rn-question-rem[data-queue-rem-container-tags~="no-hierarchy"]) .indented-rem:not(.rn-question-rem) > .rn-queue-rem {
   display: none;
 }
+
+.rn-queue__content:has(.indented-rem[data-queue-rem-container-tags~="delete-hierarchies"]) .indented-rem:not(.rn-question-rem) {
+  margin-left: 0px !important;
+}
+
+.rn-queue__content:has(.indented-rem[data-queue-rem-container-tags~="delete-hierarchies"]) .indented-rem:not(.rn-question-rem) > .rn-queue-rem {
+  display: none;
+}
 `;
 
 const HIDE_IN_QUEUE_POWERUP_CODE = "hideInQueue";
@@ -124,6 +132,22 @@ async function onActivate(plugin: ReactRNPlugin) {
     "Remove from Queue",
     REMOVE_FROM_QUEUE_POWERUP_CODE,
     "Removes the tagged Rem in the queue view.",
+    {
+      slots: [],
+    }
+  );
+  await plugin.app.registerPowerup(
+    "No hierarchy",
+    "noHierarchy",
+    "Hierarchy will not appear in rems tagged with this tag.",
+    {
+      slots: [],
+    }
+  );
+  await plugin.app.registerPowerup(
+    "Delete Hierarchies",
+    "deleteHierarchies,
+    "If any hierarchy is tagged with this, no hierarchy will appear on any flashcards below it.",
     {
       slots: [],
     }
