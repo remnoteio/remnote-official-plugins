@@ -196,13 +196,11 @@ function AutocompletePopup() {
     const prevLine = await plugin.richText.toString(
       await plugin.richText.substring(editorText, 0, sel.range.start)
     );
-    console.log("prevLine", prevLine);
     // (?:^|\W) unicode word boundary
     // [\p{L}\p{N}\d_]+ unicode word
     const lastPartialWordMatch = prevLine?.match(
       /(?:^|\W)([\p{L}\p{N}\d_]+)$/gu
     );
-    console.log("lastPartialWordMatch", lastPartialWordMatch);
     const idx = lastPartialWordMatch?.index;
     // don't match slash command
     if (idx !== undefined && idx > -1 && prevLine[idx - 1] === "/") {
