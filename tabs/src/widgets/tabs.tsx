@@ -169,7 +169,8 @@ function TabsBar() {
         "overflow-x-auto overflow-y-hidden",
         "rn-clr-background-secondary",
         "flex gap-1 items-stretch",
-        "p-1 py-0 pl-4"
+        "p-1 py-0 pl-4",
+        "fade-on-hide-ui"
       )}
     >
       {tabs?.[0] && (
