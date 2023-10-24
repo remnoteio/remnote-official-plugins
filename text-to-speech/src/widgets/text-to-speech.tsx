@@ -7,6 +7,7 @@ import {
   useTracker,
   usePlugin,
   useRunAsync,
+  Rem,
 } from "@remnote/plugin-sdk";
 import { useRef, useState } from "react";
 
@@ -44,16 +45,8 @@ function TextToSpeechWidget() {
         "textToSpeechPlugin"
       );
       const practiceDirection = await contextRem?.getPracticeDirection();
-
-      const question =
-        practiceDirection === "forward"
-          ? contextRem?.text?.toString()
-          : contextRem?.backText?.toString();
-
-      const answer =
-        practiceDirection === "forward"
-          ? contextRem?.backText?.toString()
-          : contextRem?.text?.toString();
+      const frontText = contextRem?.text?.toString();
+      const backText = await getBackText(contextRem);
 
       if (
         hasTextToSpeechPowerup &&
@@ -61,9 +54,9 @@ function TextToSpeechWidget() {
         !["both", "none"].includes(practiceDirection || "")
       ) {
         if (showAnswer) {
-          speak(answer);
+          speak(practiceDirection === "forward" ? backText : frontText);
         } else {
-          speak(question);
+          speak(practiceDirection === "forward" ? frontText : backText);
         }
       }
 
@@ -79,6 +72,18 @@ function TextToSpeechWidget() {
 
   speechSynthesis.onvoiceschanged = () => {
     voices.current = speechSynthesis.getVoices();
+  };
+
+  const getBackText = async (contextRem?: Rem) => {
+    const childrenRem = await contextRem?.getChildrenRem();
+    const isMultiline =
+      ((
+        await Promise.all(childrenRem?.map((q) => q.isCardItem()) || [])
+      ).filter(Boolean)?.length || 0) > 0;
+
+    return isMultiline
+      ? childrenRem?.map((q) => q?.text?.toString()).join(", ")
+      : contextRem?.backText?.toString();
   };
 
   const speak = (text?: string) => {
@@ -121,8 +126,8 @@ function TextToSpeechWidget() {
         ["backward", "both", "none"].includes(practiceDirection || "")) && (
         <div
           className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
-          onClick={() => {
-            speak(contextRem?.backText?.toString());
+          onClick={async () => {
+            speak(await getBackText(contextRem));
           }}
         >
           <PlayIcon />
