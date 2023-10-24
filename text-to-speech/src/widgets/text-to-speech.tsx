@@ -6,33 +6,64 @@ import {
   useSyncedStorageState,
   useTracker,
   usePlugin,
-} from '@remnote/plugin-sdk';
-import { useRef, useState } from 'react';
+  useRunAsync,
+} from "@remnote/plugin-sdk";
+import { useRef, useState } from "react";
 
 function TextToSpeechWidget() {
   const plugin = usePlugin();
   const voices = useRef<SpeechSynthesisVoice[]>();
   const currentlySpeaking = useRef(false);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [autoPlayEnabled] = useSyncedStorageState<boolean>('autoPlayTextToSpeech', false);
+  const [autoPlayEnabled] = useSyncedStorageState<boolean>(
+    "autoPlayTextToSpeech",
+    false
+  );
+  const contextRem = useRunAsync(async () => {
+    const widgetContext =
+      await plugin.widget.getWidgetContext<WidgetLocation.FlashcardUnder>();
+    return await plugin.rem.findOne(widgetContext.remId);
+  }, []);
+  const practiceDirection = useRunAsync(
+    async () => contextRem?.getPracticeDirection(),
+    [contextRem?._id]
+  );
 
   const voice: string | undefined = useTracker(
-    async (reactivePlugin) => await reactivePlugin.settings.getSetting('text-to-speech-voice'),
+    async (reactivePlugin) =>
+      await reactivePlugin.settings.getSetting("text-to-speech-voice"),
     []
   );
 
   const hasTextToSpeechPowerup = useTracker(
     async (reactivePlugin) => {
       const widgetContext =
-        await reactivePlugin.widget.getWidgetContext<WidgetLocation.FlashcardUnder>();
+        await reactivePlugin.widget.getWidgetContext<WidgetLocation.FlashcardExtraDetail>();
       const contextRem = await reactivePlugin.rem.findOne(widgetContext.remId);
-      const hasTextToSpeechPowerup = await contextRem?.hasPowerup('textToSpeechPlugin');
+      const hasTextToSpeechPowerup = await contextRem?.hasPowerup(
+        "textToSpeechPlugin"
+      );
+      const practiceDirection = await contextRem?.getPracticeDirection();
 
-      if (hasTextToSpeechPowerup && autoPlayEnabled) {
+      const question =
+        practiceDirection === "forward"
+          ? contextRem?.text?.toString()
+          : contextRem?.backText?.toString();
+
+      const answer =
+        practiceDirection === "forward"
+          ? contextRem?.backText?.toString()
+          : contextRem?.text?.toString();
+
+      if (
+        hasTextToSpeechPowerup &&
+        autoPlayEnabled &&
+        !["both", "none"].includes(practiceDirection || "")
+      ) {
         if (showAnswer) {
-          speak(contextRem?.backText?.toString());
+          speak(answer);
         } else {
-          speak(contextRem?.text?.toString());
+          speak(question);
         }
       }
 
@@ -56,7 +87,9 @@ function TextToSpeechWidget() {
     const utterance = new SpeechSynthesisUtterance(text);
 
     const utteranceVoice =
-      voice && voices?.current ? voices.current.find((v) => v.name === voice) : undefined;
+      voice && voices?.current
+        ? voices.current.find((v) => v.name === voice)
+        : undefined;
     if (utteranceVoice) {
       utterance.voice = utteranceVoice;
     }
@@ -72,32 +105,28 @@ function TextToSpeechWidget() {
 
   return hasTextToSpeechPowerup ? (
     <div className="flex items-center gap-2">
-      <div
-        className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
-        onClick={async () => {
-          const widgetContext =
-            await plugin.widget.getWidgetContext<WidgetLocation.FlashcardUnder>();
-          const contextRem = await plugin.rem.findOne(widgetContext.remId);
-
-          speak(contextRem?.text?.toString());
-        }}
-      >
-        <PlayIcon />
-        Question
-      </div>
-      {showAnswer && (
+      {(showAnswer ||
+        ["forward", "both", "none"].includes(practiceDirection || "")) && (
         <div
           className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
-          onClick={async () => {
-            const widgetContext =
-              await plugin.widget.getWidgetContext<WidgetLocation.FlashcardUnder>();
-            const contextRem = await plugin.rem.findOne(widgetContext.remId);
-
+          onClick={() => {
+            speak(contextRem?.text?.toString());
+          }}
+        >
+          <PlayIcon />
+          Front
+        </div>
+      )}
+      {(showAnswer ||
+        ["backward", "both", "none"].includes(practiceDirection || "")) && (
+        <div
+          className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
+          onClick={() => {
             speak(contextRem?.backText?.toString());
           }}
         >
           <PlayIcon />
-          Answer
+          Back
         </div>
       )}
     </div>
@@ -112,8 +141,8 @@ function PlayIcon() {
       viewBox="0 0 16 16"
       xmlns="http://www.w3.org/2000/svg"
       style={{
-        width: '12px',
-        height: '12px',
+        width: "12px",
+        height: "12px",
       }}
     >
       <path
