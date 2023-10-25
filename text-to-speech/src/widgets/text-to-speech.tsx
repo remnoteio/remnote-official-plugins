@@ -8,6 +8,8 @@ import {
   usePlugin,
   useRunAsync,
   Rem,
+  CardType,
+  RichTextInterface,
 } from "@remnote/plugin-sdk";
 import { useRef, useState } from "react";
 
@@ -49,17 +51,18 @@ function TextToSpeechWidget() {
         "textToSpeechPlugin"
       );
 
-      const frontText = contextRem?.text?.toString();
-      const backText = await getBackText(contextRem);
       const cardType = await (
         await reactivePlugin.card.findOne(widgetContext?.cardId)
       )?.getType();
+      const frontText = await getFrontText(contextRem, cardType);
+      const backText = await getBackText(contextRem, cardType);
+      const isCloze = typeof cardType === "object" && "clozeId" in cardType;
 
       if (hasTextToSpeechPowerup && autoPlayEnabled) {
         if (showAnswer) {
-          speak(cardType === "forward" ? backText : frontText);
+          speak(cardType === "forward" || isCloze ? backText : frontText);
         } else {
-          speak(cardType === "forward" ? frontText : backText);
+          speak(cardType === "forward" || isCloze ? frontText : backText);
         }
       }
 
@@ -77,16 +80,55 @@ function TextToSpeechWidget() {
     voices.current = speechSynthesis.getVoices();
   };
 
-  const getBackText = async (contextRem?: Rem) => {
+  const getFrontText = async (contextRem?: Rem, cardType?: CardType) => {
+    const isCloze = typeof cardType === "object" && "clozeId" in cardType;
+    return parseClozeText(
+      contextRem?.text,
+      isCloze ? cardType.clozeId : undefined
+    );
+  };
+
+  const getBackText = async (contextRem?: Rem, cardType?: CardType) => {
     const childrenRem = await contextRem?.getChildrenRem();
     const isMultiline =
       ((
         await Promise.all(childrenRem?.map((q) => q.isCardItem()) || [])
       ).filter(Boolean)?.length || 0) > 0;
+    const isCloze = typeof cardType === "object" && "clozeId" in cardType;
 
-    return isMultiline
-      ? childrenRem?.map((q) => q?.text?.toString()).join(", ")
-      : contextRem?.backText?.toString();
+    return isCloze
+      ? parseClozeText(contextRem?.backText || contextRem?.text)
+      : isMultiline
+      ? parseMultilineText(childrenRem)
+      : parseClozeText(contextRem?.backText);
+  };
+
+  const parseMultilineText = async (childrenRem?: Rem[]) => {
+    // Go through each child rem and parse the text for any cloze elements,
+    // then join with a comma to have pauses between each line
+    return (
+      await Promise.all(childrenRem?.map((q) => parseClozeText(q.text)) || [])
+    ).join(", ");
+  };
+
+  const parseClozeText = async (
+    richText?: RichTextInterface,
+    clozeId?: string
+  ) => {
+    // Replace the cloze rich text element with the cloze's text string
+    // or "blank" if the current card is a cloze and it has the same cloze id
+    return richText
+      ?.map((n) => {
+        if (typeof n === "object" && "cId" in n) {
+          if (clozeId && n?.cId === clozeId) {
+            return "blank";
+          } else {
+            return n?.text || "";
+          }
+        }
+        return n;
+      })
+      ?.toString();
   };
 
   const speak = (text?: string) => {
@@ -102,6 +144,7 @@ function TextToSpeechWidget() {
       utterance.voice = utteranceVoice;
     }
 
+    // "Debounce" the speaking
     currentlySpeaking.current = true;
 
     speechSynthesis.speak(utterance);
@@ -113,11 +156,13 @@ function TextToSpeechWidget() {
 
   return hasTextToSpeechPowerup ? (
     <div className="flex items-center gap-2">
-      {(showAnswer || cardType === "forward") && (
+      {(showAnswer ||
+        cardType === "forward" ||
+        (typeof cardType === "object" && "clozeId" in cardType)) && (
         <div
           className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
-          onClick={() => {
-            speak(contextRem?.text?.toString());
+          onClick={async () => {
+            speak(await getFrontText(contextRem, cardType));
           }}
         >
           <PlayIcon />
@@ -128,7 +173,7 @@ function TextToSpeechWidget() {
         <div
           className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
           onClick={async () => {
-            speak(await getBackText(contextRem));
+            speak(await getBackText(contextRem, cardType));
           }}
         >
           <PlayIcon />
