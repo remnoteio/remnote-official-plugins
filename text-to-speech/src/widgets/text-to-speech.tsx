@@ -82,7 +82,7 @@ function TextToSpeechWidget() {
 
   const getFrontText = async (contextRem?: Rem, cardType?: CardType) => {
     const isCloze = typeof cardType === "object" && "clozeId" in cardType;
-    return parseClozeText(
+    return parseRichText(
       isCloze
         ? (contextRem?.text || [])?.concat(contextRem?.backText || [])
         : contextRem?.text,
@@ -99,36 +99,39 @@ function TextToSpeechWidget() {
     const isCloze = typeof cardType === "object" && "clozeId" in cardType;
 
     return isCloze
-      ? parseClozeText(
+      ? parseRichText(
           (contextRem?.text || [])?.concat(contextRem?.backText || [])
         )
       : isMultiline
       ? parseMultilineText(childrenRem)
-      : parseClozeText(contextRem?.backText);
+      : parseRichText(contextRem?.backText);
   };
 
   const parseMultilineText = async (childrenRem?: Rem[]) => {
     // Go through each child rem and parse the text for any cloze elements,
     // then join with a comma to have pauses between each line
     return (
-      await Promise.all(childrenRem?.map((q) => parseClozeText(q.text)) || [])
+      await Promise.all(childrenRem?.map((q) => parseRichText(q.text)) || [])
     ).join(", ");
   };
 
-  const parseClozeText = async (
+  const parseRichText = async (
     richText?: RichTextInterface,
     clozeId?: string
   ) => {
-    // Replace the cloze rich text element with the cloze's text string
-    // or "blank" if the current card is a cloze and it has the same cloze id
     return richText
       ?.map((n) => {
+        // Replace the cloze rich text element with the cloze's text string
+        // or "blank" if the current card is a cloze and it has the same cloze id
         if (typeof n === "object" && "cId" in n) {
           if (clozeId && n?.cId === clozeId) {
             return "blank";
           } else {
             return n?.text || "";
           }
+        } else if (typeof n === "object" && "text" in n) {
+          // Ensure non-text rich text elements are converted to strings
+          return n?.text || "";
         }
         return n;
       })
