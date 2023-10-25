@@ -20,6 +20,14 @@ function TextToSpeechWidget() {
     "autoPlayTextToSpeech",
     false
   );
+
+  const cardType = useRunAsync(async () => {
+    const widgetContext =
+      await plugin.widget.getWidgetContext<WidgetLocation.FlashcardUnder>();
+    const card = await plugin.card.findOne(widgetContext.cardId);
+    return await card?.getType();
+  }, []);
+
   const contextRem = useRunAsync(async () => {
     const widgetContext =
       await plugin.widget.getWidgetContext<WidgetLocation.FlashcardUnder>();
