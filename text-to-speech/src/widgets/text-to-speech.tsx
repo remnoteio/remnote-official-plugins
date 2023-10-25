@@ -24,7 +24,7 @@ function TextToSpeechWidget() {
   const cardType = useRunAsync(async () => {
     const widgetContext =
       await plugin.widget.getWidgetContext<WidgetLocation.FlashcardUnder>();
-    const card = await plugin.card.findOne(widgetContext.cardId);
+    const card = await plugin.card.findOne(widgetContext?.cardId);
     return await card?.getType();
   }, []);
 
@@ -33,10 +33,6 @@ function TextToSpeechWidget() {
       await plugin.widget.getWidgetContext<WidgetLocation.FlashcardUnder>();
     return await plugin.rem.findOne(widgetContext.remId);
   }, []);
-  const practiceDirection = useRunAsync(
-    async () => contextRem?.getPracticeDirection(),
-    [contextRem?._id]
-  );
 
   const voice: string | undefined = useTracker(
     async (reactivePlugin) =>
@@ -52,19 +48,18 @@ function TextToSpeechWidget() {
       const hasTextToSpeechPowerup = await contextRem?.hasPowerup(
         "textToSpeechPlugin"
       );
-      const practiceDirection = await contextRem?.getPracticeDirection();
+
       const frontText = contextRem?.text?.toString();
       const backText = await getBackText(contextRem);
+      const cardType = await (
+        await reactivePlugin.card.findOne(widgetContext?.cardId)
+      )?.getType();
 
-      if (
-        hasTextToSpeechPowerup &&
-        autoPlayEnabled &&
-        !["both", "none"].includes(practiceDirection || "")
-      ) {
+      if (hasTextToSpeechPowerup && autoPlayEnabled) {
         if (showAnswer) {
-          speak(practiceDirection === "forward" ? backText : frontText);
+          speak(cardType === "forward" ? backText : frontText);
         } else {
-          speak(practiceDirection === "forward" ? frontText : backText);
+          speak(cardType === "forward" ? frontText : backText);
         }
       }
 
@@ -118,8 +113,7 @@ function TextToSpeechWidget() {
 
   return hasTextToSpeechPowerup ? (
     <div className="flex items-center gap-2">
-      {(showAnswer ||
-        ["forward", "both", "none"].includes(practiceDirection || "")) && (
+      {(showAnswer || cardType === "forward") && (
         <div
           className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
           onClick={() => {
@@ -130,8 +124,7 @@ function TextToSpeechWidget() {
           Front
         </div>
       )}
-      {(showAnswer ||
-        ["backward", "both", "none"].includes(practiceDirection || "")) && (
+      {(showAnswer || cardType === "backward") && (
         <div
           className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
           onClick={async () => {
