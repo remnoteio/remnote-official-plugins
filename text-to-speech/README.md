@@ -1,6 +1,6 @@
 ## Features
 
-- Provides text to speech buttons in the flashcard queue, as well as an optional auto-play mode.
+- Provides text to speech buttons in the flashcard queue, as well as an optional auto-play mode. (note: autoplay may not work correctly for the front of the card on some browsers due to browser limitations)
 
 ## How to Use
 
