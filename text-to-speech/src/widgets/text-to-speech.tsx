@@ -11,7 +11,7 @@ import {
   CardType,
   RichTextInterface,
 } from "@remnote/plugin-sdk";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function TextToSpeechWidget() {
   const plugin = usePlugin();
@@ -69,6 +69,12 @@ function TextToSpeechWidget() {
     },
     [autoPlayEnabled, showAnswer]
   );
+
+  useEffect(() => {
+    return () => {
+      cancelSpeak();
+    }
+  }, [])
 
   useAPIEventListener(QueueEvent.RevealAnswer, undefined, () => {
     cancelSpeak();
@@ -171,6 +177,9 @@ function TextToSpeechWidget() {
     // https://bugs.chromium.org/p/chromium/issues/detail?id=1176078 :(
     // @ts-ignore
     if (window?.chrome) {
+      speechSynthesis.pause();
+      speechSynthesis.resume();
+      
       speakingHackIntervalRef.current = setInterval(() => {
         speechSynthesis.pause();
         speechSynthesis.resume();
