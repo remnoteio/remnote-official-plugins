@@ -119,23 +119,18 @@ function TextToSpeechWidget() {
     richText?: RichTextInterface,
     clozeId?: string
   ) => {
-    return richText
-      ?.map((n) => {
-        // Replace the cloze rich text element with the cloze's text string
-        // or "blank" if the current card is a cloze and it has the same cloze id
+    return plugin.richText.toString(
+      richText?.map((n) => {
+        // Replace the cloze rich text element with "blank"
+        // if the current card is a cloze and it has the same cloze id
         if (typeof n === "object" && "cId" in n) {
           if (clozeId && n?.cId === clozeId) {
             return "blank";
-          } else {
-            return n?.text || "";
           }
-        } else if (typeof n === "object" && "text" in n) {
-          // Ensure non-text rich text elements are converted to strings
-          return n?.text || "";
         }
         return n;
-      })
-      ?.toString();
+      }) || []
+    );
   };
 
   const speak = (text?: string) => {
