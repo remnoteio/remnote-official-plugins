@@ -84,7 +84,9 @@ function TextToSpeechWidget() {
     const isCloze = typeof cardType === "object" && "clozeId" in cardType;
     return parseRichText(
       isCloze
-        ? (contextRem?.text || [])?.concat(contextRem?.backText || [])
+        ? (contextRem?.text || [])
+            ?.concat([" "])
+            .concat(contextRem?.backText || [])
         : contextRem?.text,
       isCloze ? cardType.clozeId : undefined
     );
@@ -100,7 +102,9 @@ function TextToSpeechWidget() {
 
     return isCloze
       ? parseRichText(
-          (contextRem?.text || [])?.concat(contextRem?.backText || [])
+          (contextRem?.text || [])
+            ?.concat([" "])
+            .concat(contextRem?.backText || [])
         )
       : isMultiline
       ? parseMultilineText(childrenRem)
