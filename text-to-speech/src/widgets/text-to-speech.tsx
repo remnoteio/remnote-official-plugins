@@ -15,7 +15,6 @@ import { useRef, useState } from "react";
 
 function TextToSpeechWidget() {
   const plugin = usePlugin();
-  const voices = useRef<SpeechSynthesisVoice[]>();
   const currentlySpeaking = useRef(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [autoPlayEnabled] = useSyncedStorageState<boolean>(
@@ -75,10 +74,6 @@ function TextToSpeechWidget() {
     currentlySpeaking.current = false;
     setShowAnswer(true);
   });
-
-  speechSynthesis.onvoiceschanged = () => {
-    voices.current = speechSynthesis.getVoices();
-  };
 
   const getFrontText = async (contextRem?: Rem, cardType?: CardType) => {
     const isCloze = typeof cardType === "object" && "clozeId" in cardType;
@@ -142,13 +137,11 @@ function TextToSpeechWidget() {
 
     const utterance = new SpeechSynthesisUtterance(text);
 
-    const utteranceVoice =
-      voice && voices?.current
-        ? voices.current.find((v) => v.name === voice)
-        : undefined;
-    if (utteranceVoice) {
-      utterance.voice = utteranceVoice;
-    }
+    const utteranceVoice = voice
+      ? speechSynthesis.getVoices().find((v) => v.name === voice) ?? null
+      : null;
+
+    utterance.voice = utteranceVoice;
 
     // "Debounce" the speaking
     currentlySpeaking.current = true;
