@@ -15,7 +15,6 @@ import { useRef, useState } from "react";
 
 function TextToSpeechWidget() {
   const plugin = usePlugin();
-  const currentlySpeaking = useRef(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [autoPlayEnabled] = useSyncedStorageState<boolean>(
     "autoPlayTextToSpeech",
@@ -71,8 +70,16 @@ function TextToSpeechWidget() {
   );
 
   useAPIEventListener(QueueEvent.RevealAnswer, undefined, () => {
-    currentlySpeaking.current = false;
+    speechSynthesis.cancel();
     setShowAnswer(true);
+  });
+
+  useAPIEventListener(QueueEvent.QueueExit, undefined, () => {
+    speechSynthesis.cancel();
+  });
+
+  useAPIEventListener(QueueEvent.QueueCompleteCard, undefined, () => {
+    speechSynthesis.cancel();
   });
 
   const getFrontText = async (contextRem?: Rem, cardType?: CardType) => {
@@ -133,7 +140,9 @@ function TextToSpeechWidget() {
   };
 
   const speak = (text?: string) => {
-    if (!text || currentlySpeaking.current) return;
+    if (!text) return;
+
+    speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
 
@@ -143,14 +152,6 @@ function TextToSpeechWidget() {
 
     utterance.voice = utteranceVoice;
 
-    // "Debounce" the speaking
-    utterance.onstart = () => {
-      currentlySpeaking.current = true;
-    };
-    utterance.onend = () => {
-      currentlySpeaking.current = false;
-    };
-
     speechSynthesis.speak(utterance);
   };
 
@@ -159,30 +160,52 @@ function TextToSpeechWidget() {
       {(showAnswer ||
         cardType === "forward" ||
         (typeof cardType === "object" && "clozeId" in cardType)) && (
-        <div
-          className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
+        <Button
           onClick={async () => {
             speak(await getFrontText(contextRem, cardType));
           }}
         >
           <PlayIcon />
           Front
-        </div>
+        </Button>
       )}
       {(showAnswer || cardType === "backward") && (
-        <div
-          className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
+        <Button
           onClick={async () => {
             speak(await getBackText(contextRem, cardType));
           }}
         >
           <PlayIcon />
           Back
-        </div>
+        </Button>
       )}
+      <Button
+        onClick={async () => {
+          speechSynthesis.cancel();
+        }}
+      >
+        Stop
+      </Button>
     </div>
   ) : (
     <></>
+  );
+}
+
+function Button({
+  onClick,
+  children,
+}: {
+  onClick: () => Promise<void>;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
+      onClick={onClick}
+    >
+      {children}
+    </div>
   );
 }
 

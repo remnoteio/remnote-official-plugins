@@ -72,6 +72,7 @@ async function onActivate(plugin: ReactRNPlugin) {
       const contextRem = await plugin.rem.findOne(remId);
 
       if (await contextRem?.hasPowerup("textToSpeechPlugin")) {
+        speechSynthesis.cancel()
         contextRem?.removePowerup("textToSpeechPlugin");
         plugin.app.toast("Text to Speech disabled!");
       } else {
