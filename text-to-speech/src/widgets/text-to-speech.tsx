@@ -144,13 +144,14 @@ function TextToSpeechWidget() {
     utterance.voice = utteranceVoice;
 
     // "Debounce" the speaking
-    currentlySpeaking.current = true;
-
-    speechSynthesis.speak(utterance);
-
+    utterance.onstart = () => {
+      currentlySpeaking.current = true;
+    };
     utterance.onend = () => {
       currentlySpeaking.current = false;
     };
+
+    speechSynthesis.speak(utterance);
   };
 
   return hasTextToSpeechPowerup ? (
