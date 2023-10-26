@@ -15,6 +15,7 @@ import { useRef, useState } from "react";
 
 function TextToSpeechWidget() {
   const plugin = usePlugin();
+  const speakingHackIntervalRef = useRef<NodeJS.Timer | undefined>(undefined);
   const [showAnswer, setShowAnswer] = useState(false);
   const [autoPlayEnabled] = useSyncedStorageState<boolean>(
     "autoPlayTextToSpeech",
@@ -70,16 +71,20 @@ function TextToSpeechWidget() {
   );
 
   useAPIEventListener(QueueEvent.RevealAnswer, undefined, () => {
-    speechSynthesis.cancel();
+    cancelSpeak();
     setShowAnswer(true);
   });
 
+  useAPIEventListener(QueueEvent.QueueEnter, undefined, () => {
+    cancelSpeak();
+  });
+
   useAPIEventListener(QueueEvent.QueueExit, undefined, () => {
-    speechSynthesis.cancel();
+    cancelSpeak();
   });
 
   useAPIEventListener(QueueEvent.QueueCompleteCard, undefined, () => {
-    speechSynthesis.cancel();
+    cancelSpeak();
   });
 
   const getFrontText = async (contextRem?: Rem, cardType?: CardType) => {
@@ -139,10 +144,15 @@ function TextToSpeechWidget() {
     );
   };
 
+  const cancelSpeak = () => {
+    speechSynthesis.cancel();
+    clearInterval(speakingHackIntervalRef.current);
+  };
+
   const speak = (text?: string) => {
     if (!text) return;
 
-    speechSynthesis.cancel();
+    cancelSpeak();
 
     const utterance = new SpeechSynthesisUtterance(text);
 
@@ -153,6 +163,16 @@ function TextToSpeechWidget() {
     utterance.voice = utteranceVoice;
 
     speechSynthesis.speak(utterance);
+
+    utterance.onend = () => {
+      cancelSpeak();
+    };
+
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=1176078 :(
+    speakingHackIntervalRef.current = setInterval(() => {
+      speechSynthesis.pause();
+      speechSynthesis.resume();
+    }, 10_000);
   };
 
   return hasTextToSpeechPowerup ? (
@@ -181,7 +201,7 @@ function TextToSpeechWidget() {
       )}
       <Button
         onClick={async () => {
-          speechSynthesis.cancel();
+          cancelSpeak();
         }}
       >
         Stop
