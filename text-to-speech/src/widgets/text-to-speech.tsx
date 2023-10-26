@@ -169,10 +169,13 @@ function TextToSpeechWidget() {
     };
 
     // https://bugs.chromium.org/p/chromium/issues/detail?id=1176078 :(
-    speakingHackIntervalRef.current = setInterval(() => {
-      speechSynthesis.pause();
-      speechSynthesis.resume();
-    }, 10_000);
+    // @ts-ignore
+    if (window?.chrome) {
+      speakingHackIntervalRef.current = setInterval(() => {
+        speechSynthesis.pause();
+        speechSynthesis.resume();
+      }, 10_000);
+    }
   };
 
   return hasTextToSpeechPowerup ? (
