@@ -72,7 +72,7 @@ async function onActivate(plugin: ReactRNPlugin) {
       const contextRem = await plugin.rem.findOne(remId);
 
       if (await contextRem?.hasPowerup("textToSpeechPlugin")) {
-        speechSynthesis.cancel()
+        speechSynthesis.cancel();
         contextRem?.removePowerup("textToSpeechPlugin");
         plugin.app.toast("Text to Speech disabled!");
       } else {
@@ -97,6 +97,19 @@ async function onActivate(plugin: ReactRNPlugin) {
     },
   });
 
+  plugin.settings.registerDropdownSetting({
+    id: "text-to-speech-voice",
+    title: "Voice",
+    description: "Select the voice to use for text to speech",
+    defaultValue: "Google US English",
+    options: speechSynthesis.getVoices().map((voice, i) => ({
+      key: i.toString(),
+      label: `${voice.name} (${voice.lang})`,
+      value: voice.name,
+    })),
+  });
+
+  // This doesn't seem to always fire on some browsers but Chrome needs it
   speechSynthesis.onvoiceschanged = () => {
     plugin.settings.registerDropdownSetting({
       id: "text-to-speech-voice",
