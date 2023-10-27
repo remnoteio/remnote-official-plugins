@@ -11,12 +11,11 @@ import {
   CardType,
   RichTextInterface,
 } from "@remnote/plugin-sdk";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function TextToSpeechWidget() {
   const plugin = usePlugin();
-  const voices = useRef<SpeechSynthesisVoice[]>();
-  const currentlySpeaking = useRef(false);
+  const speakingHackIntervalRef = useRef<NodeJS.Timer | undefined>(undefined);
   const [showAnswer, setShowAnswer] = useState(false);
   const [autoPlayEnabled] = useSyncedStorageState<boolean>(
     "autoPlayTextToSpeech",
@@ -71,14 +70,28 @@ function TextToSpeechWidget() {
     [autoPlayEnabled, showAnswer]
   );
 
+  useEffect(() => {
+    return () => {
+      cancelSpeak();
+    }
+  }, [])
+
   useAPIEventListener(QueueEvent.RevealAnswer, undefined, () => {
-    currentlySpeaking.current = false;
+    cancelSpeak();
     setShowAnswer(true);
   });
 
-  speechSynthesis.onvoiceschanged = () => {
-    voices.current = speechSynthesis.getVoices();
-  };
+  useAPIEventListener(QueueEvent.QueueEnter, undefined, () => {
+    cancelSpeak();
+  });
+
+  useAPIEventListener(QueueEvent.QueueExit, undefined, () => {
+    cancelSpeak();
+  });
+
+  useAPIEventListener(QueueEvent.QueueCompleteCard, undefined, () => {
+    cancelSpeak();
+  });
 
   const getFrontText = async (contextRem?: Rem, cardType?: CardType) => {
     const isCloze = typeof cardType === "object" && "clozeId" in cardType;
@@ -137,27 +150,41 @@ function TextToSpeechWidget() {
     );
   };
 
+  const cancelSpeak = () => {
+    speechSynthesis.cancel();
+    clearInterval(speakingHackIntervalRef.current);
+  };
+
   const speak = (text?: string) => {
-    if (!text || currentlySpeaking.current) return;
+    if (!text) return;
+
+    cancelSpeak();
 
     const utterance = new SpeechSynthesisUtterance(text);
 
-    const utteranceVoice =
-      voice && voices?.current
-        ? voices.current.find((v) => v.name === voice)
-        : undefined;
-    if (utteranceVoice) {
-      utterance.voice = utteranceVoice;
-    }
+    const utteranceVoice = voice
+      ? speechSynthesis.getVoices().find((v) => v.name === voice) ?? null
+      : null;
 
-    // "Debounce" the speaking
-    currentlySpeaking.current = true;
+    utterance.voice = utteranceVoice;
 
     speechSynthesis.speak(utterance);
 
     utterance.onend = () => {
-      currentlySpeaking.current = false;
+      cancelSpeak();
     };
+
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=1176078 :(
+    // @ts-ignore
+    if (window?.chrome) {
+      speechSynthesis.pause();
+      speechSynthesis.resume();
+      
+      speakingHackIntervalRef.current = setInterval(() => {
+        speechSynthesis.pause();
+        speechSynthesis.resume();
+      }, 10_000);
+    }
   };
 
   return hasTextToSpeechPowerup ? (
@@ -165,30 +192,52 @@ function TextToSpeechWidget() {
       {(showAnswer ||
         cardType === "forward" ||
         (typeof cardType === "object" && "clozeId" in cardType)) && (
-        <div
-          className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
+        <Button
           onClick={async () => {
             speak(await getFrontText(contextRem, cardType));
           }}
         >
           <PlayIcon />
           Front
-        </div>
+        </Button>
       )}
       {(showAnswer || cardType === "backward") && (
-        <div
-          className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
+        <Button
           onClick={async () => {
             speak(await getBackText(contextRem, cardType));
           }}
         >
           <PlayIcon />
           Back
-        </div>
+        </Button>
       )}
+      <Button
+        onClick={async () => {
+          cancelSpeak();
+        }}
+      >
+        Stop
+      </Button>
     </div>
   ) : (
     <></>
+  );
+}
+
+function Button({
+  onClick,
+  children,
+}: {
+  onClick: () => Promise<void>;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className="gap-2 py-3.5 px-4 whitespace-nowrap cursor-pointer select-none rounded-md rn-clr-background-accent text-white dark:rn-clr-content-primary flex items-center justify-between"
+      onClick={onClick}
+    >
+      {children}
+    </div>
   );
 }
 

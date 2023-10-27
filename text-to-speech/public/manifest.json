@@ -8,7 +8,7 @@
   "version": {
     "major": 0,
     "minor": 0,
-    "patch": 1
+    "patch": 2
   },
   "minimumRemNoteVersion": {
     "major": 1,
@@ -16,7 +16,7 @@
     "patch": 67
   },
   "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
-  "requestNative": false,
+  "requestNative": true,
   "requiredScopes": [
     {
       "type": "All",
