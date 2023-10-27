@@ -16,7 +16,7 @@
     "patch": 67
   },
   "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
-  "requestNative": false,
+  "requestNative": true,
   "requiredScopes": [
     {
       "type": "All",
