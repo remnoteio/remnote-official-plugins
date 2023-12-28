@@ -9,19 +9,24 @@ import {
   usePlugin,
   useTracker,
   RemIdWindowTree,
+  useSessionStorageState,
 } from "@remnote/plugin-sdk";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import { Container, Draggable } from "react-smooth-dnd";
-import { paneRemTreeToRemTree, useDebounce, removeDeletedRem } from "../lib/utils";
+import {
+  paneRemTreeToRemTree,
+  useDebounce,
+  removeDeletedRem,
+} from "../lib/utils";
 import { getOrCreateHomeWorkspace, HOME_TAB_NAME } from "../shared";
-import AutosizeInput from 'react-input-autosize';
+import AutosizeInput from "react-input-autosize";
 import deepEqual from "deep-equal";
-
+import { focusedTabIndexKey, tabsKey } from "../lib/consts";
 
 function TabsBar() {
   const plugin = usePlugin();
-  const [tabIndex, setTabIndex] = React.useState<number>(0);
+  const [tabIndex, setTabIndex] = useSessionStorageState(focusedTabIndexKey, 0);
 
   const workspacePowerup = useTracker(async (reactivePlugin: RNPlugin) => {
     return await reactivePlugin.powerup.getPowerupByCode("workspace");
@@ -36,7 +41,7 @@ function TabsBar() {
       const children = (await workspacePowerup?.getChildrenRem()) || [];
 
       return await filterAsync(children, async (c) => {
-        return (
+        return !!(
           c.type != RemType.PORTAL &&
           workspacePowerup &&
           (await c.hasPowerup("workspace"))
@@ -45,7 +50,7 @@ function TabsBar() {
     }, []) || [];
 
   // Cache the tabs in React state to reduce jitter when the user drags a tab
-  const [tabs, setTabs] = useState(reactiveTabs);
+  const [tabs, setTabs] = useSessionStorageState(tabsKey, reactiveTabs);
   useEffect(() => {
     const homeTab = reactiveTabs?.find((t) => t.text[0] == HOME_TAB_NAME);
     const nonHomeTabs = reactiveTabs?.filter((t) => t.text[0] != HOME_TAB_NAME);
@@ -70,26 +75,25 @@ function TabsBar() {
     if (tabs.length > 1) {
       const currentRemTree = paneRemTreeToRemTree(
         await plugin.window.getCurrentWindowTree()
-      )
+      );
       const tabTrees = await Promise.all(
-        tabs.map(
-          async (t) => {
-            try {
-              if (t.text[0] == HOME_TAB_NAME) {
-                return (await plugin.date.getTodaysDoc())?._id;
-              }
-              else {
-                const tree = JSON.parse(await t.getPowerupProperty("workspace", "windowTree")) as RemIdWindowTree
-                const withoutDeletedDocs = await removeDeletedRem(plugin, tree)
-                return withoutDeletedDocs
-              }
+        tabs.map(async (t) => {
+          try {
+            if (t.text[0] == HOME_TAB_NAME) {
+              return (await plugin.date.getTodaysDoc())?._id;
+            } else {
+              const tree = JSON.parse(
+                await t.getPowerupProperty("workspace", "windowTree")
+              ) as RemIdWindowTree;
+              const withoutDeletedDocs = await removeDeletedRem(plugin, tree);
+              return withoutDeletedDocs;
             }
-            catch(e) {
-            }
-          }
-        )
-      )
-      const openIndex = tabTrees.findIndex((remTree) => deepEqual(remTree, currentRemTree));
+          } catch (e) {}
+        })
+      );
+      const openIndex = tabTrees.findIndex((remTree) =>
+        deepEqual(remTree, currentRemTree)
+      );
       setTabIndex(openIndex);
     }
   };
@@ -142,9 +146,12 @@ function TabsBar() {
             await tabRem?.getPowerupProperty("workspace", "windowTree")
           );
           if (!tree) {
-            return
+            return;
           }
-          const withoutDeletedDocs = (await removeDeletedRem(plugin, tree as RemIdWindowTree))
+          const withoutDeletedDocs = await removeDeletedRem(
+            plugin,
+            tree as RemIdWindowTree
+          );
           const newTree = withoutDeletedDocs
             ? withoutDeletedDocs
             : (await plugin.date.getTodaysDoc())?._id;
@@ -152,33 +159,12 @@ function TabsBar() {
             return;
           }
           plugin.window.setRemWindowTree(newTree);
-          
         } catch (e) {
           console.log("Failed to parse JSON windowTree");
         }
       }
     }, 100);
   };
-
-  plugin.app.registerCommand({
-    id: "next-tab",
-    name: "Focus Next Tab",
-    description: "Focus the tab to the right of the currently focused tab.",
-    action: () => {
-      const newTabIndex = ((tabIndex + 1) % tabs.length + tabs.length) % tabs.length
-      onClickTab(newTabIndex)
-    }
-  })
-
-  plugin.app.registerCommand({
-    id: "prev-tab",
-    name: "Focus Previous Tab",
-    description: "Focus the tab to the left of the currently focused tab.",
-    action: () => {
-      const newTabIndex = ((tabIndex - 1) % tabs.length + tabs.length) % tabs.length
-      onClickTab(newTabIndex)
-    }
-  })
 
   const deleteTab = async (event: any, index: number) => {
     const tabRem = tabs[index];
@@ -295,22 +281,22 @@ interface TabProps {
 
 function Tab(props: TabProps) {
   const plugin = usePlugin();
-  const [value, setValue] = useState<string>()
+  const [value, setValue] = useState<string>();
   useEffect(() => {
-    const eff = async () =>{
-      setValue(await plugin.richText.toString(props.tabRem.text))
-    }
-    eff()
-  }, [])
+    const eff = async () => {
+      setValue(await plugin.richText.toString(props.tabRem.text));
+    };
+    eff();
+  }, []);
 
-  const debouncedValue = useDebounce(value, 200)
+  const debouncedValue = useDebounce(value, 200);
   useEffect(() => {
     const eff = async () => {
       if (debouncedValue === undefined) return;
       await props.tabRem.setText([debouncedValue]);
-    }
+    };
     eff();
-  }, [debouncedValue])
+  }, [debouncedValue]);
 
   return (
     <div
@@ -327,42 +313,37 @@ function Tab(props: TabProps) {
         "min-w-[50px] ",
         "!whitespace-nowrap",
         "flex items-center flex-row flex-shrink-0 flex-grow-0",
-        !props.isSelected &&
-          "cursor-pointer !whitespace-nowrap",
+        !props.isSelected && "cursor-pointer !whitespace-nowrap"
       )}
     >
-      {
-        props.index === 0
-          ? <span
-              className={clsx(
-                !props.isSelected &&
-                  "cursor-pointer !whitespace-nowrap",
-              )}
-            >
-            {
-              value
-            }
-            </span>
-          : <AutosizeInput
-              value={value}
-              placeholder={"Untitled"}
-              onClick={e => e.stopPropagation()}
-              onChange={e => setValue(e.target.value)}
-              minWidth={50}
-              className="text-md"
-              inputClassName={clsx(
-               "text-md focus:outline-none border-0 border-transparent focus:border-transparent focus:ring-0 min-w-[50px]",
-               props.isSelected
-                  ? "rn-clr-background-primary"
-                  : "rn-clr-background-secondary",
-              !props.isSelected &&
-                  "cursor-pointer !whitespace-nowrap",
-              )}
-          />
-      }
+      {props.index === 0 ? (
+        <span
+          className={clsx(
+            !props.isSelected && "cursor-pointer !whitespace-nowrap"
+          )}
+        >
+          {value}
+        </span>
+      ) : (
+        <AutosizeInput
+          value={value}
+          placeholder={"Untitled"}
+          onClick={(e) => e.stopPropagation()}
+          onChange={(e) => setValue(e.target.value)}
+          minWidth={50}
+          className="text-md"
+          inputClassName={clsx(
+            "text-md focus:outline-none border-0 border-transparent focus:border-transparent focus:ring-0 min-w-[50px]",
+            props.isSelected
+              ? "rn-clr-background-primary"
+              : "rn-clr-background-secondary",
+            !props.isSelected && "cursor-pointer !whitespace-nowrap"
+          )}
+        />
+      )}
       {/* This renders the number of open windows in the tab: */}
       {/* {!!remIds && remIds.length > 1 && (
-        <span className="text-gray-600 ml-1">({remIds?.length})</span>
+        <span className="ml-1 text-gray-600">({remIds?.length})</span>
       )} */}
       {props.deleteTab && (
         <span
@@ -374,6 +355,7 @@ function Tab(props: TabProps) {
           className="p-0.5 w-[10px] rounded-sm items-center justify-center hover:rn-clr-background--hovered flex rn-clr-content-primary"
         >
           <img
+            alt="Close tab"
             src={`${plugin.rootURL}close.svg`}
             style={{
               display: "inline-block",
@@ -393,11 +375,12 @@ function TabPlusButton(props) {
   const plugin = usePlugin();
   return (
     <div
-      className="p-1 flex items-center cursor-pointer"
+      className="flex items-center p-1 cursor-pointer"
       onClick={props.addTab}
     >
-      <div className="flex items-center w-6 h-6 justify-center rounded-md text-center hover:rn-clr-background--hovered">
+      <div className="flex items-center justify-center w-6 h-6 text-center rounded-md hover:rn-clr-background--hovered">
         <img
+          alt="Add tab"
           src={`${plugin.rootURL}add.svg`}
           style={{
             display: "inline-block",

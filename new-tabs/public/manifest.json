@@ -7,8 +7,8 @@
   "enableOnMobile": false,
   "version": {
     "major": 0,
-    "minor": 33,
-    "patch": 1
+    "minor": 34,
+    "patch": 0
   },
   "minimumRemNoteVersion": {
     "major": 1,
