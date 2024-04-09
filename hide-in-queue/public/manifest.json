@@ -1,16 +1,16 @@
 {
   "manifestVersion": 1,
   "id": "demo_hide_in_queue",
-  "name": "Hide in Queue",
+  "name": "Hide in Queue (deprecated)",
   "author": "mfranzs",
   "repoUrl": "https://github.com/remnoteio/remnote-official-plugins",
   "enableOnMobile": true,
   "version": {
     "major": 0,
-    "minor": 20,
+    "minor": 21,
     "patch": 0
   },
-  "description": "Hides single bullets in the queue.",
+  "description": "Hides single bullets in the queue (deprecated: this is now a built-in feature)",
   "requestNative": true,
   "requiredScopes": [
     {
