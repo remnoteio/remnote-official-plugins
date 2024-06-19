@@ -1,5 +1,3 @@
-This plugin is deprecated. It is now a built-in feature in RemNote.
-
 ## Features
 
 - Provides a "Hide in Queue" powerup that hides the tagged Rem in the queue.
