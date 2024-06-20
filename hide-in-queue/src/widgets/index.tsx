@@ -56,14 +56,15 @@ const REMOVE_FROM_QUEUE_POWERUP_CODE = "removeFromQueue";
 const NO_HIERARCHY_POWERUP_CODE = "noHierarchy";
 
 async function onActivate(plugin: ReactRNPlugin) {
-	await plugin.app.registerPowerup(
-		"No Hierarchy",
-		NO_HIERARCHY_POWERUP_CODE,
-		"Removes the ancestor hierarchy of the tagged Rem in the queue view.",
-		{
+	await plugin.app.registerPowerup({
+		name: "No Hierarchy",
+		code: NO_HIERARCHY_POWERUP_CODE,
+		description:
+			"Removes the ancestor hierarchy of the tagged Rem in the queue view.",
+		options: {
 			slots: [],
-		}
-	);
+		},
+	});
 
 	const runAddPowerupCommand = async (powerup: string) => {
 		const sel = await plugin.editor.getSelection();
@@ -88,14 +89,14 @@ async function onActivate(plugin: ReactRNPlugin) {
 		},
 	});
 
-	await plugin.app.registerPowerup(
-		"Hide in Queue",
-		HIDE_IN_QUEUE_POWERUP_CODE,
-		"Hides the tagged Rem in the queue view.",
-		{
+	await plugin.app.registerPowerup({
+		name: "Hide in Queue",
+		code: HIDE_IN_QUEUE_POWERUP_CODE,
+		description: "Hides the tagged Rem in the queue view.",
+		options: {
 			slots: [],
-		}
-	);
+		},
+	});
 
 	await plugin.app.registerCommand({
 		id: `${HIDE_IN_QUEUE_POWERUP_CODE}Cmd`,
@@ -105,14 +106,14 @@ async function onActivate(plugin: ReactRNPlugin) {
 		},
 	});
 
-	await plugin.app.registerPowerup(
-		"Remove from Queue",
-		REMOVE_FROM_QUEUE_POWERUP_CODE,
-		"Removes the tagged Rem in the queue view.",
-		{
+	await plugin.app.registerPowerup({
+		name: "Remove from Queue",
+		code: REMOVE_FROM_QUEUE_POWERUP_CODE,
+		description: "Removes the tagged Rem in the queue view.",
+		options: {
 			slots: [],
-		}
-	);
+		},
+	});
 
 	await plugin.app.registerCommand({
 		id: `${REMOVE_FROM_QUEUE_POWERUP_CODE}Cmd`,
