@@ -37,7 +37,7 @@ const CSS = `
 
 .rn-queue__content [data-queue-rem-container-tags~="remove-from-queue"]:not(.rn-question-rem),
 .rn-breadcrumb-item[data-rem-tags~="remove-from-queue"] {
-  display: none;
+	margin-left: 0px !important; // makes it look like its not indented to the removed parent
 }
 
 /* No Hierarchy Styles */
