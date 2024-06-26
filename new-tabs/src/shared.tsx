@@ -1,4 +1,4 @@
-import { RNPlugin } from "@remnote/plugin-sdk";
+import type { RNPlugin } from "@remnote/plugin-sdk";
 
 export const HOME_TAB_NAME = "Daily Doc";
 

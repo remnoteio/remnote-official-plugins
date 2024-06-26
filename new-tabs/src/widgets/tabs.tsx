@@ -50,12 +50,13 @@ function TabsBar() {
     }, []) || [];
 
   // Cache the tabs in React state to reduce jitter when the user drags a tab
-  const [tabs, setTabs] = useSessionStorageState(tabsKey, reactiveTabs);
+  const [tabs, setTabs] = useState(reactiveTabs);
   useEffect(() => {
     const homeTab = reactiveTabs?.find((t) => t.text[0] == HOME_TAB_NAME);
     const nonHomeTabs = reactiveTabs?.filter((t) => t.text[0] != HOME_TAB_NAME);
-
-    setTabs([homeTab!, ...(nonHomeTabs || [])].filter((i) => i));
+    const xyx = [homeTab!, ...(nonHomeTabs || [])].filter(Boolean);
+    console.log(xyx);
+    setTabs(xyx);
   }, [reactiveTabs?.length]);
 
   const currentTab = tabs?.[tabIndex];
@@ -170,12 +171,10 @@ function TabsBar() {
     const tabRem = tabs[index];
     await tabRem?.remove();
 
-    if (index >= tabs.length) {
+    if (index === tabs.length - 1) {
       await onClickTab(index - 1);
-      setTabIndex(index - 1);
     } else {
       await onClickTab(index + 1);
-      setTabIndex(index);
     }
 
     event.stopPropagation();
@@ -188,7 +187,7 @@ function TabsBar() {
         "overflow-x-auto overflow-y-hidden",
         "rn-clr-background-secondary",
         "flex gap-1 items-stretch",
-        "p-1 py-0 pl-4"
+        "p-1 py-0 pl-4 text-[14px]"
       )}
     >
       {tabs?.[0] && (
@@ -302,9 +301,8 @@ function Tab(props: TabProps) {
     <div
       onMouseUp={() => props.onClick(props.index, props.tabRem)}
       className={clsx(
-        "h-[50px] box-border",
+        "h-[35px] box-border",
         "cursor-pointer",
-        "border-solid border-b-0 border-t-0 border-[0.5px] rn-clr-border-state-disabled",
         props.isSelected
           ? "rn-clr-background-primary"
           : "rn-clr-background-secondary",
@@ -333,7 +331,7 @@ function Tab(props: TabProps) {
           minWidth={50}
           className="text-md"
           inputClassName={clsx(
-            "text-md focus:outline-none border-0 border-transparent focus:border-transparent focus:ring-0 min-w-[50px]",
+            "text-md focus:outline-none border-0 border-transparent focus:border-transparent focus:ring-0 min-w-[50px] rn-clr-content-primary",
             props.isSelected
               ? "rn-clr-background-primary"
               : "rn-clr-background-secondary",

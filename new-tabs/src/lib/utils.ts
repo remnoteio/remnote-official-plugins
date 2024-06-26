@@ -1,32 +1,41 @@
-import {PaneRemWindowTree, RemIdWindowTree, RNPlugin} from "@remnote/plugin-sdk";
-import {useEffect, useState} from "react";
+import type {
+  PaneRemWindowTree,
+  RemIdWindowTree,
+  RNPlugin,
+} from "@remnote/plugin-sdk";
+import { useEffect, useState } from "react";
 
-export const paneRemTreeToRemTree = (pwt: PaneRemWindowTree): RemIdWindowTree => {
-  if ('remId' in pwt) {
+export const paneRemTreeToRemTree = (
+  pwt: PaneRemWindowTree
+): RemIdWindowTree => {
+  if ("remId" in pwt) {
     return pwt.remId;
   }
-  else {
-    return {
-      ...pwt,
-      first: paneRemTreeToRemTree(pwt.first),
-      second: paneRemTreeToRemTree(pwt.second),
-    }
-  }
-}
+  return {
+    ...pwt,
+    first: paneRemTreeToRemTree(pwt.first),
+    second: paneRemTreeToRemTree(pwt.second),
+  };
+};
 
 export async function removeDeletedRem(plugin: RNPlugin, t: RemIdWindowTree) {
   const remIds = getAllRemIds(t);
-  const existRem = (await plugin.rem.findMany(remIds) || []).filter(x => !!x).map(x => x._id);
-  const idsToRemove = remIds.filter(id => !existRem.includes(id))
-  return idsToRemove.reduce((acc, id) => acc ? removeRemId(acc, id) : null, t)
+  const existRem = ((await plugin.rem.findMany(remIds)) || [])
+    .filter((x) => !!x)
+    .map((x) => x._id);
+  const idsToRemove = remIds.filter((id) => !existRem.includes(id));
+  return idsToRemove.reduce(
+    (acc, id) => (acc ? removeRemId(acc, id) : null),
+    t
+  );
 }
 
 function removeRemId(
-  paneTree: RemIdWindowTree ,
-  idToRemove: string,
-): RemIdWindowTree | null  {
-  if (typeof paneTree == 'string') {
-    return paneTree == idToRemove ? null : paneTree;
+  paneTree: RemIdWindowTree,
+  idToRemove: string
+): RemIdWindowTree | null {
+  if (typeof paneTree === "string") {
+    return paneTree === idToRemove ? null : paneTree;
   } else {
     if (paneTree.first == idToRemove) {
       return paneTree.second;

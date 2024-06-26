@@ -1,7 +1,7 @@
 import {
   WidgetLocation,
   declareIndexPlugin,
-  ReactRNPlugin,
+  type ReactRNPlugin,
 } from "@remnote/plugin-sdk";
 import { getOrCreateHomeWorkspace } from "../shared";
 import "../style.css";
