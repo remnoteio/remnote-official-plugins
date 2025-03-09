@@ -101,6 +101,7 @@ async function onActivate(plugin: ReactRNPlugin) {
 	await plugin.app.registerCommand({
 		id: `${HIDE_IN_QUEUE_POWERUP_CODE}Cmd`,
 		name: "Hide in Queue",
+		quickCode: "hiq",
 		action: async () => {
 			await runAddPowerupCommand(HIDE_IN_QUEUE_POWERUP_CODE);
 		},
