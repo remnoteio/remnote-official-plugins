@@ -84,6 +84,8 @@ async function onActivate(plugin: ReactRNPlugin) {
 	await plugin.app.registerCommand({
 		id: `${NO_HIERARCHY_POWERUP_CODE}Cmd`,
 		name: "No Hierarchy",
+		description: `Any ancestors will be hidden on the front and back of the flashcard.`,
+		quickCode: "nh",
 		action: async () => {
 			await runAddPowerupCommand(NO_HIERARCHY_POWERUP_CODE);
 		},
@@ -101,6 +103,7 @@ async function onActivate(plugin: ReactRNPlugin) {
 	await plugin.app.registerCommand({
 		id: `${HIDE_IN_QUEUE_POWERUP_CODE}Cmd`,
 		name: "Hide in Queue",
+		description: `Hide the tagged Rem in the queue, displaying only “Hidden in Queue."`,
 		quickCode: "hiq",
 		action: async () => {
 			await runAddPowerupCommand(HIDE_IN_QUEUE_POWERUP_CODE);
@@ -119,6 +122,8 @@ async function onActivate(plugin: ReactRNPlugin) {
 	await plugin.app.registerCommand({
 		id: `${REMOVE_FROM_QUEUE_POWERUP_CODE}Cmd`,
 		name: "Remove from Queue",
+		description: `Completely remove the tagged Rem from the queue view.`,
+		quickCode: "rfq",
 		action: async () => {
 			await runAddPowerupCommand(REMOVE_FROM_QUEUE_POWERUP_CODE);
 		},
