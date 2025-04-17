@@ -12,17 +12,14 @@ import {
   useSessionStorageState,
 } from "@remnote/plugin-sdk";
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { Container, Draggable } from "react-smooth-dnd";
-import {
-  paneRemTreeToRemTree,
-  useDebounce,
-  removeDeletedRem,
-} from "../lib/utils";
+import { paneRemTreeToRemTree, useDebounce, removeDeletedRem } from "../lib/utils";
 import { getOrCreateHomeWorkspace, HOME_TAB_NAME } from "../shared";
 import AutosizeInput from "react-input-autosize";
 import deepEqual from "deep-equal";
-import { focusedTabIndexKey, tabsKey } from "../lib/consts";
+import { focusedTabIndexKey } from "../lib/consts";
+import "./tabs.css";
 
 function TabsBar() {
   const plugin = usePlugin();
@@ -35,17 +32,11 @@ function TabsBar() {
   // Reactively get the tabs
   const reactiveTabs =
     useTracker(async (reactivePlugin) => {
-      const workspacePowerup = await reactivePlugin.powerup.getPowerupByCode(
-        "workspace"
-      );
+      const workspacePowerup = await reactivePlugin.powerup.getPowerupByCode("workspace");
       const children = (await workspacePowerup?.getChildrenRem()) || [];
 
       return await filterAsync(children, async (c) => {
-        return !!(
-          c.type != RemType.PORTAL &&
-          workspacePowerup &&
-          (await c.hasPowerup("workspace"))
-        );
+        return !!(c.type != RemType.PORTAL && workspacePowerup && (await c.hasPowerup("workspace")));
       });
     }, []) || [];
 
@@ -74,41 +65,31 @@ function TabsBar() {
 
   const findOpenTab = async () => {
     if (tabs.length > 1) {
-      const currentRemTree = paneRemTreeToRemTree(
-        await plugin.window.getCurrentWindowTree()
-      );
+      const currentRemTree = paneRemTreeToRemTree(await plugin.window.getCurrentWindowTree());
       const tabTrees = await Promise.all(
         tabs.map(async (t) => {
           try {
             if (t.text[0] == HOME_TAB_NAME) {
               return (await plugin.date.getTodaysDoc())?._id;
             } else {
-              const tree = JSON.parse(
-                await t.getPowerupProperty("workspace", "windowTree")
-              ) as RemIdWindowTree;
+              const tree = JSON.parse(await t.getPowerupProperty("workspace", "windowTree")) as RemIdWindowTree;
               const withoutDeletedDocs = await removeDeletedRem(plugin, tree);
               return withoutDeletedDocs;
             }
           } catch (e) {}
         })
       );
-      const openIndex = tabTrees.findIndex((remTree) =>
-        deepEqual(remTree, currentRemTree)
-      );
+      const openIndex = tabTrees.findIndex((remTree) => deepEqual(remTree, currentRemTree));
       setTabIndex(openIndex);
     }
   };
 
-  useAPIEventListener(
-    AppEvents.ClickRemReference,
-    "workspace",
-    async (data) => {
-      const tabIndex = tabs?.findIndex((t) => t._id == data.remId);
-      if (tabIndex !== undefined) {
-        onClickTab(tabIndex);
-      }
+  useAPIEventListener(AppEvents.ClickRemReference, "workspace", async (data) => {
+    const tabIndex = tabs?.findIndex((t) => t._id == data.remId);
+    if (tabIndex !== undefined) {
+      onClickTab(tabIndex);
     }
-  );
+  });
 
   useEffect(() => {
     findOpenTab();
@@ -143,19 +124,12 @@ function TabsBar() {
       } else {
         const tabRem = tabs[index];
         try {
-          const tree = JSON.parse(
-            await tabRem?.getPowerupProperty("workspace", "windowTree")
-          );
+          const tree = JSON.parse(await tabRem?.getPowerupProperty("workspace", "windowTree"));
           if (!tree) {
             return;
           }
-          const withoutDeletedDocs = await removeDeletedRem(
-            plugin,
-            tree as RemIdWindowTree
-          );
-          const newTree = withoutDeletedDocs
-            ? withoutDeletedDocs
-            : (await plugin.date.getTodaysDoc())?._id;
+          const withoutDeletedDocs = await removeDeletedRem(plugin, tree as RemIdWindowTree);
+          const newTree = withoutDeletedDocs ? withoutDeletedDocs : (await plugin.date.getTodaysDoc())?._id;
           if (!newTree) {
             return;
           }
@@ -183,22 +157,9 @@ function TabsBar() {
 
   return (
     <div
-      className={clsx(
-        "overflow-x-auto overflow-y-hidden",
-        "rn-clr-background-secondary",
-        "flex gap-1 items-stretch",
-        "p-1 py-0 pl-4 text-[14px]"
-      )}
+      className={clsx("overflow-x-auto overflow-y-hidden", "rn-clr-background-secondary", "flex gap-1 items-stretch", "p-1 py-0 pl-4 text-[14px]")}
     >
-      {tabs?.[0] && (
-        <Tab
-          tabRem={tabs?.[0]}
-          index={0}
-          key={tabs[0]?._id}
-          isSelected={0 == tabIndex}
-          onClick={onClickTab}
-        />
-      )}
+      {tabs?.[0] && <Tab tabRem={tabs?.[0]} index={0} key={tabs[0]?._id} isSelected={0 == tabIndex} onClick={onClickTab} />}
       <Container
         lockAxis="x"
         getChildPayload={(idx) => tabs[idx + 1]}
@@ -222,20 +183,11 @@ function TabsBar() {
           const powerupChildren = await workspacePowerup!.getChildrenRem();
 
           const dropIndex =
-            e.addedIndex! >= tabs.length
-              ? powerupChildren.length + 1
-              : powerupChildren
-                  .map((q) => q._id)
-                  .indexOf(tabs[e.addedIndex! + 1]._id);
+            e.addedIndex! >= tabs.length ? powerupChildren.length + 1 : powerupChildren.map((q) => q._id).indexOf(tabs[e.addedIndex! + 1]._id);
 
           const parent = rem.parent;
-          if (
-            powerupChildren.map((x) => x._id).indexOf(rem._id) !== dropIndex
-          ) {
-            await rem.setParent(
-              parent,
-              e.addedIndex! > e.removedIndex! ? dropIndex + 1 : dropIndex
-            );
+          if (powerupChildren.map((x) => x._id).indexOf(rem._id) !== dropIndex) {
+            await rem.setParent(parent, e.addedIndex! > e.removedIndex! ? dropIndex + 1 : dropIndex);
           }
 
           if (tabIndex === e.removedIndex! + 1) {
@@ -244,24 +196,14 @@ function TabsBar() {
 
           if (e.addedIndex! + 1 <= tabIndex && e.removedIndex! + 1 > tabIndex) {
             setTabIndex(tabIndex + 1);
-          } else if (
-            e.addedIndex! + 1 >= tabIndex &&
-            e.removedIndex! + 1 < tabIndex
-          ) {
+          } else if (e.addedIndex! + 1 >= tabIndex && e.removedIndex! + 1 < tabIndex) {
             setTabIndex(tabIndex - 1);
           }
         }}
       >
         {tabs?.slice(1).map((tabRem, index) => (
           <Draggable key={tabRem._id}>
-            <Tab
-              tabRem={tabRem}
-              index={index + 1}
-              key={tabRem._id}
-              isSelected={index + 1 == tabIndex}
-              deleteTab={deleteTab}
-              onClick={onClickTab}
-            />
+            <Tab tabRem={tabRem} index={index + 1} key={tabRem._id} isSelected={index + 1 == tabIndex} deleteTab={deleteTab} onClick={onClickTab} />
           </Draggable>
         ))}
       </Container>
@@ -281,6 +223,8 @@ interface TabProps {
 function Tab(props: TabProps) {
   const plugin = usePlugin();
   const [value, setValue] = useState<string>();
+  const [isLocked, setIsLocked] = useState(true);
+
   useEffect(() => {
     const eff = async () => {
       setValue(await plugin.richText.toString(props.tabRem.text));
@@ -301,11 +245,9 @@ function Tab(props: TabProps) {
     <div
       onMouseUp={() => props.onClick(props.index, props.tabRem)}
       className={clsx(
-        "h-[35px] box-border",
+        "h-[40px] box-border",
         "cursor-pointer",
-        props.isSelected
-          ? "rn-clr-background-primary"
-          : "rn-clr-background-secondary",
+        props.isSelected ? "rn-clr-background-primary" : "rn-clr-background-secondary",
         "flex items-center justify-between gap-2 py-2",
         props.index == 0 ? "px-4" : "pl-4 pr-3",
         "min-w-[50px] ",
@@ -315,29 +257,43 @@ function Tab(props: TabProps) {
       )}
     >
       {props.index === 0 ? (
-        <span
-          className={clsx(
-            !props.isSelected && "cursor-pointer !whitespace-nowrap"
-          )}
-        >
-          {value}
-        </span>
+        <>
+          <span className={clsx(!props.isSelected && "cursor-pointer !whitespace-nowrap")}>{value}</span>
+          <button title="When locked - you can't rename the tab. When it's unlocked - you're good to go">{isLocked ? "🔒" : "🔓"}</button>
+        </>
       ) : (
-        <AutosizeInput
-          value={value}
-          placeholder={"Untitled"}
-          onClick={(e) => e.stopPropagation()}
-          onChange={(e) => setValue(e.target.value)}
-          minWidth={50}
-          className="text-md"
-          inputClassName={clsx(
-            "text-md focus:outline-none border-0 border-transparent focus:border-transparent focus:ring-0 min-w-[50px] rn-clr-content-primary",
-            props.isSelected
-              ? "rn-clr-background-primary"
-              : "rn-clr-background-secondary",
-            !props.isSelected && "cursor-pointer !whitespace-nowrap"
+        <>
+          {isLocked ? (
+            <span style={{ fontSize: "14px" }}>{value}</span>
+          ) : (
+            <AutosizeInput
+              value={value}
+              placeholder={"Untitled"}
+              onClick={(e: any) => e.stopPropagation()}
+              onChange={(e: any) => setValue(e.target.value)}
+              minWidth={50}
+              inputClassName={clsx("bg-transparent rn-clr-content-primary")}
+              inputStyle={{ fontSize: "15px" }}
+            />
           )}
-        />
+
+          <Tooltip>
+            <button
+              onMouseUp={(e) => {
+                e.stopPropagation();
+              }}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsLocked((prev) => !prev);
+              }}
+            >
+              {isLocked ? "🔒" : "🔓"}
+            </button>
+          </Tooltip>
+        </>
       )}
       {/* This renders the number of open windows in the tab: */}
       {/* {!!remIds && remIds.length > 1 && (
@@ -369,13 +325,10 @@ function Tab(props: TabProps) {
   );
 }
 
-function TabPlusButton(props) {
+function TabPlusButton(props: any) {
   const plugin = usePlugin();
   return (
-    <div
-      className="flex items-center p-1 cursor-pointer"
-      onClick={props.addTab}
-    >
+    <div className="flex items-center p-1 cursor-pointer" onClick={props.addTab}>
       <div className="flex items-center justify-center w-6 h-6 text-center rounded-md hover:rn-clr-background--hovered">
         <img
           alt="Add tab"
@@ -392,5 +345,11 @@ function TabPlusButton(props) {
     </div>
   );
 }
+
+const Tooltip = ({ children }: { children: ReactElement }) => (
+  <span className="tooltip" data-tooltip={`🔒 - you can't rename the tab 🔓 - you're good to go`}>
+    {children}
+  </span>
+);
 
 renderWidget(TabsBar);
