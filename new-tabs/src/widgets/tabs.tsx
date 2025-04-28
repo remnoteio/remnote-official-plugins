@@ -25,10 +25,12 @@ import "./tabs.css";
 function TabsBar() {
   const plugin = usePlugin();
   const [tabIndex, setTabIndex] = useSessionStorageState(focusedTabIndexKey, 0);
-  // const [isLockEnabled, setIsLockEnabled] = useState<boolean>(true);
-
   const workspacePowerup = useTracker(async (reactivePlugin: RNPlugin) => {
     return await reactivePlugin.powerup.getPowerupByCode("workspace");
+  }, []);
+  const isLockEnabled = useTracker(async (reactivePlugin) => {
+    const isLockingEnabled = await reactivePlugin.settings.getSetting<boolean>("tab-lock");
+    return Boolean(isLockingEnabled);
   }, []);
 
   // Reactively get the tabs
@@ -41,11 +43,6 @@ function TabsBar() {
         return !!(c.type != RemType.PORTAL && workspacePowerup && (await c.hasPowerup("workspace")));
       });
     }, []) || [];
-
-  const isLockEnabled = useTracker(async (reactivePlugin) => {
-    const isLockingEnabled = await reactivePlugin.settings.getSetting<boolean>("tab-lock");
-    return Boolean(isLockingEnabled);
-  });
 
   // Cache the tabs in React state to reduce jitter when the user drags a tab
   const [tabs, setTabs] = useState(reactiveTabs);
@@ -164,8 +161,7 @@ function TabsBar() {
 
   const toggleTabLock = async (index: number) => {
     const tabRem = tabs[index];
-    const isLocked = await tabRem.getPowerupProperty("workspace", "isLocked");
-
+    const isLocked = JSON.parse(await tabRem.getPowerupProperty("workspace", "isLocked"));
     await tabRem?.setPowerupProperty("workspace", "isLocked", [`${!isLocked}`]);
   };
 
@@ -250,13 +246,15 @@ interface TabProps {
 function Tab(props: TabProps) {
   const plugin = usePlugin();
   const [value, setValue] = useState<string>();
-  const [isLocked, setIsLocked] = useState<boolean>();
+  const [isLocked, setIsLocked] = useState<boolean>(false);
 
   useEffect(() => {
     const eff = async () => {
       setValue(await plugin.richText.toString(props.tabRem.text));
-      if (props.isLockEnabled) setIsLocked(false);
-      else setIsLocked(!!(await props.tabRem.getPowerupProperty("workspace", "isLocked")));
+      const isLocked = JSON.parse((await props.tabRem.getPowerupProperty("workspace", "isLocked")) ?? "true");
+
+      if (props.isLockEnabled) setIsLocked(isLocked);
+      else setIsLocked(false);
     };
     eff();
   }, []);
@@ -288,11 +286,7 @@ function Tab(props: TabProps) {
       {props.index === 0 ? (
         <>
           <span className={clsx(!props.isSelected && "cursor-pointer !whitespace-nowrap")}>{value}</span>
-          {props.isLockEnabled && (
-            <button title="When locked - you can't rename the tab. When it's unlocked - you're good to go">
-              <LockedIcon />
-            </button>
-          )}
+          {props.isLockEnabled && <LockedIcon />}
         </>
       ) : (
         <>
