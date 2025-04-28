@@ -20,6 +20,9 @@ import AutosizeInput from "react-input-autosize";
 import deepEqual from "deep-equal";
 import { focusedTabIndexKey } from "../lib/consts";
 import "./tabs.css";
+import LockedIcon from "./components/LockedIcon";
+import { UnlockedIcon } from "./components";
+import Tooltip from "./components/Tooltip";
 
 function TabsBar() {
   const plugin = usePlugin();
@@ -259,7 +262,9 @@ function Tab(props: TabProps) {
       {props.index === 0 ? (
         <>
           <span className={clsx(!props.isSelected && "cursor-pointer !whitespace-nowrap")}>{value}</span>
-          <button title="When locked - you can't rename the tab. When it's unlocked - you're good to go">{isLocked ? "🔒" : "🔓"}</button>
+          <button title="When locked - you can't rename the tab. When it's unlocked - you're good to go">
+            <LockedIcon />
+          </button>
         </>
       ) : (
         <>
@@ -277,7 +282,7 @@ function Tab(props: TabProps) {
             />
           )}
 
-          <Tooltip>
+          <Tooltip message={isLocked ? "Tab is locked. Click the lock to rename." : "Tab unlocked — click the lock to secure it."}>
             <button
               onMouseUp={(e) => {
                 e.stopPropagation();
@@ -290,7 +295,7 @@ function Tab(props: TabProps) {
                 setIsLocked((prev) => !prev);
               }}
             >
-              {isLocked ? "🔒" : "🔓"}
+              {isLocked ? <LockedIcon /> : <UnlockedIcon />}
             </button>
           </Tooltip>
         </>
@@ -345,11 +350,5 @@ function TabPlusButton(props: any) {
     </div>
   );
 }
-
-const Tooltip = ({ children }: { children: ReactElement }) => (
-  <span className="tooltip" data-tooltip={`🔒 - you can't rename the tab 🔓 - you're good to go`}>
-    {children}
-  </span>
-);
 
 renderWidget(TabsBar);

@@ -1,4 +1,3 @@
-
 .tooltip {
   position: relative;
   display: inline-block;
@@ -9,7 +8,7 @@
   content: attr(data-tooltip);
   position: absolute;
   left: 50%;
-  transform: translate(-100%, 10px);
+  transform: translate(-100%, 5px);
   z-index: 9999;
   background-color: #445262;
   color: #fff;
