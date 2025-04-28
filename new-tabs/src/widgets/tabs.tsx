@@ -25,6 +25,7 @@ import "./tabs.css";
 function TabsBar() {
   const plugin = usePlugin();
   const [tabIndex, setTabIndex] = useSessionStorageState(focusedTabIndexKey, 0);
+  // const [isLockEnabled, setIsLockEnabled] = useState<boolean>(true);
 
   const workspacePowerup = useTracker(async (reactivePlugin: RNPlugin) => {
     return await reactivePlugin.powerup.getPowerupByCode("workspace");
@@ -40,6 +41,11 @@ function TabsBar() {
         return !!(c.type != RemType.PORTAL && workspacePowerup && (await c.hasPowerup("workspace")));
       });
     }, []) || [];
+
+  const isLockEnabled = useTracker(async (reactivePlugin) => {
+    const isLockingEnabled = await reactivePlugin.settings.getSetting<boolean>("tab-lock");
+    return Boolean(isLockingEnabled);
+  });
 
   // Cache the tabs in React state to reduce jitter when the user drags a tab
   const [tabs, setTabs] = useState(reactiveTabs);
@@ -167,7 +173,9 @@ function TabsBar() {
     <div
       className={clsx("overflow-x-auto overflow-y-hidden", "rn-clr-background-secondary", "flex gap-1 items-stretch", "p-1 py-0 pl-4 text-[14px]")}
     >
-      {tabs?.[0] && <Tab tabRem={tabs?.[0]} index={0} key={tabs[0]?._id} isSelected={0 == tabIndex} onClick={onClickTab} />}
+      {tabs?.[0] && (
+        <Tab tabRem={tabs?.[0]} index={0} key={tabs[0]?._id} isSelected={0 == tabIndex} onClick={onClickTab} isLockEnabled={!!isLockEnabled} />
+      )}
       <Container
         lockAxis="x"
         getChildPayload={(idx) => tabs[idx + 1]}
@@ -219,6 +227,7 @@ function TabsBar() {
               deleteTab={deleteTab}
               onClick={onClickTab}
               toggleTabLock={toggleTabLock}
+              isLockEnabled={!!isLockEnabled}
             />
           </Draggable>
         ))}
@@ -232,6 +241,7 @@ interface TabProps {
   tabRem: Rem;
   index: number;
   isSelected: boolean;
+  isLockEnabled: boolean;
   deleteTab?: (event: any, index: number) => void;
   onClick: (index: number, tabRem: Rem | undefined) => void;
   toggleTabLock?: (index: number) => void;
@@ -245,7 +255,8 @@ function Tab(props: TabProps) {
   useEffect(() => {
     const eff = async () => {
       setValue(await plugin.richText.toString(props.tabRem.text));
-      setIsLocked(!!(await props.tabRem.getPowerupProperty("workspace", "isLocked")));
+      if (props.isLockEnabled) setIsLocked(false);
+      else setIsLocked(!!(await props.tabRem.getPowerupProperty("workspace", "isLocked")));
     };
     eff();
   }, []);
@@ -277,9 +288,11 @@ function Tab(props: TabProps) {
       {props.index === 0 ? (
         <>
           <span className={clsx(!props.isSelected && "cursor-pointer !whitespace-nowrap")}>{value}</span>
-          <button title="When locked - you can't rename the tab. When it's unlocked - you're good to go">
-            <LockedIcon />
-          </button>
+          {props.isLockEnabled && (
+            <button title="When locked - you can't rename the tab. When it's unlocked - you're good to go">
+              <LockedIcon />
+            </button>
+          )}
         </>
       ) : (
         <>
@@ -297,23 +310,25 @@ function Tab(props: TabProps) {
             />
           )}
 
-          <Tooltip message={isLocked ? "Tab is locked. Click the lock to rename." : "Tab unlocked — click the lock to secure it."}>
-            <button
-              onMouseUp={(e) => {
-                e.stopPropagation();
-              }}
-              onMouseDown={(e) => {
-                e.stopPropagation();
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsLocked((prev) => !prev);
-                props.toggleTabLock?.(props.index);
-              }}
-            >
-              {isLocked ? <LockedIcon /> : <UnlockedIcon />}
-            </button>
-          </Tooltip>
+          {props.isLockEnabled && (
+            <Tooltip message={isLocked ? "Tab is locked. Click the lock to rename." : "Tab unlocked — click the lock to secure it."}>
+              <button
+                onMouseUp={(e) => {
+                  e.stopPropagation();
+                }}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsLocked((prev) => !prev);
+                  props.toggleTabLock?.(props.index);
+                }}
+              >
+                {isLocked ? <LockedIcon /> : <UnlockedIcon />}
+              </button>
+            </Tooltip>
+          )}
         </>
       )}
       {/* This renders the number of open windows in the tab: */}

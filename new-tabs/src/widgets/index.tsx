@@ -39,6 +39,13 @@ async function onActivate(plugin: ReactRNPlugin) {
     },
   });
 
+  await plugin.settings.registerBooleanSetting({
+    id: "tab-lock",
+    title: "Lock Tab",
+    description: "Lock the current tab name. When tab is locked drag & drop functionalities works better as same as switching between the tabs.",
+    defaultValue: true,
+  });
+
   await getOrCreateHomeWorkspace(plugin);
 }
 
