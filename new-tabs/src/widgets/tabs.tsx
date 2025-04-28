@@ -12,17 +12,15 @@ import {
   useSessionStorageState,
 } from "@remnote/plugin-sdk";
 import clsx from "clsx";
-import { ReactElement, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Draggable } from "react-smooth-dnd";
 import { paneRemTreeToRemTree, useDebounce, removeDeletedRem } from "../lib/utils";
 import { getOrCreateHomeWorkspace, HOME_TAB_NAME } from "../shared";
 import AutosizeInput from "react-input-autosize";
 import deepEqual from "deep-equal";
 import { focusedTabIndexKey } from "../lib/consts";
+import { UnlockedIcon, LockedIcon, Tooltip } from "./components";
 import "./tabs.css";
-import LockedIcon from "./components/LockedIcon";
-import { UnlockedIcon } from "./components";
-import Tooltip from "./components/Tooltip";
 
 function TabsBar() {
   const plugin = usePlugin();
@@ -158,6 +156,13 @@ function TabsBar() {
     event.preventDefault();
   };
 
+  const toggleTabLock = async (index: number) => {
+    const tabRem = tabs[index];
+    const isLocked = await tabRem.getPowerupProperty("workspace", "isLocked");
+
+    await tabRem?.setPowerupProperty("workspace", "isLocked", [`${!isLocked}`]);
+  };
+
   return (
     <div
       className={clsx("overflow-x-auto overflow-y-hidden", "rn-clr-background-secondary", "flex gap-1 items-stretch", "p-1 py-0 pl-4 text-[14px]")}
@@ -206,7 +211,15 @@ function TabsBar() {
       >
         {tabs?.slice(1).map((tabRem, index) => (
           <Draggable key={tabRem._id}>
-            <Tab tabRem={tabRem} index={index + 1} key={tabRem._id} isSelected={index + 1 == tabIndex} deleteTab={deleteTab} onClick={onClickTab} />
+            <Tab
+              tabRem={tabRem}
+              index={index + 1}
+              key={tabRem._id}
+              isSelected={index + 1 == tabIndex}
+              deleteTab={deleteTab}
+              onClick={onClickTab}
+              toggleTabLock={toggleTabLock}
+            />
           </Draggable>
         ))}
       </Container>
@@ -221,16 +234,18 @@ interface TabProps {
   isSelected: boolean;
   deleteTab?: (event: any, index: number) => void;
   onClick: (index: number, tabRem: Rem | undefined) => void;
+  toggleTabLock?: (index: number) => void;
 }
 
 function Tab(props: TabProps) {
   const plugin = usePlugin();
   const [value, setValue] = useState<string>();
-  const [isLocked, setIsLocked] = useState(true);
+  const [isLocked, setIsLocked] = useState<boolean>();
 
   useEffect(() => {
     const eff = async () => {
       setValue(await plugin.richText.toString(props.tabRem.text));
+      setIsLocked(!!(await props.tabRem.getPowerupProperty("workspace", "isLocked")));
     };
     eff();
   }, []);
@@ -293,6 +308,7 @@ function Tab(props: TabProps) {
               onClick={(e) => {
                 e.stopPropagation();
                 setIsLocked((prev) => !prev);
+                props.toggleTabLock?.(props.index);
               }}
             >
               {isLocked ? <LockedIcon /> : <UnlockedIcon />}

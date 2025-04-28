@@ -1,15 +1,14 @@
-import {
-  WidgetLocation,
-  declareIndexPlugin,
-  type ReactRNPlugin,
-} from "@remnote/plugin-sdk";
+import { WidgetLocation, declareIndexPlugin, type ReactRNPlugin } from "@remnote/plugin-sdk";
 import { getOrCreateHomeWorkspace } from "../shared";
 import "../style.css";
 import { focusedTabIndexKey, tabsKey } from "../lib/consts";
 
 async function onActivate(plugin: ReactRNPlugin) {
   await plugin.app.registerPowerup("workspace", "workspace", "workspace", {
-    slots: [{ code: "windowTree", name: "Window Tree" }],
+    slots: [
+      { code: "windowTree", name: "Window Tree" },
+      { code: "isLocked", name: "Is Locked" },
+    ],
   });
 
   await plugin.app.registerWidget("tabs", WidgetLocation.TopBar, {
@@ -21,11 +20,9 @@ async function onActivate(plugin: ReactRNPlugin) {
     name: "Focus Next Tab",
     description: "Focus the tab to the right of the currently focused tab.",
     action: async () => {
-      const focusedTabIndex =
-        (await plugin.storage.getSession<number>(focusedTabIndexKey)) || 0;
+      const focusedTabIndex = (await plugin.storage.getSession<number>(focusedTabIndexKey)) || 0;
       const tabs = (await plugin.storage.getSession<any[]>(tabsKey)) || [];
-      const newTabIndex =
-        (((focusedTabIndex + 1) % tabs.length) + tabs.length) % tabs.length;
+      const newTabIndex = (((focusedTabIndex + 1) % tabs.length) + tabs.length) % tabs.length;
       await plugin.storage.setSession(focusedTabIndexKey, newTabIndex);
     },
   });
@@ -35,11 +32,9 @@ async function onActivate(plugin: ReactRNPlugin) {
     name: "Focus Previous Tab",
     description: "Focus the tab to the left of the currently focused tab.",
     action: async () => {
-      const focusedTabIndex =
-        (await plugin.storage.getSession<number>(focusedTabIndexKey)) || 0;
+      const focusedTabIndex = (await plugin.storage.getSession<number>(focusedTabIndexKey)) || 0;
       const tabs = (await plugin.storage.getSession<any[]>(tabsKey)) || [];
-      const newTabIndex =
-        (((focusedTabIndex - 1) % tabs.length) + tabs.length) % tabs.length;
+      const newTabIndex = (((focusedTabIndex - 1) % tabs.length) + tabs.length) % tabs.length;
       await plugin.storage.setSession(focusedTabIndexKey, newTabIndex);
     },
   });
