@@ -196,7 +196,9 @@ function TabsBar() {
           const powerupChildren = await workspacePowerup!.getChildrenRem();
 
           const dropIndex =
-            e.addedIndex! >= tabs.length ? powerupChildren.length + 1 : powerupChildren.map((q) => q._id).indexOf(tabs[e.addedIndex! + 1]._id);
+            e.addedIndex! >= tabs.length
+              ? powerupChildren.length + 1
+              : powerupChildren.map((q) => q._id).indexOf(tabs[e.addedIndex! + 1]._id);
 
           const parent = rem.parent;
           if (powerupChildren.map((x) => x._id).indexOf(rem._id) !== dropIndex) {
@@ -258,7 +260,7 @@ function Tab(props: TabProps) {
       else setIsLocked(false);
     };
     eff();
-  }, []);
+  }, [props.isLockEnabled, props.tabRem]);
 
   const debouncedValue = useDebounce(value, 200);
   useEffect(() => {
@@ -267,7 +269,7 @@ function Tab(props: TabProps) {
       await props.tabRem.setText([debouncedValue]);
     };
     eff();
-  }, [debouncedValue]);
+  }, [debouncedValue, props.tabRem]);
 
   return (
     <div
