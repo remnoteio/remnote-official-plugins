@@ -60,6 +60,7 @@ function TabsBar() {
     const index = tabs?.length;
     const newRem = (await plugin.rem.createRem())!;
     await setPowerupPropertiesForCurrentWindow(newRem);
+    await newRem?.setPowerupProperty("workspace", "isLocked", [`${false}`]);
 
     await newRem.addTag(workspacePowerup?._id || "");
     await newRem.setParent(workspacePowerup?._id || "", 9999999);
@@ -161,7 +162,7 @@ function TabsBar() {
 
   const toggleTabLock = async (index: number) => {
     const tabRem = tabs[index];
-    const isLocked = JSON.parse(await tabRem.getPowerupProperty("workspace", "isLocked"));
+    const isLocked = JSON.parse((await tabRem.getPowerupProperty("workspace", "isLocked")) || "false");
     await tabRem?.setPowerupProperty("workspace", "isLocked", [`${!isLocked}`]);
   };
 
