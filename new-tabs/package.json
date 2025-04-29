@@ -16,8 +16,6 @@
   },
   "dependencies": {
     "@remnote/plugin-sdk": "^0.0.23",
-    "@types/deep-equal": "^1.0.1",
-    "@types/underscore": "^1.11.4",
     "babel-loader": "^8.2.3",
     "clsx": "^1.1.1",
     "css-loader": "^6.7.1",
@@ -34,6 +32,8 @@
     "underscore": "^1.13.2"
   },
   "devDependencies": {
+    "@types/deep-equal": "^1.0.1",
+    "@types/underscore": "^1.11.4",
     "@babel/core": "^7.7.7",
     "@babel/preset-env": "^7.7.7",
     "@babel/preset-react": "^7.7.4",
@@ -43,6 +43,7 @@
     "@types/node": "^12.12.5",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.2",
+    "@types/react-input-autosize": "^2.2.4",
     "autoprefixer": "^10.4.2",
     "concurrently": "^7.0.0",
     "copy-webpack-plugin": "^10.2.4",

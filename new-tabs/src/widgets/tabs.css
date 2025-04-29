@@ -1,0 +1,28 @@
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  transform: translate(-100%, 5px);
+  z-index: 9999;
+  background-color: #445262;
+  color: #fff;
+  padding: 4px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 11px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease-in-out;
+  transition-delay: 0.75s;
+  z-index: 10;
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+}
