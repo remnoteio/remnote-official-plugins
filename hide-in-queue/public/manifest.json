@@ -8,7 +8,7 @@
 	"version": {
 		"major": 0,
 		"minor": 23,
-		"patch": 1
+		"patch": 2
 	},
 	"description": "Hides single bullets in the queue",
 	"requestNative": true,
