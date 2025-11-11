@@ -4,9 +4,9 @@ import {
   AppEvents,
   useAPIEventListener,
   useRunAsync,
-  WidgetLocation,
+  type WidgetLocation,
 } from "@remnote/plugin-sdk";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import mermaid from "mermaid";
 import { debounce } from "debounce";
 import { nanoid } from "nanoid";
@@ -21,28 +21,38 @@ export const MermaidWidget = () => {
   const widgetRef = useRef<HTMLDivElement | null>(null);
   const rendererRef = useRef<HTMLDivElement | null>(null);
 
+  // Initialize mermaid once
+  useEffect(() => {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "default",
+      securityLevel: "loose",
+    });
+  }, []);
+
   const widgetContext = useRunAsync(() => plugin.widget.getWidgetContext<WidgetLocation.UnderRemEditor>(), []);
 
-  const getRemText = async (remId: string) => {
-    const rem = await plugin.rem.findOne(remId);
-    const text = await plugin.richText.toString(rem?.text || []);
-    return text?.toString() || "";
-  };
+  const getRemText = useCallback(
+    async (remId: string) => {
+      const rem = await plugin.rem.findOne(remId);
+      const text = await plugin.richText.toString(rem?.text || []);
+      return text?.toString() || "";
+    },
+    [plugin]
+  );
 
-  const renderMermaid = async () => {
+  const renderMermaid = useCallback(async () => {
     const remId = widgetContext?.remId;
     const text = remId && (await getRemText(remId));
-    if (text) {
+    if (text && rendererRef.current) {
       try {
-        mermaid.render(MERMAID_WIDGET + id, text, (svgCode: string) => {
-          rendererRef.current!.innerHTML = svgCode;
-        });
-      }
-      catch (e) {
-        console.log("Mermaid failed to render: ", e)
+        const { svg } = await mermaid.render(MERMAID_WIDGET + id, text);
+        rendererRef.current.innerHTML = svg;
+      } catch (e) {
+        console.log("Mermaid failed to render: ", e);
       }
     }
-  };
+  }, [widgetContext?.remId, id, getRemText]);
 
   useAPIEventListener(
     AppEvents.RemChanged,
@@ -54,7 +64,7 @@ export const MermaidWidget = () => {
     if (widgetContext?.remId && widgetRef.current && rendererRef.current) {
       renderMermaid();
     }
-  }, [widgetContext?.remId, widgetRef.current, rendererRef.current]);
+  }, [widgetContext?.remId, renderMermaid]);
 
   return (
     <div>
