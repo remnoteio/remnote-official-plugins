@@ -4,7 +4,7 @@ var path = require("path");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { ESBuildMinifyPlugin } = require("esbuild-loader");
-const { ProvidePlugin, BannerPlugin } = require("webpack");
+const { ProvidePlugin } = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
@@ -78,11 +78,6 @@ const config = {
     new ProvidePlugin({
       React: "react",
     }),
-    isProd &&
-      new BannerPlugin({
-        banner: "const IMPORT_META=import.meta;",
-        raw: true,
-      }),
     new CopyPlugin({
       patterns: [{ from: "public", to: "" }],
     }),
