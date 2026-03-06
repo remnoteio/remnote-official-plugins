@@ -7,7 +7,7 @@
 
 ### Hide In Queue
 
-Tag any Rem with "Hide in Queue". Its content will be replaced with "Hidden in Queue":
+Tag any Rem with "Hide in Queue" (using the command). Its content will be replaced with "Hidden in Queue":
 
 **Editor:**
 ![](https://i.imgur.com/06IHTFp.png)
@@ -17,7 +17,7 @@ Tag any Rem with "Hide in Queue". Its content will be replaced with "Hidden in Q
 
 ### Remove from Queue
 
-Tag any Rem with "Remove from Queue". Its content will be completely removed.
+Tag any Rem with "Remove from Queue" (using the command). Its content will be completely removed.
 
 **Editor:**
 <br/>
@@ -29,7 +29,7 @@ Tag any Rem with "Remove from Queue". Its content will be completely removed.
 
 ### No Hierarchy
 
-Tag any Rem with "No Hierarchy". Any ancestors will be hidden on the front and back of the flashcard.
+Tag any Rem with "No Hierarchy" (using the command). Any ancestors will be hidden on the front and back of the flashcard.
 
 **Editor:**
 <br/>
@@ -39,32 +39,34 @@ Tag any Rem with "No Hierarchy". Any ancestors will be hidden on the front and b
 <br/>
 ![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/no-hier-queue.png)
 
-## Developers
-
 ### Hide Parent
 
-Tag any Rem with "Hide Parent". Its immediate parent will be hidden on the front of the flashcard, but revealed on the back.
+Tag any Rem with "Hide Parent" (using the command). Its immediate parent will be hidden on the front of the flashcard, but revealed on the back. (Similar to **Hide in Queue**, but instead of tagging the parent Rem, the user tags the specific flashcard Rem, so that other flashcards descendants of the same parent Rem are not affected.)
 
 **Editor:**
 <br/>
-![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/hide-parent-ed.png)
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/hide-parent-editor.png)
 
 **Queue:**
 <br/>
-![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/hide-parent-queue.png)
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/hide-parent-queue-question.png)
+
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/hide-parent-queue-answer.png)
 
 
 ### Hide Grandparent
 
-Tag any Rem with "Hide Grandparent". Its grandparent will be hidden on the front of the flashcard, but revealed on the back.
+Tag any Rem with "Hide Grandparent" (using the command). Its grandparent will be hidden on the front of the flashcard, but revealed on the back.
 
 **Editor:**
 <br/>
-![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/hide-grandparent-ed.png)
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/hide-grandparent-editor.png)
 
 **Queue:**
 <br/>
-![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/hide-grandparent-queue.png)
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/hide-grandparent-queue-question.png)
+
+![](https://raw.githubusercontent.com/remnoteio/remnote-official-plugins/main/hide-in-queue/images/hide-grandparent-queue-answer.png)
 
 ## Developers
 
