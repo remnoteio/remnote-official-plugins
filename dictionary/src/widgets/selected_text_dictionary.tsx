@@ -92,7 +92,7 @@ function SelectedTextDictionary() {
     300
   )
 
-  const { response, isLoading, isError } = useFetch<WordData[] | null>(
+  const { response, isLoading, isError, errorMessage } = useFetch<WordData[] | null>(
     // If the search term is not null, request the definition
     // from the dictionary API.
     searchTerm ? apiBaseUrl + searchTerm : null,
@@ -105,7 +105,7 @@ function SelectedTextDictionary() {
       {isLoading ? (
         <LoadingSpinner/>
       ) : isError ? (
-        <p>An error occurred fetching the definition</p>
+        <p>An error occurred fetching the definition: {errorMessage}</p>
       ) : searchTerm ? (
         wordData ? (
           <PreviewDefinitions

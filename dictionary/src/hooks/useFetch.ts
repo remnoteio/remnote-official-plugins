@@ -1,9 +1,9 @@
-import * as R from "react";
+import * as R from 'react';
 
 enum FetchDataActionType {
-  INIT = "INIT",
-  ERROR = "ERROR",
-  DONE = "DONE",
+  INIT = 'INIT',
+  ERROR = 'ERROR',
+  DONE = 'DONE',
 }
 
 type FetchDataAction<T> =
@@ -11,22 +11,41 @@ type FetchDataAction<T> =
   | { type: FetchDataActionType.ERROR; message: string }
   | { type: FetchDataActionType.DONE; payload: T };
 
-type FetchDataState<T> = { response: T; isLoading: boolean; isError: boolean };
+type FetchDataState<T> = {
+  response: T;
+  isLoading: boolean;
+  isError: boolean;
+  errorMessage: string | null;
+};
 
 export function apiReducer<T>(
   prevState: FetchDataState<T>,
-  action: FetchDataAction<T>
+  action: FetchDataAction<T>,
 ): FetchDataState<T> {
   switch (action.type) {
     case FetchDataActionType.INIT:
-      return { ...prevState, isLoading: true, isError: false };
+      return {
+        ...prevState,
+        isLoading: true,
+        isError: false,
+        errorMessage: null,
+      };
     case FetchDataActionType.ERROR:
-      console.log(action.message);
-      return { ...prevState, isError: true };
+      return {
+        ...prevState,
+        isLoading: false,
+        isError: true,
+        errorMessage: action.message,
+      };
     case FetchDataActionType.DONE:
-      return { ...prevState, response: action.payload, isLoading: false };
+      return {
+        response: action.payload,
+        isLoading: false,
+        isError: false,
+        errorMessage: null,
+      };
     default:
-      throw new Error("apiReducer: Unknown state...");
+      throw new Error('apiReducer: Unknown state...');
   }
 }
 
@@ -41,37 +60,60 @@ type ApiReducer<T> = Reducer<FetchDataState<T>, FetchDataAction<T>>;
  */
 export function useFetch<T>(
   url: string | null,
-  initialData: T
+  initialData: T,
 ): FetchDataState<T> {
   const initialState = {
     response: initialData,
     isLoading: false,
     isError: false,
+    errorMessage: null,
   };
-  const [{ response, isLoading, isError }, dispatch] = R.useReducer<
-    ApiReducer<T>
-  >(apiReducer, initialState);
+  const [state, dispatch] = R.useReducer<ApiReducer<T>>(
+    apiReducer,
+    initialState,
+  );
 
   R.useEffect(() => {
     if (!url) {
+      dispatch({ type: FetchDataActionType.DONE, payload: initialData });
       return;
     }
+    let cancelled = false;
     const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10_000);
     const getAndSetData = async () => {
       dispatch({ type: FetchDataActionType.INIT });
       const response = await fetch(url, { signal: controller.signal });
+      if (!response.ok && response.status !== 404) {
+        throw new Error(
+          `Dictionary API returned HTTP ${response.status} ${response.statusText}.`,
+        );
+      }
       const json = await response.json();
-      dispatch({ type: FetchDataActionType.DONE, payload: json });
+      if (!cancelled) {
+        dispatch({ type: FetchDataActionType.DONE, payload: json });
+      }
     };
 
-    getAndSetData().catch((e) => {
-      const msg =
-        e instanceof Error ? e.message : `Error fetching data from ${url}.`;
-      dispatch({ type: FetchDataActionType.ERROR, message: msg });
-    });
+    getAndSetData()
+      .catch((e) => {
+        if (!cancelled) {
+          const msg = controller.signal.aborted
+            ? 'Dictionary lookup timed out.'
+            : e instanceof Error
+              ? e.message
+              : `Error fetching data from ${url}.`;
+          dispatch({ type: FetchDataActionType.ERROR, message: msg });
+        }
+      })
+      .finally(() => clearTimeout(timeout));
 
-    return () => controller.abort();
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, [url]);
 
-  return { response, isLoading, isError };
+  return state;
 }
