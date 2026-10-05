@@ -40,6 +40,7 @@ const config = {
         loader: "esbuild-loader",
         options: {
           loader: "tsx",
+          tsconfigRaw: { compilerOptions: { jsx: "react" } },
           target: "es2020",
           minify: false,
         },
