@@ -51,6 +51,11 @@ const CSS = `
   display: none;
 }
 
+/* Beautiful Queue renders the document path as a breadcrumb row outside .indented-rem */
+.rn-queue__content:has(.rn-question-rem[data-queue-rem-container-tags~="no-hierarchy"]) :has(> .queue-beautiful-breadcrumbs) {
+  display: none;
+}
+
 `;
 
 const HIDE_IN_QUEUE_POWERUP_CODE = "hideInQueue";
